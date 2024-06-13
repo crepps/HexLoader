@@ -1,11 +1,45 @@
 #pragma once
+#include <iostream>
 #include <string>
 #include <vector>
 
-#define TITLE_BAR_HEIGHT 30
-#define TITLE_BAR_WIDTH 751
+// Text animation-related
 #define NUM_HEADER_FRAMES 16
 #define HEADER_TICK_RATE 9
+
+// Mouse-selectable window regions
+#define TITLE_BAR_HEIGHT 30
+#define TITLE_BAR_WIDTH 751
+
+#define BSB_AREA_L 0	// BUTTON_SELECT_BIN left, right, top, bottom
+#define BSB_AREA_R 0
+#define BSB_AREA_T 0
+#define BSB_AREA_B 0
+
+#define BSL_AREA_L 0	// BUTTON_SELECT_LIB
+#define BSL_AREA_R 0
+#define BSL_AREA_T 0
+#define BSL_AREA_B 0
+
+#define BB_AREA_L 657	// BUTTON_BUILD
+#define BB_AREA_R 733
+#define BB_AREA_T 270
+#define BB_AREA_B 294
+
+enum AREA
+{
+	BUTTON_SELECT_BIN,
+	BUTTON_SELECT_LIB,
+	BUTTON_BUILD
+};
+
+struct vec2
+{
+	int x, y;
+
+	vec2(int a_x, int a_y) noexcept
+		:x(a_x), y(a_y) {}
+};
 
 const std::vector<std::string> headerFrames =
 {
@@ -46,8 +80,11 @@ namespace HexLoader {
 
 
 		   Point cursorDownPos,
-			cursorPos,
 			cursorDelta;
+	private: System::Windows::Forms::Label^ label2;
+	private: System::Windows::Forms::Button^ button_build;
+	private: System::Windows::Forms::Button^ button_build2;
+
 	private: System::Windows::Forms::Label^ header_1;
 
 
@@ -57,7 +94,31 @@ namespace HexLoader {
 			InitializeComponent();
 			mouseDown = false;
 			timer_anim->Start();
+
+			button_build->FlatStyle = FlatStyle::Flat;
+			button_build2->FlatStyle = FlatStyle::Flat;
+			button_build->FlatAppearance->BorderSize = 0;
+			button_build2->FlatAppearance->BorderSize = 0;
 		}
+		bool CheckMouseover(vec2 cursorPos, AREA area)
+		{
+			switch (area)
+			{
+			case BUTTON_SELECT_BIN:
+				return (cursorPos.x >= BSB_AREA_L && cursorPos.x <= BSB_AREA_R
+					&& cursorPos.y >= BSB_AREA_T && cursorPos.y <= BSB_AREA_B);
+
+			case BUTTON_SELECT_LIB:
+				return (cursorPos.x >= BSL_AREA_L && cursorPos.x <= BSL_AREA_R
+					&& cursorPos.y >= BSL_AREA_T && cursorPos.y <= BSL_AREA_B);
+			
+			case BUTTON_BUILD:
+				return (cursorPos.x >= BB_AREA_L && cursorPos.x <= BB_AREA_R
+					&& cursorPos.y >= BB_AREA_T && cursorPos.y <= BB_AREA_B);
+			}
+		}
+
+
 
 	protected:
 		/// <summary>
@@ -113,6 +174,9 @@ namespace HexLoader {
 			this->textBox1 = (gcnew System::Windows::Forms::TextBox());
 			this->timer_anim = (gcnew System::Windows::Forms::Timer(this->components));
 			this->header_1 = (gcnew System::Windows::Forms::Label());
+			this->label2 = (gcnew System::Windows::Forms::Label());
+			this->button_build = (gcnew System::Windows::Forms::Button());
+			this->button_build2 = (gcnew System::Windows::Forms::Button());
 			this->SuspendLayout();
 			// 
 			// radio_loader
@@ -125,7 +189,7 @@ namespace HexLoader {
 			this->radio_loader->Location = System::Drawing::Point(505, 119);
 			this->radio_loader->Name = L"radio_loader";
 			this->radio_loader->Size = System::Drawing::Size(67, 20);
-			this->radio_loader->TabIndex = 0;
+			this->radio_loader->TabIndex = 2;
 			this->radio_loader->TabStop = true;
 			this->radio_loader->Text = L"Loader";
 			this->radio_loader->UseVisualStyleBackColor = true;
@@ -169,7 +233,7 @@ namespace HexLoader {
 			this->input_bin->Location = System::Drawing::Point(123, 121);
 			this->input_bin->Name = L"input_bin";
 			this->input_bin->Size = System::Drawing::Size(196, 16);
-			this->input_bin->TabIndex = 3;
+			this->input_bin->TabIndex = 0;
 			// 
 			// input_libs
 			// 
@@ -184,7 +248,7 @@ namespace HexLoader {
 			this->input_libs->Name = L"input_libs";
 			this->input_libs->ReadOnly = true;
 			this->input_libs->Size = System::Drawing::Size(196, 118);
-			this->input_libs->TabIndex = 4;
+			this->input_libs->TabIndex = 1;
 			// 
 			// label_bin
 			// 
@@ -213,10 +277,10 @@ namespace HexLoader {
 			this->checkBox1->AutoSize = true;
 			this->checkBox1->Font = (gcnew System::Drawing::Font(L"Lucida Sans Unicode", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
-			this->checkBox1->Location = System::Drawing::Point(535, 210);
+			this->checkBox1->Location = System::Drawing::Point(538, 210);
 			this->checkBox1->Name = L"checkBox1";
 			this->checkBox1->Size = System::Drawing::Size(111, 19);
-			this->checkBox1->TabIndex = 7;
+			this->checkBox1->TabIndex = 4;
 			this->checkBox1->Text = L"Cleanup Thread";
 			this->checkBox1->UseVisualStyleBackColor = true;
 			// 
@@ -242,7 +306,7 @@ namespace HexLoader {
 			this->textBox1->Location = System::Drawing::Point(543, 175);
 			this->textBox1->Name = L"textBox1";
 			this->textBox1->Size = System::Drawing::Size(196, 16);
-			this->textBox1->TabIndex = 8;
+			this->textBox1->TabIndex = 3;
 			this->textBox1->Text = L"C:\\temp";
 			// 
 			// timer_anim
@@ -265,6 +329,51 @@ namespace HexLoader {
 			this->header_1->Text = L"HexLoader";
 			this->header_1->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
 			// 
+			// label2
+			// 
+			this->label2->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(25)), static_cast<System::Int32>(static_cast<System::Byte>(25)),
+				static_cast<System::Int32>(static_cast<System::Byte>(25)));
+			this->label2->Font = (gcnew System::Drawing::Font(L"Trebuchet MS", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->label2->ForeColor = System::Drawing::SystemColors::ButtonFace;
+			this->label2->Location = System::Drawing::Point(34, 7);
+			this->label2->Name = L"label2";
+			this->label2->Size = System::Drawing::Size(105, 19);
+			this->label2->TabIndex = 11;
+			this->label2->Text = L"HexLoader ALPHA";
+			// 
+			// button_build
+			// 
+			this->button_build->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"button_build.BackgroundImage")));
+			this->button_build->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
+			this->button_build->Enabled = false;
+			this->button_build->Font = (gcnew System::Drawing::Font(L"Lucida Sans Unicode", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->button_build->ForeColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(224)), static_cast<System::Int32>(static_cast<System::Byte>(224)),
+				static_cast<System::Int32>(static_cast<System::Byte>(224)));
+			this->button_build->Location = System::Drawing::Point(658, 271);
+			this->button_build->Name = L"button_build";
+			this->button_build->Size = System::Drawing::Size(75, 23);
+			this->button_build->TabIndex = 5;
+			this->button_build->Text = L"Build";
+			this->button_build->UseVisualStyleBackColor = true;
+			// 
+			// button_build2
+			// 
+			this->button_build2->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"button_build2.BackgroundImage")));
+			this->button_build2->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
+			this->button_build2->Font = (gcnew System::Drawing::Font(L"Lucida Sans Unicode", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->button_build2->ForeColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(200)), static_cast<System::Int32>(static_cast<System::Byte>(0)),
+				static_cast<System::Int32>(static_cast<System::Byte>(0)));
+			this->button_build2->Location = System::Drawing::Point(658, 271);
+			this->button_build2->Name = L"button_build2";
+			this->button_build2->Size = System::Drawing::Size(75, 23);
+			this->button_build2->TabIndex = 12;
+			this->button_build2->Text = L"Build";
+			this->button_build2->UseVisualStyleBackColor = true;
+			this->button_build2->Visible = false;
+			// 
 			// gui
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
@@ -273,6 +382,7 @@ namespace HexLoader {
 				static_cast<System::Int32>(static_cast<System::Byte>(30)));
 			this->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"$this.BackgroundImage")));
 			this->ClientSize = System::Drawing::Size(796, 325);
+			this->Controls->Add(this->label2);
 			this->Controls->Add(this->header_1);
 			this->Controls->Add(this->label1);
 			this->Controls->Add(this->textBox1);
@@ -284,6 +394,8 @@ namespace HexLoader {
 			this->Controls->Add(this->header_1_back);
 			this->Controls->Add(this->radio_installer);
 			this->Controls->Add(this->radio_loader);
+			this->Controls->Add(this->button_build2);
+			this->Controls->Add(this->button_build);
 			this->ForeColor = System::Drawing::SystemColors::ButtonFace;
 			this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::None;
 			this->Name = L"gui";
@@ -301,6 +413,7 @@ namespace HexLoader {
 			static int currentFrame{ 0 },
 				ticks{ 0 };
 
+			// Animate header text
 			if (++ticks == HEADER_TICK_RATE)
 			{
 				header_1_back->Text = (currentFrame < NUM_HEADER_FRAMES-1 ? gcnew String(headerFrames[++currentFrame].data()) : gcnew String(headerFrames[currentFrame = 0].data()));
@@ -326,16 +439,28 @@ namespace HexLoader {
 		}
 		private: System::Void gui::gui_MouseMove(System::Object^ Sender, System::Windows::Forms::MouseEventArgs^ e)
 		{
+			// If mouse button down over title bar, move window with cursor
 			if (mouseDown)
-			{
-				cursorPos = Cursor->Position;
-				if (cursorPos != cursorDownPos)
+			{	
+				if (Cursor->Position != cursorDownPos)
 				{
-					cursorDelta = Point(cursorDownPos.X - cursorPos.X, cursorDownPos.Y - cursorPos.Y);
+					cursorDelta = Point(cursorDownPos.X - Cursor->Position.X, cursorDownPos.Y - Cursor->Position.Y);
 					Location = System::Drawing::Point(Location.X - cursorDelta.X, Location.Y - cursorDelta.Y);
-					cursorDownPos = cursorPos;
+					cursorDownPos = Cursor->Position;
 				}
 			}
+
+			// Highlight build button on mouseover
+			if (CheckMouseover(vec2(e->X, e->Y), BUTTON_BUILD))
+			{
+				button_build2->Visible = true;
+			}
+			else if (button_build2->Visible)
+			{	
+				button_build2->Visible = false;
+			}
+
+			std::cout << "x: " << e->X << " y: " << e->Y << '\n';
 		}
-};
+	};
 }
