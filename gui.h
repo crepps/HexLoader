@@ -83,7 +83,7 @@ namespace HexLoader {
 			cursorDelta;
 	private: System::Windows::Forms::Label^ label2;
 	private: System::Windows::Forms::Button^ button_build;
-	private: System::Windows::Forms::Button^ button_build2;
+
 
 	private: System::Windows::Forms::Label^ header_1;
 
@@ -96,9 +96,7 @@ namespace HexLoader {
 			timer_anim->Start();
 
 			button_build->FlatStyle = FlatStyle::Flat;
-			button_build2->FlatStyle = FlatStyle::Flat;
 			button_build->FlatAppearance->BorderSize = 0;
-			button_build2->FlatAppearance->BorderSize = 0;
 		}
 		bool CheckMouseover(vec2 cursorPos, AREA area)
 		{
@@ -176,7 +174,6 @@ namespace HexLoader {
 			this->header_1 = (gcnew System::Windows::Forms::Label());
 			this->label2 = (gcnew System::Windows::Forms::Label());
 			this->button_build = (gcnew System::Windows::Forms::Button());
-			this->button_build2 = (gcnew System::Windows::Forms::Button());
 			this->SuspendLayout();
 			// 
 			// radio_loader
@@ -346,33 +343,17 @@ namespace HexLoader {
 			// 
 			this->button_build->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"button_build.BackgroundImage")));
 			this->button_build->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
-			this->button_build->Enabled = false;
 			this->button_build->Font = (gcnew System::Drawing::Font(L"Lucida Sans Unicode", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
-			this->button_build->ForeColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(224)), static_cast<System::Int32>(static_cast<System::Byte>(224)),
-				static_cast<System::Int32>(static_cast<System::Byte>(224)));
+			this->button_build->ForeColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(200)), static_cast<System::Int32>(static_cast<System::Byte>(0)),
+				static_cast<System::Int32>(static_cast<System::Byte>(0)));
 			this->button_build->Location = System::Drawing::Point(658, 271);
 			this->button_build->Name = L"button_build";
 			this->button_build->Size = System::Drawing::Size(75, 23);
-			this->button_build->TabIndex = 5;
+			this->button_build->TabIndex = 12;
 			this->button_build->Text = L"Build";
 			this->button_build->UseVisualStyleBackColor = true;
-			// 
-			// button_build2
-			// 
-			this->button_build2->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"button_build2.BackgroundImage")));
-			this->button_build2->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
-			this->button_build2->Font = (gcnew System::Drawing::Font(L"Lucida Sans Unicode", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
-				static_cast<System::Byte>(0)));
-			this->button_build2->ForeColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(200)), static_cast<System::Int32>(static_cast<System::Byte>(0)),
-				static_cast<System::Int32>(static_cast<System::Byte>(0)));
-			this->button_build2->Location = System::Drawing::Point(658, 271);
-			this->button_build2->Name = L"button_build2";
-			this->button_build2->Size = System::Drawing::Size(75, 23);
-			this->button_build2->TabIndex = 12;
-			this->button_build2->Text = L"Build";
-			this->button_build2->UseVisualStyleBackColor = true;
-			this->button_build2->Visible = false;
+			this->button_build->Visible = false;
 			// 
 			// gui
 			// 
@@ -394,7 +375,6 @@ namespace HexLoader {
 			this->Controls->Add(this->header_1_back);
 			this->Controls->Add(this->radio_installer);
 			this->Controls->Add(this->radio_loader);
-			this->Controls->Add(this->button_build2);
 			this->Controls->Add(this->button_build);
 			this->ForeColor = System::Drawing::SystemColors::ButtonFace;
 			this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::None;
@@ -453,11 +433,11 @@ namespace HexLoader {
 			// Highlight build button on mouseover
 			if (CheckMouseover(vec2(e->X, e->Y), BUTTON_BUILD))
 			{
-				button_build2->Visible = true;
+				button_build->Visible = true;
 			}
-			else if (button_build2->Visible)
+			else if (button_build->Visible)
 			{	
-				button_build2->Visible = false;
+				button_build->Visible = false;
 			}
 
 			std::cout << "x: " << e->X << " y: " << e->Y << '\n';
