@@ -77,16 +77,12 @@ namespace HexLoader {
 	{
 	private:
 		bool mouseDown;
-
-
-		   Point cursorDownPos,
+		Point cursorDownPos,
 			cursorDelta;
+
 	private: System::Windows::Forms::Label^ label2;
 	private: System::Windows::Forms::Button^ button_build;
-
-
 	private: System::Windows::Forms::Label^ header_1;
-
 
 	public:
 		gui(void)
@@ -115,8 +111,6 @@ namespace HexLoader {
 					&& cursorPos.y >= BB_AREA_T && cursorPos.y <= BB_AREA_B);
 			}
 		}
-
-
 
 	protected:
 		/// <summary>
@@ -439,8 +433,6 @@ namespace HexLoader {
 			{	
 				button_build->Visible = false;
 			}
-
-			std::cout << "x: " << e->X << " y: " << e->Y << '\n';
 		}
 	};
 }
