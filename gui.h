@@ -17,10 +17,10 @@
 #define BSB_AREA_T 121
 #define BSB_AREA_B 136
 
-#define BSL_AREA_L 0	// BUTTON_SELECT_LIB
-#define BSL_AREA_R 0
-#define BSL_AREA_T 0
-#define BSL_AREA_B 0
+#define BSL_AREA_L 329	// BUTTON_SELECT_LIB
+#define BSL_AREA_R 341
+#define BSL_AREA_T 177
+#define BSL_AREA_B 189
 
 #define BB_AREA_L 657	// BUTTON_BUILD
 #define BB_AREA_R 733
@@ -85,6 +85,7 @@ namespace HexLoader {
 	private: System::Windows::Forms::Label^ label2;
 	private: System::Windows::Forms::Button^ button_build;
 	private: System::Windows::Forms::Button^ button_sb;
+	private: System::Windows::Forms::Button^ button_sl;
 	private: System::Windows::Forms::Label^ header_1;
 
 	public:
@@ -96,8 +97,10 @@ namespace HexLoader {
 
 			button_build->FlatStyle = FlatStyle::Flat;
 			button_sb->FlatStyle = FlatStyle::Flat;
+			button_sl->FlatStyle = FlatStyle::Flat;
 			button_build->FlatAppearance->BorderSize = 0;
 			button_sb->FlatAppearance->BorderSize = 0;
+			button_sl->FlatAppearance->BorderSize = 0;
 		}
 		bool CheckMouseover(vec2 cursorPos, AREA area)
 		{
@@ -174,6 +177,7 @@ namespace HexLoader {
 			this->label2 = (gcnew System::Windows::Forms::Label());
 			this->button_build = (gcnew System::Windows::Forms::Button());
 			this->button_sb = (gcnew System::Windows::Forms::Button());
+			this->button_sl = (gcnew System::Windows::Forms::Button());
 			this->SuspendLayout();
 			// 
 			// radio_loader
@@ -368,6 +372,17 @@ namespace HexLoader {
 			this->button_sb->UseVisualStyleBackColor = true;
 			this->button_sb->Visible = false;
 			// 
+			// button_sl
+			// 
+			this->button_sl->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"button_sl.BackgroundImage")));
+			this->button_sl->ForeColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(30)), static_cast<System::Int32>(static_cast<System::Byte>(30)),
+				static_cast<System::Int32>(static_cast<System::Byte>(30)));
+			this->button_sl->Location = System::Drawing::Point(329, 177);
+			this->button_sl->Name = L"button_sl";
+			this->button_sl->Size = System::Drawing::Size(12, 12);
+			this->button_sl->TabIndex = 14;
+			this->button_sl->UseVisualStyleBackColor = true;
+			// 
 			// gui
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
@@ -376,6 +391,7 @@ namespace HexLoader {
 				static_cast<System::Int32>(static_cast<System::Byte>(30)));
 			this->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"$this.BackgroundImage")));
 			this->ClientSize = System::Drawing::Size(796, 325);
+			this->Controls->Add(this->button_sl);
 			this->Controls->Add(this->button_sb);
 			this->Controls->Add(this->label2);
 			this->Controls->Add(this->header_1);
@@ -453,23 +469,17 @@ namespace HexLoader {
 					buttonPtr = button_sb;
 					break;
 				case BUTTON_SELECT_LIB:
-					//buttonPtr = button_sl;
+					buttonPtr = button_sl;
 					break;
 				case BUTTON_BUILD:
 					buttonPtr = button_build;
 				}
 
-				if (i != BUTTON_SELECT_LIB) // <- remove after adding BSL
-				{
-					if (CheckMouseover(vec2(e->X, e->Y), AREA(i)))
-					{
-						buttonPtr->Visible = true;
-					}
-					else if (buttonPtr->Visible)
-					{
-						buttonPtr->Visible = false;
-					}
-				}
+				if (CheckMouseover(vec2(e->X, e->Y), AREA(i)))
+					buttonPtr->Visible = true;
+
+				else if (buttonPtr->Visible)
+					buttonPtr->Visible = false;
 			}
 
 			//std::cout << "\nX: " << e->X << ", Y: " << e->Y << '\n';	// debug
