@@ -17,10 +17,10 @@
 #define BSB_AREA_T 121
 #define BSB_AREA_B 136
 
-#define BSL_AREA_L 329	// BUTTON_SELECT_LIB
-#define BSL_AREA_R 341
-#define BSL_AREA_T 177
-#define BSL_AREA_B 189
+#define BSL_AREA_L 333	// BUTTON_SELECT_LIB
+#define BSL_AREA_R 349
+#define BSL_AREA_T 172
+#define BSL_AREA_B 188
 
 #define BB_AREA_L 657	// BUTTON_BUILD
 #define BB_AREA_R 733
@@ -86,6 +86,7 @@ namespace HexLoader {
 	private: System::Windows::Forms::Button^ button_build;
 	private: System::Windows::Forms::Button^ button_sb;
 	private: System::Windows::Forms::Button^ button_sl;
+	private: System::Windows::Forms::LinkLabel^ link_more;
 	private: System::Windows::Forms::Label^ header_1;
 
 	public:
@@ -178,6 +179,7 @@ namespace HexLoader {
 			this->button_build = (gcnew System::Windows::Forms::Button());
 			this->button_sb = (gcnew System::Windows::Forms::Button());
 			this->button_sl = (gcnew System::Windows::Forms::Button());
+			this->link_more = (gcnew System::Windows::Forms::LinkLabel());
 			this->SuspendLayout();
 			// 
 			// radio_loader
@@ -377,11 +379,27 @@ namespace HexLoader {
 			this->button_sl->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"button_sl.BackgroundImage")));
 			this->button_sl->ForeColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(30)), static_cast<System::Int32>(static_cast<System::Byte>(30)),
 				static_cast<System::Int32>(static_cast<System::Byte>(30)));
-			this->button_sl->Location = System::Drawing::Point(329, 177);
+			this->button_sl->Location = System::Drawing::Point(335, 173);
 			this->button_sl->Name = L"button_sl";
 			this->button_sl->Size = System::Drawing::Size(12, 12);
 			this->button_sl->TabIndex = 14;
 			this->button_sl->UseVisualStyleBackColor = true;
+			this->button_sl->Visible = false;
+			// 
+			// link_more
+			// 
+			this->link_more->AutoSize = true;
+			this->link_more->ForeColor = System::Drawing::SystemColors::ButtonFace;
+			this->link_more->LinkColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(210)), static_cast<System::Int32>(static_cast<System::Byte>(210)),
+				static_cast<System::Int32>(static_cast<System::Byte>(210)));
+			this->link_more->Location = System::Drawing::Point(713, 43);
+			this->link_more->Name = L"link_more";
+			this->link_more->Size = System::Drawing::Size(31, 13);
+			this->link_more->TabIndex = 15;
+			this->link_more->TabStop = true;
+			this->link_more->Text = L"More";
+			this->link_more->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
+			this->link_more->VisitedLinkColor = System::Drawing::SystemColors::ButtonFace;
 			// 
 			// gui
 			// 
@@ -391,6 +409,7 @@ namespace HexLoader {
 				static_cast<System::Int32>(static_cast<System::Byte>(30)));
 			this->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"$this.BackgroundImage")));
 			this->ClientSize = System::Drawing::Size(796, 325);
+			this->Controls->Add(this->link_more);
 			this->Controls->Add(this->button_sl);
 			this->Controls->Add(this->button_sb);
 			this->Controls->Add(this->label2);
