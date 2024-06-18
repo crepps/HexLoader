@@ -103,23 +103,6 @@ namespace HexLoader {
 			button_sb->FlatAppearance->BorderSize = 0;
 			button_sl->FlatAppearance->BorderSize = 0;
 		}
-		bool CheckMouseover(vec2 cursorPos, AREA area)
-		{
-			switch (area)
-			{
-			case BUTTON_SELECT_BIN:
-				return (cursorPos.x >= BSB_AREA_L && cursorPos.x <= BSB_AREA_R
-					&& cursorPos.y >= BSB_AREA_T && cursorPos.y <= BSB_AREA_B);
-
-			case BUTTON_SELECT_LIB:
-				return (cursorPos.x >= BSL_AREA_L && cursorPos.x <= BSL_AREA_R
-					&& cursorPos.y >= BSL_AREA_T && cursorPos.y <= BSL_AREA_B);
-			
-			case BUTTON_BUILD:
-				return (cursorPos.x >= BB_AREA_L && cursorPos.x <= BB_AREA_R
-					&& cursorPos.y >= BB_AREA_T && cursorPos.y <= BB_AREA_B);
-			}
-		}
 
 	protected:
 		/// <summary>
@@ -392,7 +375,7 @@ namespace HexLoader {
 			this->link_more->ForeColor = System::Drawing::SystemColors::ButtonFace;
 			this->link_more->LinkColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(210)), static_cast<System::Int32>(static_cast<System::Byte>(210)),
 				static_cast<System::Int32>(static_cast<System::Byte>(210)));
-			this->link_more->Location = System::Drawing::Point(713, 43);
+			this->link_more->Location = System::Drawing::Point(713, 50);
 			this->link_more->Name = L"link_more";
 			this->link_more->Size = System::Drawing::Size(31, 13);
 			this->link_more->TabIndex = 15;
@@ -437,6 +420,23 @@ namespace HexLoader {
 
 		}
 #pragma endregion
+		private: bool CheckMouseover(vec2 cursorPos, AREA area)
+		{
+			switch (area)
+			{
+			case BUTTON_SELECT_BIN:
+				return (cursorPos.x >= BSB_AREA_L && cursorPos.x <= BSB_AREA_R
+					&& cursorPos.y >= BSB_AREA_T && cursorPos.y <= BSB_AREA_B);
+
+			case BUTTON_SELECT_LIB:
+				return (cursorPos.x >= BSL_AREA_L && cursorPos.x <= BSL_AREA_R
+					&& cursorPos.y >= BSL_AREA_T && cursorPos.y <= BSL_AREA_B);
+
+			case BUTTON_BUILD:
+				return (cursorPos.x >= BB_AREA_L && cursorPos.x <= BB_AREA_R
+					&& cursorPos.y >= BB_AREA_T && cursorPos.y <= BB_AREA_B);
+			}
+		}
 		private: System::Void timer_anim_Tick(System::Object^ sender, System::EventArgs^ e)
 		{
 			static int currentFrame{ 0 },
