@@ -356,6 +356,7 @@ namespace HexLoader {
 			this->button_sb->TabIndex = 13;
 			this->button_sb->UseVisualStyleBackColor = true;
 			this->button_sb->Visible = false;
+			this->button_sb->Click += gcnew System::EventHandler(this, &gui::button_sb_Click);
 			// 
 			// button_sl
 			// 
@@ -503,5 +504,16 @@ namespace HexLoader {
 
 			//std::cout << "\nX: " << e->X << ", Y: " << e->Y << '\n';	// debug
 		}
-	};
+	private: System::Void button_sb_Click(System::Object^ sender, System::EventArgs^ e)
+	{
+		OpenFileDialog^ openFileDialog1 = gcnew OpenFileDialog;
+		static std::string str;
+		size_t strPos;
+
+		openFileDialog1->InitialDirectory = gcnew String(getenv("USERPROFILE"));
+		openFileDialog1->Filter = "All Files|*.exe;";
+		openFileDialog1->FilterIndex = 2;
+		openFileDialog1->RestoreDirectory = true;
+	}
+};
 }
