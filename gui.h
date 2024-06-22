@@ -27,6 +27,8 @@
 #define BB_AREA_T 270
 #define BB_AREA_B 294
 
+void ConvertString(System::String^, std::string&);
+
 enum AREA
 {
 	BUTTON_SELECT_BIN,
@@ -80,6 +82,8 @@ namespace HexLoader {
 		bool mouseDown;
 		Point cursorDownPos,
 			cursorDelta;
+		const char* binPath;
+		System::Collections::Generic::List<String^> libPaths;
 		System::Windows::Forms::Button^ buttonPtr;
 
 	private: System::Windows::Forms::Label^ label2;
@@ -91,6 +95,7 @@ namespace HexLoader {
 
 	public:
 		gui(void)
+			:binPath(nullptr)
 		{
 			InitializeComponent();
 			mouseDown = false;
@@ -121,7 +126,8 @@ namespace HexLoader {
 	private: System::Windows::Forms::Label^ header_1_back;
 
 	private: System::Windows::Forms::TextBox^ input_bin;
-	private: System::Windows::Forms::TextBox^ input_libs;
+	private: System::Windows::Forms::TextBox^ input_lib;
+
 	private: System::Windows::Forms::Label^ label_bin;
 	private: System::Windows::Forms::Label^ label_libs;
 	private: System::Windows::Forms::CheckBox^ checkBox1;
@@ -150,7 +156,7 @@ namespace HexLoader {
 			this->radio_installer = (gcnew System::Windows::Forms::RadioButton());
 			this->header_1_back = (gcnew System::Windows::Forms::Label());
 			this->input_bin = (gcnew System::Windows::Forms::TextBox());
-			this->input_libs = (gcnew System::Windows::Forms::TextBox());
+			this->input_lib = (gcnew System::Windows::Forms::TextBox());
 			this->label_bin = (gcnew System::Windows::Forms::Label());
 			this->label_libs = (gcnew System::Windows::Forms::Label());
 			this->checkBox1 = (gcnew System::Windows::Forms::CheckBox());
@@ -221,20 +227,20 @@ namespace HexLoader {
 			this->input_bin->Size = System::Drawing::Size(196, 16);
 			this->input_bin->TabIndex = 0;
 			// 
-			// input_libs
+			// input_lib
 			// 
-			this->input_libs->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(40)), static_cast<System::Int32>(static_cast<System::Byte>(40)),
+			this->input_lib->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(40)), static_cast<System::Int32>(static_cast<System::Byte>(40)),
 				static_cast<System::Int32>(static_cast<System::Byte>(40)));
-			this->input_libs->BorderStyle = System::Windows::Forms::BorderStyle::None;
-			this->input_libs->Font = (gcnew System::Drawing::Font(L"Consolas", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->input_lib->BorderStyle = System::Windows::Forms::BorderStyle::None;
+			this->input_lib->Font = (gcnew System::Drawing::Font(L"Consolas", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
-			this->input_libs->ForeColor = System::Drawing::SystemColors::ButtonFace;
-			this->input_libs->Location = System::Drawing::Point(124, 173);
-			this->input_libs->Multiline = true;
-			this->input_libs->Name = L"input_libs";
-			this->input_libs->ReadOnly = true;
-			this->input_libs->Size = System::Drawing::Size(196, 118);
-			this->input_libs->TabIndex = 1;
+			this->input_lib->ForeColor = System::Drawing::SystemColors::ButtonFace;
+			this->input_lib->Location = System::Drawing::Point(124, 173);
+			this->input_lib->Multiline = true;
+			this->input_lib->Name = L"input_lib";
+			this->input_lib->ReadOnly = true;
+			this->input_lib->Size = System::Drawing::Size(196, 118);
+			this->input_lib->TabIndex = 1;
 			// 
 			// label_bin
 			// 
@@ -369,6 +375,7 @@ namespace HexLoader {
 			this->button_sl->TabIndex = 14;
 			this->button_sl->UseVisualStyleBackColor = true;
 			this->button_sl->Visible = false;
+			this->button_sl->Click += gcnew System::EventHandler(this, &gui::button_sl_Click);
 			// 
 			// link_more
 			// 
@@ -403,7 +410,7 @@ namespace HexLoader {
 			this->Controls->Add(this->checkBox1);
 			this->Controls->Add(this->label_libs);
 			this->Controls->Add(this->label_bin);
-			this->Controls->Add(this->input_libs);
+			this->Controls->Add(this->input_lib);
 			this->Controls->Add(this->input_bin);
 			this->Controls->Add(this->header_1_back);
 			this->Controls->Add(this->radio_installer);
@@ -504,16 +511,59 @@ namespace HexLoader {
 
 			//std::cout << "\nX: " << e->X << ", Y: " << e->Y << '\n';	// debug
 		}
-	private: System::Void button_sb_Click(System::Object^ sender, System::EventArgs^ e)
-	{
-		OpenFileDialog^ openFileDialog1 = gcnew OpenFileDialog;
-		static std::string str;
-		size_t strPos;
+	
+		private: const char* GetPath(AREA button)
+		{
+			OpenFileDialog^ openFileDialog1 = gcnew OpenFileDialog;
+			static std::string str;
+			const char* result{ nullptr };
 
-		openFileDialog1->InitialDirectory = gcnew String(getenv("USERPROFILE"));
-		openFileDialog1->Filter = "All Files|*.exe;";
-		openFileDialog1->FilterIndex = 2;
-		openFileDialog1->RestoreDirectory = true;
-	}
-};
+			openFileDialog1->InitialDirectory = gcnew String(getenv("USERPROFILE"));
+			openFileDialog1->FilterIndex = 2;
+			openFileDialog1->RestoreDirectory = true;
+
+			switch (button)
+			{
+			case BUTTON_SELECT_BIN:
+				openFileDialog1->Filter = "Exe Files (.exe)|*.exe";
+				break;
+			case BUTTON_SELECT_LIB:
+				openFileDialog1->Filter = "DLL Files (.dll)|*.dll";
+			}
+
+			if (openFileDialog1->ShowDialog() == System::Windows::Forms::DialogResult::OK)
+			{
+				ConvertString(openFileDialog1->FileName, str);
+				result = str.c_str();
+			}
+
+			return result;
+		}
+		private: System::Void button_sb_Click(System::Object^ sender, System::EventArgs^ e)
+		{
+			// Store full path, set input cursor to end
+			binPath = GetPath(BUTTON_SELECT_BIN);
+			input_bin->Text = gcnew String(binPath);
+			input_bin->Select(input_bin->Text->Length, 0);
+		}
+		private: System::Void button_sl_Click(System::Object^ sender, System::EventArgs^ e)
+		{
+			// Store full path, add only filename to input_lib text
+			std::string path = GetPath(BUTTON_SELECT_LIB);
+			libPaths.Add(gcnew String(path.c_str()));
+			size_t pos = path.find_last_of("\\");
+			path.erase(0, pos + 1);
+			input_lib->AppendText(gcnew String(path.c_str()));
+			input_lib->AppendText(Environment::NewLine);
+		}
+	};
+}
+
+void ConvertString(System::String^ s, std::string& os)
+{
+	using namespace System::Runtime::InteropServices;
+	const char* chars =
+		(const char*)(Marshal::StringToHGlobalAnsi(s)).ToPointer();
+	os = chars;
+	Marshal::FreeHGlobal(System::IntPtr((void*)chars));
 }
