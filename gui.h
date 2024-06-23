@@ -27,6 +27,12 @@
 #define BB_AREA_T 270
 #define BB_AREA_B 294
 
+// Label locations
+#define XPOS_OFFSET 400
+#define XPOS_CHECK_CLEANUP 538
+#define XPOS_CHECK_UNINSTALLER 554
+#define XPOS_PROMPTS 460
+
 void ConvertString(System::String^, std::string&);
 
 enum AREA
@@ -82,7 +88,8 @@ namespace HexLoader {
 		bool mouseDown;
 		Point cursorDownPos,
 			cursorDelta;
-		const char* binPath;
+		const char *binPath,
+					*appName;
 		System::Collections::Generic::List<String^> libPaths;
 		System::Windows::Forms::Button^ buttonPtr;
 
@@ -91,11 +98,19 @@ namespace HexLoader {
 	private: System::Windows::Forms::Button^ button_sb;
 	private: System::Windows::Forms::Button^ button_sl;
 	private: System::Windows::Forms::LinkLabel^ link_more;
+	private: System::Windows::Forms::CheckBox^ check_shortcut;
+
+	private: System::Windows::Forms::Label^ label_prompts;
+	private: System::Windows::Forms::CheckBox^ check_startup;
+
+
+	private: System::Windows::Forms::CheckBox^ check_uninstaller;
+
 	private: System::Windows::Forms::Label^ header_1;
 
 	public:
 		gui(void)
-			:binPath(nullptr)
+			:binPath(""), appName("")
 		{
 			InitializeComponent();
 			mouseDown = false;
@@ -130,9 +145,12 @@ namespace HexLoader {
 
 	private: System::Windows::Forms::Label^ label_bin;
 	private: System::Windows::Forms::Label^ label_libs;
-	private: System::Windows::Forms::CheckBox^ checkBox1;
-	private: System::Windows::Forms::Label^ label1;
-	private: System::Windows::Forms::TextBox^ textBox1;
+	private: System::Windows::Forms::CheckBox^ check_cleanup;
+
+	private: System::Windows::Forms::Label^ label_run;
+
+	private: System::Windows::Forms::TextBox^ input_run;
+
 	private: System::Windows::Forms::Timer^ timer_anim;
 
 	private: System::ComponentModel::IContainer^ components;
@@ -159,9 +177,9 @@ namespace HexLoader {
 			this->input_lib = (gcnew System::Windows::Forms::TextBox());
 			this->label_bin = (gcnew System::Windows::Forms::Label());
 			this->label_libs = (gcnew System::Windows::Forms::Label());
-			this->checkBox1 = (gcnew System::Windows::Forms::CheckBox());
-			this->label1 = (gcnew System::Windows::Forms::Label());
-			this->textBox1 = (gcnew System::Windows::Forms::TextBox());
+			this->check_cleanup = (gcnew System::Windows::Forms::CheckBox());
+			this->label_run = (gcnew System::Windows::Forms::Label());
+			this->input_run = (gcnew System::Windows::Forms::TextBox());
 			this->timer_anim = (gcnew System::Windows::Forms::Timer(this->components));
 			this->header_1 = (gcnew System::Windows::Forms::Label());
 			this->label2 = (gcnew System::Windows::Forms::Label());
@@ -169,11 +187,17 @@ namespace HexLoader {
 			this->button_sb = (gcnew System::Windows::Forms::Button());
 			this->button_sl = (gcnew System::Windows::Forms::Button());
 			this->link_more = (gcnew System::Windows::Forms::LinkLabel());
+			this->check_shortcut = (gcnew System::Windows::Forms::CheckBox());
+			this->label_prompts = (gcnew System::Windows::Forms::Label());
+			this->check_startup = (gcnew System::Windows::Forms::CheckBox());
+			this->check_uninstaller = (gcnew System::Windows::Forms::CheckBox());
 			this->SuspendLayout();
 			// 
 			// radio_loader
 			// 
 			this->radio_loader->AutoSize = true;
+			this->radio_loader->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(32)), static_cast<System::Int32>(static_cast<System::Byte>(32)),
+				static_cast<System::Int32>(static_cast<System::Byte>(32)));
 			this->radio_loader->Checked = true;
 			this->radio_loader->Font = (gcnew System::Drawing::Font(L"Lucida Sans Unicode", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
@@ -184,11 +208,14 @@ namespace HexLoader {
 			this->radio_loader->TabIndex = 2;
 			this->radio_loader->TabStop = true;
 			this->radio_loader->Text = L"Loader";
-			this->radio_loader->UseVisualStyleBackColor = true;
+			this->radio_loader->UseVisualStyleBackColor = false;
+			this->radio_loader->CheckedChanged += gcnew System::EventHandler(this, &gui::radio_loader_CheckedChanged);
 			// 
 			// radio_installer
 			// 
 			this->radio_installer->AutoSize = true;
+			this->radio_installer->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(32)), static_cast<System::Int32>(static_cast<System::Byte>(32)),
+				static_cast<System::Int32>(static_cast<System::Byte>(32)));
 			this->radio_installer->Font = (gcnew System::Drawing::Font(L"Lucida Sans Unicode", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
 			this->radio_installer->ForeColor = System::Drawing::SystemColors::ButtonFace;
@@ -197,7 +224,7 @@ namespace HexLoader {
 			this->radio_installer->Size = System::Drawing::Size(76, 20);
 			this->radio_installer->TabIndex = 1;
 			this->radio_installer->Text = L"Installer";
-			this->radio_installer->UseVisualStyleBackColor = true;
+			this->radio_installer->UseVisualStyleBackColor = false;
 			// 
 			// header_1_back
 			// 
@@ -264,42 +291,46 @@ namespace HexLoader {
 			this->label_libs->TabIndex = 6;
 			this->label_libs->Text = L"Library Files";
 			// 
-			// checkBox1
+			// check_cleanup
 			// 
-			this->checkBox1->AutoSize = true;
-			this->checkBox1->Font = (gcnew System::Drawing::Font(L"Lucida Sans Unicode", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->check_cleanup->AutoSize = true;
+			this->check_cleanup->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(32)), static_cast<System::Int32>(static_cast<System::Byte>(32)),
+				static_cast<System::Int32>(static_cast<System::Byte>(32)));
+			this->check_cleanup->Font = (gcnew System::Drawing::Font(L"Lucida Sans Unicode", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
-			this->checkBox1->Location = System::Drawing::Point(538, 210);
-			this->checkBox1->Name = L"checkBox1";
-			this->checkBox1->Size = System::Drawing::Size(111, 19);
-			this->checkBox1->TabIndex = 4;
-			this->checkBox1->Text = L"Cleanup Thread";
-			this->checkBox1->UseVisualStyleBackColor = true;
+			this->check_cleanup->Location = System::Drawing::Point(538, 199);
+			this->check_cleanup->Name = L"check_cleanup";
+			this->check_cleanup->Size = System::Drawing::Size(111, 19);
+			this->check_cleanup->TabIndex = 4;
+			this->check_cleanup->Text = L"Cleanup Thread";
+			this->check_cleanup->UseVisualStyleBackColor = false;
 			// 
-			// label1
+			// label_run
 			// 
-			this->label1->AutoSize = true;
-			this->label1->Font = (gcnew System::Drawing::Font(L"Lucida Sans Unicode", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->label_run->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(35)), static_cast<System::Int32>(static_cast<System::Byte>(35)),
+				static_cast<System::Int32>(static_cast<System::Byte>(35)));
+			this->label_run->Font = (gcnew System::Drawing::Font(L"Lucida Sans Unicode", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
-			this->label1->Location = System::Drawing::Point(456, 174);
-			this->label1->Name = L"label1";
-			this->label1->Size = System::Drawing::Size(80, 16);
-			this->label1->TabIndex = 9;
-			this->label1->Text = L"Run Location";
+			this->label_run->Location = System::Drawing::Point(432, 162);
+			this->label_run->Name = L"label_run";
+			this->label_run->Size = System::Drawing::Size(99, 16);
+			this->label_run->TabIndex = 9;
+			this->label_run->Text = L"Run Location";
+			this->label_run->TextAlign = System::Drawing::ContentAlignment::MiddleRight;
 			// 
-			// textBox1
+			// input_run
 			// 
-			this->textBox1->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(45)), static_cast<System::Int32>(static_cast<System::Byte>(45)),
+			this->input_run->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(45)), static_cast<System::Int32>(static_cast<System::Byte>(45)),
 				static_cast<System::Int32>(static_cast<System::Byte>(45)));
-			this->textBox1->BorderStyle = System::Windows::Forms::BorderStyle::None;
-			this->textBox1->Font = (gcnew System::Drawing::Font(L"Consolas", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->input_run->BorderStyle = System::Windows::Forms::BorderStyle::None;
+			this->input_run->Font = (gcnew System::Drawing::Font(L"Consolas", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
-			this->textBox1->ForeColor = System::Drawing::SystemColors::ButtonFace;
-			this->textBox1->Location = System::Drawing::Point(543, 175);
-			this->textBox1->Name = L"textBox1";
-			this->textBox1->Size = System::Drawing::Size(196, 16);
-			this->textBox1->TabIndex = 3;
-			this->textBox1->Text = L"C:\\temp";
+			this->input_run->ForeColor = System::Drawing::SystemColors::ButtonFace;
+			this->input_run->Location = System::Drawing::Point(543, 163);
+			this->input_run->Name = L"input_run";
+			this->input_run->Size = System::Drawing::Size(196, 16);
+			this->input_run->TabIndex = 3;
+			this->input_run->Text = L"C:\\temp";
 			// 
 			// timer_anim
 			// 
@@ -392,6 +423,60 @@ namespace HexLoader {
 			this->link_more->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
 			this->link_more->VisitedLinkColor = System::Drawing::SystemColors::ButtonFace;
 			// 
+			// check_shortcut
+			// 
+			this->check_shortcut->AutoSize = true;
+			this->check_shortcut->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(25)), static_cast<System::Int32>(static_cast<System::Byte>(25)),
+				static_cast<System::Int32>(static_cast<System::Byte>(25)));
+			this->check_shortcut->Font = (gcnew System::Drawing::Font(L"Lucida Sans Unicode", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->check_shortcut->Location = System::Drawing::Point(860, 243);
+			this->check_shortcut->Name = L"check_shortcut";
+			this->check_shortcut->Size = System::Drawing::Size(72, 19);
+			this->check_shortcut->TabIndex = 16;
+			this->check_shortcut->Text = L"Shortcut";
+			this->check_shortcut->UseVisualStyleBackColor = false;
+			// 
+			// label_prompts
+			// 
+			this->label_prompts->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(29)), static_cast<System::Int32>(static_cast<System::Byte>(29)),
+				static_cast<System::Int32>(static_cast<System::Byte>(29)));
+			this->label_prompts->Font = (gcnew System::Drawing::Font(L"Lucida Sans Unicode", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->label_prompts->Location = System::Drawing::Point(860, 223);
+			this->label_prompts->Name = L"label_prompts";
+			this->label_prompts->Size = System::Drawing::Size(65, 15);
+			this->label_prompts->TabIndex = 17;
+			this->label_prompts->Text = L"Prompts";
+			// 
+			// check_startup
+			// 
+			this->check_startup->AutoSize = true;
+			this->check_startup->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(20)), static_cast<System::Int32>(static_cast<System::Byte>(20)),
+				static_cast<System::Int32>(static_cast<System::Byte>(20)));
+			this->check_startup->Font = (gcnew System::Drawing::Font(L"Lucida Sans Unicode", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->check_startup->Location = System::Drawing::Point(860, 264);
+			this->check_startup->Name = L"check_startup";
+			this->check_startup->Size = System::Drawing::Size(65, 19);
+			this->check_startup->TabIndex = 18;
+			this->check_startup->Text = L"Startup";
+			this->check_startup->UseVisualStyleBackColor = false;
+			// 
+			// check_uninstaller
+			// 
+			this->check_uninstaller->AutoSize = true;
+			this->check_uninstaller->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(32)),
+				static_cast<System::Int32>(static_cast<System::Byte>(32)), static_cast<System::Int32>(static_cast<System::Byte>(32)));
+			this->check_uninstaller->Font = (gcnew System::Drawing::Font(L"Lucida Sans Unicode", 8.25F, System::Drawing::FontStyle::Regular,
+				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
+			this->check_uninstaller->Location = System::Drawing::Point(954, 199);
+			this->check_uninstaller->Name = L"check_uninstaller";
+			this->check_uninstaller->Size = System::Drawing::Size(84, 19);
+			this->check_uninstaller->TabIndex = 19;
+			this->check_uninstaller->Text = L"Uninstaller";
+			this->check_uninstaller->UseVisualStyleBackColor = false;
+			// 
 			// gui
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
@@ -399,15 +484,19 @@ namespace HexLoader {
 			this->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(30)), static_cast<System::Int32>(static_cast<System::Byte>(30)),
 				static_cast<System::Int32>(static_cast<System::Byte>(30)));
 			this->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"$this.BackgroundImage")));
-			this->ClientSize = System::Drawing::Size(796, 325);
+			this->ClientSize = System::Drawing::Size(793, 325);
+			this->Controls->Add(this->check_uninstaller);
+			this->Controls->Add(this->check_startup);
+			this->Controls->Add(this->label_prompts);
+			this->Controls->Add(this->check_shortcut);
 			this->Controls->Add(this->link_more);
 			this->Controls->Add(this->button_sl);
 			this->Controls->Add(this->button_sb);
 			this->Controls->Add(this->label2);
 			this->Controls->Add(this->header_1);
-			this->Controls->Add(this->label1);
-			this->Controls->Add(this->textBox1);
-			this->Controls->Add(this->checkBox1);
+			this->Controls->Add(this->label_run);
+			this->Controls->Add(this->input_run);
+			this->Controls->Add(this->check_cleanup);
 			this->Controls->Add(this->label_libs);
 			this->Controls->Add(this->label_bin);
 			this->Controls->Add(this->input_lib);
@@ -556,7 +645,49 @@ namespace HexLoader {
 			input_lib->AppendText(gcnew String(path.c_str()));
 			input_lib->AppendText(Environment::NewLine);
 		}
-	};
+	private: System::Void radio_loader_CheckedChanged(System::Object^ sender, System::EventArgs^ e)
+	{
+		// Loader selected
+		if (radio_loader->Checked == true)
+		{
+			// Displace installer input
+			check_uninstaller->Location = System::Drawing::Point(XPOS_CHECK_UNINSTALLER + XPOS_OFFSET, check_uninstaller->Location.Y);
+			label_prompts->Location = System::Drawing::Point(XPOS_PROMPTS + XPOS_OFFSET, label_prompts->Location.Y);
+			check_shortcut->Location = System::Drawing::Point(XPOS_PROMPTS + XPOS_OFFSET, check_shortcut->Location.Y);
+			check_startup->Location = System::Drawing::Point(XPOS_PROMPTS + XPOS_OFFSET, check_startup->Location.Y);
+
+			// Restore loader input
+			check_cleanup->Location = System::Drawing::Point(XPOS_CHECK_CLEANUP, check_cleanup->Location.Y);
+
+			// Change label
+			label_run->Text = "Run Location";
+
+			// Change suggested path
+			input_run->Text = "C:\\temp";
+		}
+
+		// Installer selected
+		else
+		{
+			// Displace loader input
+			check_cleanup->Location = System::Drawing::Point(XPOS_CHECK_CLEANUP + XPOS_OFFSET, check_cleanup->Location.Y);
+
+			// Restore installer input
+			check_uninstaller->Location = System::Drawing::Point(XPOS_CHECK_UNINSTALLER, check_uninstaller->Location.Y);
+			label_prompts->Location = System::Drawing::Point(XPOS_PROMPTS, label_prompts->Location.Y);
+			check_shortcut->Location = System::Drawing::Point(XPOS_PROMPTS, check_shortcut->Location.Y);
+			check_startup->Location = System::Drawing::Point(XPOS_PROMPTS, check_startup->Location.Y);
+
+			// Change label
+			label_run->Text = "Install Location";
+
+			// Change suggested path
+			std::string path("C:\\Program Files\\");
+			path.append(appName);
+			input_run->Text = gcnew String(path.c_str());
+		}
+	}
+};
 }
 
 void ConvertString(System::String^ s, std::string& os)
