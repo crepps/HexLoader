@@ -57,7 +57,8 @@ namespace HexLoader {
 	public ref class gui : public System::Windows::Forms::Form
 	{
 	private:
-		bool mouseDown;
+		bool mouseDown,
+			expandConsole;
 		Point cursorDownPos,
 			cursorDelta;
 		const char *binPath,
@@ -71,8 +72,8 @@ namespace HexLoader {
 
 		// Text animation-related
 		const unsigned int NUM_BUTTONS{ 3 },
-			NUM_HEADER_FRAMES{ 16 },
-			HEADER_TICK_RATE{ 9 },
+		NUM_HEADER_FRAMES{ 16 },
+		HEADER_TICK_RATE{ 9 },
 
 		// Mouse-selectable window regions
 		TITLE_BAR_HEIGHT{ 30 },
@@ -97,10 +98,12 @@ namespace HexLoader {
 		XPOS_OFFSET{ 400 },
 		XPOS_CHECK_CLEANUP{ 538 },
 		XPOS_CHECK_UNINSTALLER{ 554 },
-		XPOS_PROMPTS{ 460 };
+		XPOS_PROMPTS{ 460 },
 
 		// Defaults
+		CONSOLE_WIDTH{ 341 };
 		const char* DEFAULT_TEXT_RUN{ "C:\\temp" };
+
 
 	private: System::Windows::Forms::Label^ label2;
 	private: System::Windows::Forms::Button^ button_build;
@@ -115,12 +118,14 @@ namespace HexLoader {
 
 	private: System::Windows::Forms::CheckBox^ check_uninstaller;
 	private: System::Windows::Forms::LinkLabel^ linkLabel1;
+	private: System::Windows::Forms::TextBox^ text_output;
+
 
 	private: System::Windows::Forms::Label^ header_1;
 
 	public:
 		gui(void)
-			:binPath(""), appName("")
+			:binPath(""), appName(""), expandConsole(false)
 		{
 			InitializeComponent();
 			mouseDown = false;
@@ -202,6 +207,7 @@ namespace HexLoader {
 			this->check_startup = (gcnew System::Windows::Forms::CheckBox());
 			this->check_uninstaller = (gcnew System::Windows::Forms::CheckBox());
 			this->linkLabel1 = (gcnew System::Windows::Forms::LinkLabel());
+			this->text_output = (gcnew System::Windows::Forms::TextBox());
 			this->SuspendLayout();
 			// 
 			// radio_loader
@@ -391,6 +397,7 @@ namespace HexLoader {
 			this->button_build->Text = L"Build";
 			this->button_build->UseVisualStyleBackColor = true;
 			this->button_build->Visible = false;
+			this->button_build->Click += gcnew System::EventHandler(this, &gui::button_build_Click);
 			// 
 			// button_sb
 			// 
@@ -506,6 +513,22 @@ namespace HexLoader {
 			this->linkLabel1->VisitedLinkColor = System::Drawing::SystemColors::ButtonFace;
 			this->linkLabel1->LinkClicked += gcnew System::Windows::Forms::LinkLabelLinkClickedEventHandler(this, &gui::linkLabel1_LinkClicked);
 			// 
+			// text_output
+			// 
+			this->text_output->BackColor = System::Drawing::SystemColors::InfoText;
+			this->text_output->BorderStyle = System::Windows::Forms::BorderStyle::None;
+			this->text_output->Font = (gcnew System::Drawing::Font(L"Cascadia Code", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->text_output->ForeColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(192)), static_cast<System::Int32>(static_cast<System::Byte>(0)),
+				static_cast<System::Int32>(static_cast<System::Byte>(0)));
+			this->text_output->Location = System::Drawing::Point(400, 106);
+			this->text_output->Margin = System::Windows::Forms::Padding(5);
+			this->text_output->Multiline = true;
+			this->text_output->Name = L"text_output";
+			this->text_output->ReadOnly = true;
+			this->text_output->Size = System::Drawing::Size(0, 193);
+			this->text_output->TabIndex = 21;
+			// 
 			// gui
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
@@ -514,6 +537,7 @@ namespace HexLoader {
 				static_cast<System::Int32>(static_cast<System::Byte>(30)));
 			this->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"$this.BackgroundImage")));
 			this->ClientSize = System::Drawing::Size(793, 325);
+			this->Controls->Add(this->text_output);
 			this->Controls->Add(this->linkLabel1);
 			this->Controls->Add(this->check_uninstaller);
 			this->Controls->Add(this->check_startup);
@@ -574,6 +598,20 @@ namespace HexLoader {
 			{
 				header_1_back->Text = (currentFrame < NUM_HEADER_FRAMES-1 ? gcnew String(headerFrames[++currentFrame].data()) : gcnew String(headerFrames[currentFrame = 0].data()));
 				ticks = 0;
+			}
+
+			// Expand console
+			if (expandConsole)
+			{
+				if (text_output->Size.Width < CONSOLE_WIDTH)
+					text_output->Width += 25;
+			}
+
+			// Hide console
+			else
+			{
+				if (text_output->Size.Width > 0)
+					text_output->Width -= 25;
 			}
 		}
 		private: System::Void gui::gui_MouseDown(System::Object^ Sender, System::Windows::Forms::MouseEventArgs^ e)
@@ -707,6 +745,7 @@ namespace HexLoader {
 				label_prompts->Location = System::Drawing::Point(XPOS_PROMPTS, label_prompts->Location.Y);
 				check_shortcut->Location = System::Drawing::Point(XPOS_PROMPTS, check_shortcut->Location.Y);
 				check_startup->Location = System::Drawing::Point(XPOS_PROMPTS, check_startup->Location.Y);
+				check_startup->Size.Width += 1;
 
 				// Change label
 				label_run->Text = "Install Location";
@@ -732,6 +771,10 @@ namespace HexLoader {
 		private: System::Void linkLabel1_LinkClicked(System::Object^ sender, System::Windows::Forms::LinkLabelLinkClickedEventArgs^ e)
 		{
 			Reset();
+		}
+		private: System::Void button_build_Click(System::Object^ sender, System::EventArgs^ e)
+		{
+			expandConsole = true;
 		}
 	};
 }
