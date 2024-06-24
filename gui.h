@@ -3,35 +3,7 @@
 #include <string>
 #include <vector>
 
-// Text animation-related
-#define NUM_BUTTONS 3
-#define NUM_HEADER_FRAMES 16
-#define HEADER_TICK_RATE 9
 
-// Mouse-selectable window regions
-#define TITLE_BAR_HEIGHT 30
-#define TITLE_BAR_WIDTH 751
-
-#define BSB_AREA_L 329	// BUTTON_SELECT_BIN left, right, top, bottom
-#define BSB_AREA_R 352
-#define BSB_AREA_T 121
-#define BSB_AREA_B 136
-
-#define BSL_AREA_L 333	// BUTTON_SELECT_LIB
-#define BSL_AREA_R 349
-#define BSL_AREA_T 172
-#define BSL_AREA_B 188
-
-#define BB_AREA_L 657	// BUTTON_BUILD
-#define BB_AREA_R 733
-#define BB_AREA_T 270
-#define BB_AREA_B 294
-
-// Label locations
-#define XPOS_OFFSET 400
-#define XPOS_CHECK_CLEANUP 538
-#define XPOS_CHECK_UNINSTALLER 554
-#define XPOS_PROMPTS 460
 
 void ConvertString(System::String^, std::string&);
 
@@ -93,6 +65,43 @@ namespace HexLoader {
 		System::Collections::Generic::List<String^> libPaths;
 		System::Windows::Forms::Button^ buttonPtr;
 
+		/*
+					Constants
+		*/
+
+		// Text animation-related
+		const unsigned int NUM_BUTTONS{ 3 },
+			NUM_HEADER_FRAMES{ 16 },
+			HEADER_TICK_RATE{ 9 },
+
+		// Mouse-selectable window regions
+		TITLE_BAR_HEIGHT{ 30 },
+		TITLE_BAR_WIDTH{ 751 },
+
+		BSB_AREA_L{ 329 },	// BUTTON_SELECT_BIN left, right, top, bottom
+		BSB_AREA_R{ 352 },
+		BSB_AREA_T{ 121 },
+		BSB_AREA_B{ 136 },
+
+		BSL_AREA_L{ 333 },	// BUTTON_SELECT_LIB
+		BSL_AREA_R{ 349 },
+		BSL_AREA_T{ 172 },
+		BSL_AREA_B{ 188 },
+
+		BB_AREA_L{ 657 },	// BUTTON_BUILD
+		BB_AREA_R{ 733 },
+		BB_AREA_T{ 270 },
+		BB_AREA_B{ 294 },
+
+		// Label locations
+		XPOS_OFFSET{ 400 },
+		XPOS_CHECK_CLEANUP{ 538 },
+		XPOS_CHECK_UNINSTALLER{ 554 },
+		XPOS_PROMPTS{ 460 };
+
+		// Defaults
+		const char* DEFAULT_TEXT_RUN{ "C:\\temp" };
+
 	private: System::Windows::Forms::Label^ label2;
 	private: System::Windows::Forms::Button^ button_build;
 	private: System::Windows::Forms::Button^ button_sb;
@@ -105,6 +114,7 @@ namespace HexLoader {
 
 
 	private: System::Windows::Forms::CheckBox^ check_uninstaller;
+	private: System::Windows::Forms::LinkLabel^ linkLabel1;
 
 	private: System::Windows::Forms::Label^ header_1;
 
@@ -191,6 +201,7 @@ namespace HexLoader {
 			this->label_prompts = (gcnew System::Windows::Forms::Label());
 			this->check_startup = (gcnew System::Windows::Forms::CheckBox());
 			this->check_uninstaller = (gcnew System::Windows::Forms::CheckBox());
+			this->linkLabel1 = (gcnew System::Windows::Forms::LinkLabel());
 			this->SuspendLayout();
 			// 
 			// radio_loader
@@ -477,6 +488,24 @@ namespace HexLoader {
 			this->check_uninstaller->Text = L"Uninstaller";
 			this->check_uninstaller->UseVisualStyleBackColor = false;
 			// 
+			// linkLabel1
+			// 
+			this->linkLabel1->AutoSize = true;
+			this->linkLabel1->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(20)), static_cast<System::Int32>(static_cast<System::Byte>(20)),
+				static_cast<System::Int32>(static_cast<System::Byte>(20)));
+			this->linkLabel1->ForeColor = System::Drawing::SystemColors::ButtonFace;
+			this->linkLabel1->LinkColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(150)), static_cast<System::Int32>(static_cast<System::Byte>(0)),
+				static_cast<System::Int32>(static_cast<System::Byte>(0)));
+			this->linkLabel1->Location = System::Drawing::Point(593, 276);
+			this->linkLabel1->Name = L"linkLabel1";
+			this->linkLabel1->Size = System::Drawing::Size(35, 13);
+			this->linkLabel1->TabIndex = 20;
+			this->linkLabel1->TabStop = true;
+			this->linkLabel1->Text = L"Reset";
+			this->linkLabel1->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
+			this->linkLabel1->VisitedLinkColor = System::Drawing::SystemColors::ButtonFace;
+			this->linkLabel1->LinkClicked += gcnew System::Windows::Forms::LinkLabelLinkClickedEventHandler(this, &gui::linkLabel1_LinkClicked);
+			// 
 			// gui
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
@@ -485,6 +514,7 @@ namespace HexLoader {
 				static_cast<System::Int32>(static_cast<System::Byte>(30)));
 			this->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"$this.BackgroundImage")));
 			this->ClientSize = System::Drawing::Size(793, 325);
+			this->Controls->Add(this->linkLabel1);
 			this->Controls->Add(this->check_uninstaller);
 			this->Controls->Add(this->check_startup);
 			this->Controls->Add(this->label_prompts);
@@ -645,49 +675,65 @@ namespace HexLoader {
 			input_lib->AppendText(gcnew String(path.c_str()));
 			input_lib->AppendText(Environment::NewLine);
 		}
-	private: System::Void radio_loader_CheckedChanged(System::Object^ sender, System::EventArgs^ e)
-	{
-		// Loader selected
-		if (radio_loader->Checked == true)
+		private: System::Void radio_loader_CheckedChanged(System::Object^ sender, System::EventArgs^ e)
 		{
-			// Displace installer input
-			check_uninstaller->Location = System::Drawing::Point(XPOS_CHECK_UNINSTALLER + XPOS_OFFSET, check_uninstaller->Location.Y);
-			label_prompts->Location = System::Drawing::Point(XPOS_PROMPTS + XPOS_OFFSET, label_prompts->Location.Y);
-			check_shortcut->Location = System::Drawing::Point(XPOS_PROMPTS + XPOS_OFFSET, check_shortcut->Location.Y);
-			check_startup->Location = System::Drawing::Point(XPOS_PROMPTS + XPOS_OFFSET, check_startup->Location.Y);
+			// Loader selected
+			if (radio_loader->Checked == true)
+			{
+				// Displace installer input
+				check_uninstaller->Location = System::Drawing::Point(XPOS_CHECK_UNINSTALLER + XPOS_OFFSET, check_uninstaller->Location.Y);
+				label_prompts->Location = System::Drawing::Point(XPOS_PROMPTS + XPOS_OFFSET, label_prompts->Location.Y);
+				check_shortcut->Location = System::Drawing::Point(XPOS_PROMPTS + XPOS_OFFSET, check_shortcut->Location.Y);
+				check_startup->Location = System::Drawing::Point(XPOS_PROMPTS + XPOS_OFFSET, check_startup->Location.Y);
 
-			// Restore loader input
-			check_cleanup->Location = System::Drawing::Point(XPOS_CHECK_CLEANUP, check_cleanup->Location.Y);
+				// Restore loader input
+				check_cleanup->Location = System::Drawing::Point(XPOS_CHECK_CLEANUP, check_cleanup->Location.Y);
 
-			// Change label
-			label_run->Text = "Run Location";
+				// Change label
+				label_run->Text = "Run Location";
 
-			// Change suggested path
-			input_run->Text = "C:\\temp";
+				// Change suggested path
+				input_run->Text = "C:\\temp";
+			}
+
+			// Installer selected
+			else
+			{
+				// Displace loader input
+				check_cleanup->Location = System::Drawing::Point(XPOS_CHECK_CLEANUP + XPOS_OFFSET, check_cleanup->Location.Y);
+
+				// Restore installer input
+				check_uninstaller->Location = System::Drawing::Point(XPOS_CHECK_UNINSTALLER, check_uninstaller->Location.Y);
+				label_prompts->Location = System::Drawing::Point(XPOS_PROMPTS, label_prompts->Location.Y);
+				check_shortcut->Location = System::Drawing::Point(XPOS_PROMPTS, check_shortcut->Location.Y);
+				check_startup->Location = System::Drawing::Point(XPOS_PROMPTS, check_startup->Location.Y);
+
+				// Change label
+				label_run->Text = "Install Location";
+
+				// Change suggested path
+				std::string path("C:\\Program Files\\");
+				path.append(appName);
+				input_run->Text = gcnew String(path.c_str());
+			}
 		}
-
-		// Installer selected
-		else
+		private: System::Void Reset()
 		{
-			// Displace loader input
-			check_cleanup->Location = System::Drawing::Point(XPOS_CHECK_CLEANUP + XPOS_OFFSET, check_cleanup->Location.Y);
-
-			// Restore installer input
-			check_uninstaller->Location = System::Drawing::Point(XPOS_CHECK_UNINSTALLER, check_uninstaller->Location.Y);
-			label_prompts->Location = System::Drawing::Point(XPOS_PROMPTS, label_prompts->Location.Y);
-			check_shortcut->Location = System::Drawing::Point(XPOS_PROMPTS, check_shortcut->Location.Y);
-			check_startup->Location = System::Drawing::Point(XPOS_PROMPTS, check_startup->Location.Y);
-
-			// Change label
-			label_run->Text = "Install Location";
-
-			// Change suggested path
-			std::string path("C:\\Program Files\\");
-			path.append(appName);
-			input_run->Text = gcnew String(path.c_str());
+			radio_loader->Checked = true;
+			libPaths.Clear();
+			input_bin->Text = "";
+			input_lib->Text = "";
+			input_run->Text = gcnew String(DEFAULT_TEXT_RUN);
+			check_cleanup->Checked = false;
+			check_uninstaller->Checked = false;
+			check_shortcut->Checked = false;
+			check_startup->Checked = false;
 		}
-	}
-};
+		private: System::Void linkLabel1_LinkClicked(System::Object^ sender, System::Windows::Forms::LinkLabelLinkClickedEventArgs^ e)
+		{
+			Reset();
+		}
+	};
 }
 
 void ConvertString(System::String^ s, std::string& os)
