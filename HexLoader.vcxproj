@@ -127,6 +127,7 @@
     <ClInclude Include="gui.h">
       <FileType>CppForm</FileType>
     </ClInclude>
+    <ClInclude Include="loader.h" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gui.resx">

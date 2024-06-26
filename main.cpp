@@ -1,5 +1,6 @@
 #include <Windows.h>
 #include <filesystem>
+#include "loader.h"
 #include "gui.h"
 
 //#define UNIT_TESTING
