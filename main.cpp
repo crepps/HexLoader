@@ -3,7 +3,7 @@
 #include "loader.h"
 #include "gui.h"
 
-//#define UNIT_TESTING
+#define UNIT_TESTING
 
 using namespace System;
 using namespace System::Windows::Forms;
@@ -18,9 +18,9 @@ public:
 	Loader obj;
 };
 
-TEST_F(LoaderTesting, Test1)
+TEST_F(LoaderTesting, ValidateBinPath)
 {
-	ASSERT_THAT(someValue, Eq(0));
+	ASSERT_THAT(obj.ValidatePath(Loader::PATH_TYPE::PATH_BIN), Eq(SUCCESS));
 }
 
 #endif
