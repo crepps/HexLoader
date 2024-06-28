@@ -19,10 +19,15 @@ public:
 		ALL,
 		PATH_BIN,
 		PATH_LIB,
-		PATH_EXPORT
+		PATH_RUN
 	};
 
-	Loader() {};
-	unsigned int ValidatePath(PATH_TYPE);
+	Loader()
+	:binPath(""), runPath(""){};
+	void SetPath(PATH_TYPE, std::string);
+	//unsigned int ValidatePath(PATH_TYPE) const;
+	std::string GetBinPath() const noexcept { return binPath; };
+	std::vector<std::string> GetLibPaths() const noexcept { return libPaths; };
+	std::string GetRunPath() const noexcept { return runPath; };
 	~Loader() {}
 };

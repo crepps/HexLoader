@@ -18,10 +18,25 @@ public:
 	Loader obj;
 };
 
-TEST_F(LoaderTesting, ValidateBinPath)
+TEST_F(LoaderTesting, CheckBinPathSet)
 {
-	ASSERT_THAT(obj.ValidatePath(Loader::PATH_TYPE::PATH_BIN), Eq(SUCCESS));
+	obj.SetPath(Loader::PATH_BIN, "C:\\temp\\bin.exe");
+	ASSERT_THAT(obj.GetBinPath(), Ne(""));
 }
+TEST_F(LoaderTesting, CheckLibPathsSet)
+{
+	obj.SetPath(Loader::PATH_LIB, "C:\\temp\\lib.dll");
+	ASSERT_THAT(obj.GetLibPaths().empty(), Eq(false));
+}
+TEST_F(LoaderTesting, CheckRunPathSet)
+{
+	obj.SetPath(Loader::PATH_RUN, "C:\\temp\\");
+	ASSERT_THAT(obj.GetRunPath(), Ne(""));
+}
+//TEST_F(LoaderTesting, ValidateBinPath)
+//{
+//	ASSERT_THAT(obj.ValidatePath(Loader::PATH_BIN), Eq(SUCCESS));
+//}
 
 #endif
 
