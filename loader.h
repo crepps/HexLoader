@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <vector>
+#include <sys/stat.h>
 
 #define SUCCESS 0
 #define FAILURE_ABORT 1
