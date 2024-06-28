@@ -18,7 +18,7 @@ private:
 public:
 	enum PATH_TYPE
 	{
-		ALL,
+		PATH_ALL,
 		PATH_BIN,
 		PATH_LIB,
 		PATH_RUN

@@ -28,18 +28,21 @@ unsigned int Loader::ValidatePath(PATH_TYPE type) const noexcept
 	// Return path type if file/directory doesn't exist
 	switch (type)
 	{
+	case PATH_ALL:
 	case PATH_BIN:
 		if (stat(binPath.c_str(), &statInfo) != 0)
 			return (unsigned int)type;
-		break;
-		
+		if (type)
+			break;
+
 	case PATH_LIB:
 		for (auto& path : libPaths)
 		{
 			if (stat(path.c_str(), &statInfo) != 0)
 				return (unsigned int)type;
 		}
-		break;
+		if (type)
+			break;
 
 	case PATH_RUN:
 		if (stat(runPath.c_str(), &statInfo) != 0)
