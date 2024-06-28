@@ -10,7 +10,8 @@ class Loader
 {
 private:
 	std::string binPath,
-				runPath;
+				runPath,
+				error;
 	std::vector<std::string> libPaths;
 
 public:
@@ -22,12 +23,13 @@ public:
 		PATH_RUN
 	};
 
-	Loader()
-	:binPath(""), runPath(""){};
-	void SetPath(PATH_TYPE, std::string);
-	//unsigned int ValidatePath(PATH_TYPE) const;
+	Loader() noexcept {};
+	void SetError(std::string arg) noexcept { error = arg; }
+	std::string GetError() const noexcept { return error; }
+	void SetPath(PATH_TYPE, std::string) noexcept;
+	unsigned int ValidatePath(PATH_TYPE) const noexcept;
 	std::string GetBinPath() const noexcept { return binPath; };
 	std::vector<std::string> GetLibPaths() const noexcept { return libPaths; };
 	std::string GetRunPath() const noexcept { return runPath; };
-	~Loader() {}
+	~Loader() noexcept {}
 };
