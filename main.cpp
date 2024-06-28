@@ -59,6 +59,26 @@ TEST_F(LoaderTesting, ValidateRunPath)
 	obj.SetPath(Loader::PATH_RUN, "C:\\temp");
 	ASSERT_THAT(obj.ValidatePath(Loader::PATH_RUN), Eq(SUCCESS));
 }
+TEST_F(LoaderTesting, ValidateAllPaths)
+{
+	// Set all paths
+	obj.SetPath(Loader::PATH_BIN, "C:\\temp\\hl_mock_bin.exe");
+	obj.SetPath(Loader::PATH_LIB, "C:\\temp\\hl_mock_lib1.dll");
+	obj.SetPath(Loader::PATH_LIB, "C:\\temp\\hl_mock_lib2.dll");
+	obj.SetPath(Loader::PATH_RUN, "C:\\temp");
+
+	// Create exe at set location
+	std::ofstream outFile(obj.GetBinPath().c_str(), std::ios::out);
+	outFile.close();
+
+	// Create two .dlls at set location
+	std::ofstream outFile1(obj.GetLibPaths()[0].c_str(), std::ios::out),
+		outFile2(obj.GetLibPaths()[1].c_str(), std::ios::out);
+	outFile2.close();
+	outFile1.close();
+
+	ASSERT_THAT(obj.ValidatePath(Loader::PATH_ALL), Eq(SUCCESS));
+}
 #endif
 
 [STAThreadAttribute]
