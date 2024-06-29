@@ -14,6 +14,10 @@ private:
 				runPath,
 				error;
 	std::vector<std::string> libPaths;
+	bool compilerInstalled,
+		compilerCheck;
+
+	const char* PATH_COMPILER{ "C:\\ProgramData\\mingw64\\mingw64\\bin\\g++.exe" };
 
 public:
 	enum PATH_TYPE
@@ -24,7 +28,8 @@ public:
 		PATH_RUN
 	};
 
-	Loader() noexcept {};
+	Loader() noexcept
+		:compilerInstalled(false), compilerCheck(false) {};
 	void SetError(std::string arg) noexcept { error = arg; }
 	std::string GetError() const noexcept { return error; }
 	void SetPath(PATH_TYPE, std::string) noexcept;
@@ -32,5 +37,7 @@ public:
 	std::string GetBinPath() const noexcept { return binPath; };
 	std::vector<std::string> GetLibPaths() const noexcept { return libPaths; };
 	std::string GetRunPath() const noexcept { return runPath; };
+	bool CompilerInstalled() noexcept;
+	bool CompilerChecked() const noexcept { return compilerCheck;  }
 	~Loader() noexcept {}
 };
