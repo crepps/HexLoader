@@ -57,6 +57,7 @@ namespace HexLoader {
 	public ref class gui : public System::Windows::Forms::Form
 	{
 	private:
+		Loader* loaderPtr;
 		bool mouseDown,
 			expandConsole;
 		Point cursorDownPos,
@@ -124,11 +125,17 @@ namespace HexLoader {
 	private: System::Windows::Forms::Label^ header_1;
 
 	public:
-		gui(void)
-			:binPath(""), appName(""), expandConsole(false)
+		gui(Loader& obj)
+			:binPath(""),
+			appName(""), 
+			mouseDown (false),
+			expandConsole(false)
 		{
-			InitializeComponent();
+			loaderPtr = &obj;
 			mouseDown = false;
+
+			InitializeComponent();
+
 			timer_anim->Start();
 
 			button_build->FlatStyle = FlatStyle::Flat;
@@ -270,6 +277,7 @@ namespace HexLoader {
 			this->input_bin->Name = L"input_bin";
 			this->input_bin->Size = System::Drawing::Size(196, 16);
 			this->input_bin->TabIndex = 0;
+			this->input_bin->TextChanged += gcnew System::EventHandler(this, &gui::input_bin_TextChanged);
 			// 
 			// input_lib
 			// 
@@ -360,7 +368,7 @@ namespace HexLoader {
 				static_cast<System::Int32>(static_cast<System::Byte>(33)));
 			this->header_1->Font = (gcnew System::Drawing::Font(L"Lucida Console", 18, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
-			this->header_1->ForeColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(150)), static_cast<System::Int32>(static_cast<System::Byte>(0)),
+			this->header_1->ForeColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(170)), static_cast<System::Int32>(static_cast<System::Byte>(0)),
 				static_cast<System::Int32>(static_cast<System::Byte>(0)));
 			this->header_1->Location = System::Drawing::Point(330, 44);
 			this->header_1->Name = L"header_1";
@@ -517,9 +525,10 @@ namespace HexLoader {
 			// 
 			this->text_output->BackColor = System::Drawing::SystemColors::InfoText;
 			this->text_output->BorderStyle = System::Windows::Forms::BorderStyle::None;
+			this->text_output->Cursor = System::Windows::Forms::Cursors::Default;
 			this->text_output->Font = (gcnew System::Drawing::Font(L"Cascadia Code", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
-			this->text_output->ForeColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(192)), static_cast<System::Int32>(static_cast<System::Byte>(0)),
+			this->text_output->ForeColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(170)), static_cast<System::Int32>(static_cast<System::Byte>(0)),
 				static_cast<System::Int32>(static_cast<System::Byte>(0)));
 			this->text_output->Location = System::Drawing::Point(400, 106);
 			this->text_output->Margin = System::Windows::Forms::Padding(5);
@@ -592,6 +601,7 @@ namespace HexLoader {
 		{
 			static int currentFrame{ 0 },
 				ticks{ 0 };
+			static bool build{ false };
 
 			// Animate header text
 			if (++ticks == HEADER_TICK_RATE)
@@ -605,6 +615,11 @@ namespace HexLoader {
 			{
 				if (text_output->Size.Width < CONSOLE_WIDTH)
 					text_output->Width += 25;
+				else if (!build)
+				{
+					build = true;
+					Build();
+				}
 			}
 
 			// Hide console
@@ -772,9 +787,48 @@ namespace HexLoader {
 		{
 			Reset();
 		}
+		private: System::Void input_bin_TextChanged(System::Object^ sender, System::EventArgs^ e)
+		{
+			std::string path;
+			ConvertString(input_bin->Text, path);
+			loaderPtr->SetPath(Loader::PATH_BIN, path);
+		}
 		private: System::Void button_build_Click(System::Object^ sender, System::EventArgs^ e)
 		{
+			/* Reveal text output area, call Build() from
+				timer_anim_tick() when area is fully expanded */
+
 			expandConsole = true;
+		}
+		private: unsigned int Build()
+		{
+			text_output->Clear();
+
+			// Validate file paths
+			text_output->AppendText("Validating file paths.                         <-"
+				+ Environment::NewLine);
+
+			unsigned int pathResult = loaderPtr->ValidatePath(Loader::PATH_ALL);
+
+			if (pathResult != SUCCESS)
+			{
+				switch (pathResult)
+				{
+				case Loader::PATH_BIN:
+					text_output->AppendText("Invalid executable path specified.");
+					break;
+				case Loader::PATH_LIB:
+					text_output->AppendText("Invalid DLL path(s) specified.");
+					break;
+				case Loader::PATH_RUN:
+					text_output->AppendText("Invalid run path specified.");
+					break;
+				}
+
+				return FAILURE_CONTINUE;
+			}
+
+			return SUCCESS;
 		}
 	};
 }

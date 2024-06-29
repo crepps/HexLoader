@@ -93,9 +93,10 @@ int main(array<String^>^ args)
 
 	try
 	{
+		Loader obj;
 		Application::EnableVisualStyles();
 		Application::SetCompatibleTextRenderingDefault(false);
-		HexLoader::gui mainForm;
+		HexLoader::gui mainForm(obj);
 		Application::Run(% mainForm);
 	}
 	catch (std::exception& e)

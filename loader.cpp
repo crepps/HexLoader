@@ -30,23 +30,25 @@ unsigned int Loader::ValidatePath(PATH_TYPE type) const noexcept
 	{
 	case PATH_ALL:
 	case PATH_BIN:
-		if (stat(binPath.c_str(), &statInfo) != 0)
-			return (unsigned int)type;
+		if (stat(binPath.c_str(), &statInfo) != 0 || binPath == "")
+			return (unsigned int)PATH_BIN;
 		if (type)
 			break;
 
 	case PATH_LIB:
+		if (libPaths.empty())
+			return (unsigned int)PATH_LIB;
 		for (auto& path : libPaths)
 		{
 			if (stat(path.c_str(), &statInfo) != 0)
-				return (unsigned int)type;
+				return (unsigned int)PATH_LIB;
 		}
 		if (type)
 			break;
 
 	case PATH_RUN:
-		if (stat(runPath.c_str(), &statInfo) != 0)
-			return (unsigned int)type;
+		if (stat(runPath.c_str(), &statInfo) != 0 || runPath == "")
+			return (unsigned int)PATH_RUN;
 	}
 
 	return SUCCESS;
