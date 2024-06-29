@@ -53,3 +53,14 @@ unsigned int Loader::ValidatePath(PATH_TYPE type) const noexcept
 
 	return SUCCESS;
 }
+bool Loader::CompilerInstalled() noexcept
+{
+	struct stat statInfo;
+
+	if (stat(PATH_COMPILER, &statInfo) == 0)
+		compilerInstalled = true;
+
+	compilerCheck = true;
+
+	return compilerInstalled;
+}

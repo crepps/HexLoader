@@ -17,67 +17,61 @@ class LoaderTesting : public ::testing::Test
 {
 public:
 	Loader obj;
+
+	void SetUp() override
+	{
+		// Set bin, lib and run paths
+		obj.SetPath(Loader::PATH_BIN, "C:\\temp\\hl_mock_bin.exe");
+		obj.SetPath(Loader::PATH_LIB, "C:\\temp\\hl_mock_lib1.dll");
+		obj.SetPath(Loader::PATH_LIB, "C:\\temp\\hl_mock_lib2.dll");
+		obj.SetPath(Loader::PATH_RUN, "C:\\temp");
+
+		// Create exe file at set location
+		std::ofstream outFile(obj.GetBinPath().c_str(), std::ios::out);
+
+		// Create two dll files at set location
+		std::ofstream outFile1(obj.GetLibPaths()[0].c_str(), std::ios::out),
+			outFile2(obj.GetLibPaths()[1].c_str(), std::ios::out);
+		outFile2.close();
+		outFile1.close();
+	}
 };
 
 TEST_F(LoaderTesting, CheckBinPathSet)
 {
-	obj.SetPath(Loader::PATH_BIN, "C:\\temp\\hl_mock_bin.exe");
 	ASSERT_THAT(obj.GetBinPath(), Ne(""));
 }
 TEST_F(LoaderTesting, CheckLibPathsSet)
 {
-	obj.SetPath(Loader::PATH_LIB, "C:\\temp\\hl_mock_lib1.dll");
-	ASSERT_THAT(obj.GetLibPaths().empty(), Eq(false));
+	ASSERT_FALSE(obj.GetLibPaths().empty());
 }
 TEST_F(LoaderTesting, CheckRunPathSet)
 {
-	obj.SetPath(Loader::PATH_RUN, "C:\\temp");
 	ASSERT_THAT(obj.GetRunPath(), Ne(""));
 }
 TEST_F(LoaderTesting, ValidateBinPath)
-{
-	obj.SetPath(Loader::PATH_BIN, "C:\\temp\\hl_mock_bin.exe");
-	std::ofstream outFile(obj.GetBinPath().c_str(), std::ios::out);	// Create exe at set location
-	outFile.close();
+{	
 	ASSERT_THAT(obj.ValidatePath(Loader::PATH_BIN), Eq(SUCCESS));
 }
 TEST_F(LoaderTesting, ValidateLibPaths)
 {
-	obj.SetPath(Loader::PATH_LIB, "C:\\temp\\hl_mock_lib1.dll");
-	obj.SetPath(Loader::PATH_LIB, "C:\\temp\\hl_mock_lib2.dll");
-
-	// Create two .dlls at set location
-	std::ofstream outFile1(obj.GetLibPaths()[0].c_str(), std::ios::out),
-					outFile2(obj.GetLibPaths()[1].c_str(), std::ios::out);
-	outFile2.close();
-	outFile1.close();
-
 	ASSERT_THAT(obj.ValidatePath(Loader::PATH_LIB), Eq(SUCCESS));
 }
 TEST_F(LoaderTesting, ValidateRunPath)
 {
-	obj.SetPath(Loader::PATH_RUN, "C:\\temp");
 	ASSERT_THAT(obj.ValidatePath(Loader::PATH_RUN), Eq(SUCCESS));
 }
 TEST_F(LoaderTesting, ValidateAllPaths)
 {
-	// Set all paths
-	obj.SetPath(Loader::PATH_BIN, "C:\\temp\\hl_mock_bin.exe");
-	obj.SetPath(Loader::PATH_LIB, "C:\\temp\\hl_mock_lib1.dll");
-	obj.SetPath(Loader::PATH_LIB, "C:\\temp\\hl_mock_lib2.dll");
-	obj.SetPath(Loader::PATH_RUN, "C:\\temp");
-
-	// Create exe at set location
-	std::ofstream outFile(obj.GetBinPath().c_str(), std::ios::out);
-	outFile.close();
-
-	// Create two .dlls at set location
-	std::ofstream outFile1(obj.GetLibPaths()[0].c_str(), std::ios::out),
-		outFile2(obj.GetLibPaths()[1].c_str(), std::ios::out);
-	outFile2.close();
-	outFile1.close();
-
 	ASSERT_THAT(obj.ValidatePath(Loader::PATH_ALL), Eq(SUCCESS));
+}
+TEST_F(LoaderTesting, CheckCompilerInstalled)
+{
+	// Check whether compiler is installed on target system, ignore result
+	obj.CompilerInstalled();
+
+	// Verify that it was checked
+	ASSERT_TRUE(obj.CompilerChecked());
 }
 #endif
 
