@@ -855,13 +855,16 @@ namespace HexLoader {
 				switch (pathResult)
 				{
 				case Loader::PATH_BIN:
-					text_output->AppendText("Invalid executable path specified.");
+					text_output->AppendText("Invalid executable path specified."
+						+ System::Environment::NewLine);
 					break;
 				case Loader::PATH_LIB:
-					text_output->AppendText("Invalid DLL path(s) specified.");
+					text_output->AppendText("Invalid DLL path(s) specified."
+						+ System::Environment::NewLine);
 					break;
 				case Loader::PATH_RUN:
-					text_output->AppendText("Invalid run path specified.");
+					text_output->AppendText("Invalid run path specified."
+						+ System::Environment::NewLine);
 					break;
 				}
 
@@ -870,7 +873,11 @@ namespace HexLoader {
 
 			// Check for compiler, install if not found
 			if (!loaderPtr->CompilerInstalled())
-				loaderPtr->InstallCompiler(&g_loaderOutput);
+			{
+				if (loaderPtr->InstallCompiler(&g_loaderOutput) != SUCCESS)
+					text_output->AppendText(gcnew String(loaderPtr->GetError().c_str())
+						+ System::Environment::NewLine);
+			}
 
 			return SUCCESS;
 		}
