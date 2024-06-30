@@ -93,12 +93,19 @@ TEST_F(CompilerTesting, CompilerInstallChecked)
 	// Verify that installation was checked
 	ASSERT_TRUE(obj.CompilerChecked());
 }
-TEST_F(CompilerTesting, ProcessStdout)
+TEST_F(CompilerTesting, ReadProcessStdout)
 {
 	obj.SetProcessCmd("echo hexloader");
 	std::string output{ "" };
 	obj.InstallCompiler(&output);
 	ASSERT_THAT(output, Eq("hexloader \n"));
+}
+TEST_F(CompilerTesting, ReadProcessErrout)
+{
+	obj.SetProcessCmd("tasklist x");
+	std::string output{ "" };
+	obj.InstallCompiler(&output);
+	ASSERT_TRUE(output.find("ERROR") != std::string::npos);
 }
 TEST_F(CompilerTesting, DISABLED_CompilerInstallSuccessful)
 {
