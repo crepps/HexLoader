@@ -64,26 +64,43 @@ bool Loader::CompilerInstalled() noexcept
 
 	return compilerInstalled;
 }
-unsigned int Loader::InstallCompiler(std::string* pOutput) const noexcept
+unsigned int Loader::InstallCompiler(std::string* pOutput) noexcept
 {
 	// Redirect process's stderr to stdout stream
 	std::string command(newProcessCmd);
 	command += " 2>&1";
 
 	// Open pipe for reading, execute command
-	FILE* pipe = _popen(command.c_str(), "r");
+	FILE* pipe;
+	try
+	{
+		pipe = _popen(command.c_str(), "r");
+	}
+	catch (...)
+	{
+		*pOutput += "Failed: _popen threw an exception when attempting to install compiler.";
+		return FAILURE_CONTINUE;
+	}
 	if (!pipe)
 	{
-		//std::cerr << "Couldn't start command." << std::endl;
+		*pOutput += "Failed to open pipe when attempting to install compiler.";
 		return FAILURE_CONTINUE;
 	}
 
 	// Feed output to caller
-	char buffer[BUFFER_SIZE];
-	while (fgets(buffer, 128, pipe) != NULL)
-		*pOutput += buffer;
-	
-	_pclose(pipe);
+	try
+	{
+		char buffer[BUFFER_SIZE];
+		while (fgets(buffer, BUFFER_SIZE, pipe) != NULL)
+			*pOutput += buffer;
+
+		_pclose(pipe);
+	}
+	catch (...)
+	{
+		*pOutput += "Failed to read from pipe when attempting to install compiler.";
+		return FAILURE_CONTINUE;
+	}
 
 	return SUCCESS;
 }

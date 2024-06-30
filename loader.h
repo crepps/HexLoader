@@ -43,8 +43,7 @@ public:
 	std::string GetRunPath() const noexcept { return runPath; };
 	bool CompilerInstalled() noexcept;
 	bool CompilerChecked() const noexcept { return compilerCheck;  }
-	unsigned int InstallCompiler(std::string*) const noexcept;
+	unsigned int InstallCompiler(std::string*) noexcept;
 	void SetProcessCmd(const std::string& arg) { newProcessCmd = arg; }
-
 	~Loader() noexcept {}
 };
