@@ -3,9 +3,8 @@
 #include <string>
 #include <vector>
 
-
-
-void ConvertString(System::String^, std::string&);
+// Global non-managed object
+std::string g_loaderOutput;
 
 enum AREA
 {
@@ -64,7 +63,7 @@ namespace HexLoader {
 			cursorDelta;
 		const char *binPath,
 					*appName;
-		std::string* loaderOutput;
+		//std::string g_loaderOutput;
 		System::Collections::Generic::List<String^> libPaths;
 		System::Windows::Forms::Button^ buttonPtr;
 
@@ -121,6 +120,7 @@ namespace HexLoader {
 	private: System::Windows::Forms::CheckBox^ check_uninstaller;
 	private: System::Windows::Forms::LinkLabel^ linkLabel1;
 	private: System::Windows::Forms::TextBox^ text_output;
+	private: System::Windows::Forms::Timer^ timer_console;
 
 
 	private: System::Windows::Forms::Label^ header_1;
@@ -216,6 +216,7 @@ namespace HexLoader {
 			this->check_uninstaller = (gcnew System::Windows::Forms::CheckBox());
 			this->linkLabel1 = (gcnew System::Windows::Forms::LinkLabel());
 			this->text_output = (gcnew System::Windows::Forms::TextBox());
+			this->timer_console = (gcnew System::Windows::Forms::Timer(this->components));
 			this->SuspendLayout();
 			// 
 			// radio_loader
@@ -357,6 +358,7 @@ namespace HexLoader {
 			this->input_run->Size = System::Drawing::Size(196, 16);
 			this->input_run->TabIndex = 3;
 			this->input_run->Text = L"C:\\temp";
+			this->input_run->TextChanged += gcnew System::EventHandler(this, &gui::input_run_TextChanged);
 			// 
 			// timer_anim
 			// 
@@ -539,6 +541,11 @@ namespace HexLoader {
 			this->text_output->Size = System::Drawing::Size(0, 193);
 			this->text_output->TabIndex = 21;
 			// 
+			// timer_console
+			// 
+			this->timer_console->Interval = 1;
+			this->timer_console->Tick += gcnew System::EventHandler(this, &gui::timer_console_Tick);
+			// 
 			// gui
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
@@ -581,6 +588,14 @@ namespace HexLoader {
 
 		}
 #pragma endregion
+		private: System::Void ConvertString(System::String^ s, std::string& os)
+		{
+			using namespace System::Runtime::InteropServices;
+			const char* chars =
+				(const char*)(Marshal::StringToHGlobalAnsi(s)).ToPointer();
+			os = chars;
+			Marshal::FreeHGlobal(System::IntPtr((void*)chars));
+		}
 		private: bool CheckMouseover(vec2 cursorPos, AREA area)
 		{
 			switch (area)
@@ -602,13 +617,23 @@ namespace HexLoader {
 		{
 			static int currentFrame{ 0 },
 				ticks{ 0 };
-			static bool build{ false };
 
 			// Animate header text
 			if (++ticks == HEADER_TICK_RATE)
 			{
 				header_1_back->Text = (currentFrame < NUM_HEADER_FRAMES-1 ? gcnew String(headerFrames[++currentFrame].data()) : gcnew String(headerFrames[currentFrame = 0].data()));
 				ticks = 0;
+			}
+		}
+		private: System::Void timer_console_Tick(System::Object^ sender, System::EventArgs^ e)
+		{
+			static bool build{ false };
+
+			// Poll global output string, move contents to console
+			if (g_loaderOutput.length())
+			{
+				text_output->AppendText(gcnew String(g_loaderOutput.c_str()));
+				g_loaderOutput = std::string("");
 			}
 
 			// Expand console
@@ -628,6 +653,12 @@ namespace HexLoader {
 			{
 				if (text_output->Size.Width > 0)
 					text_output->Width -= 25;
+
+				else
+				{
+					build = false;
+					timer_console->Stop();
+				}
 			}
 		}
 		private: System::Void gui::gui_MouseDown(System::Object^ Sender, System::Windows::Forms::MouseEventArgs^ e)
@@ -724,6 +755,7 @@ namespace HexLoader {
 			// Store full path, add only filename to input_lib text
 			std::string path = GetPath(BUTTON_SELECT_LIB);
 			libPaths.Add(gcnew String(path.c_str()));
+			loaderPtr->SetPath(Loader::PATH_LIB, path);
 			size_t pos = path.find_last_of("\\");
 			path.erase(0, pos + 1);
 			input_lib->AppendText(gcnew String(path.c_str()));
@@ -794,12 +826,19 @@ namespace HexLoader {
 			ConvertString(input_bin->Text, path);
 			loaderPtr->SetPath(Loader::PATH_BIN, path);
 		}
+		private: System::Void input_run_TextChanged(System::Object^ sender, System::EventArgs^ e)
+		{
+			std::string path;
+			ConvertString(input_run->Text, path);
+			loaderPtr->SetPath(Loader::PATH_RUN, path);
+		}
 		private: System::Void button_build_Click(System::Object^ sender, System::EventArgs^ e)
 		{
 			/* Reveal text output area, call Build() from
 				timer_anim_tick() when area is fully expanded */
 
 			expandConsole = true;
+			timer_console->Start();
 		}
 		private: unsigned int Build()
 		{
@@ -831,18 +870,10 @@ namespace HexLoader {
 
 			// Check for compiler, install if not found
 			if (!loaderPtr->CompilerInstalled())
-				loaderPtr->InstallCompiler(loaderOutput);
+				loaderPtr->InstallCompiler(&g_loaderOutput);
 
 			return SUCCESS;
 		}
-	};
+};
 }
 
-void ConvertString(System::String^ s, std::string& os)
-{
-	using namespace System::Runtime::InteropServices;
-	const char* chars =
-		(const char*)(Marshal::StringToHGlobalAnsi(s)).ToPointer();
-	os = chars;
-	Marshal::FreeHGlobal(System::IntPtr((void*)chars));
-}

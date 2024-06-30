@@ -93,12 +93,12 @@ unsigned int Loader::InstallCompiler(std::string* pOutput) noexcept
 		char buffer[BUFFER_SIZE];
 		while (fgets(buffer, BUFFER_SIZE, pipe) != NULL)
 			*pOutput += buffer;
-
 		_pclose(pipe);
 	}
 	catch (...)
 	{
-		*pOutput += "Failed to read from pipe when attempting to install compiler.";
+		_pclose(pipe);
+		SetError("Failed to read from pipe when attempting to install compiler.");
 		return FAILURE_CONTINUE;
 	}
 
