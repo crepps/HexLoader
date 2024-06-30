@@ -13,7 +13,7 @@ using namespace System::Windows::Forms;
 #ifdef UNIT_TESTING
 #include "gmock/gmock.h"
 using namespace testing;
-class LoaderTesting : public ::testing::Test
+class InitTesting : public ::testing::Test
 {
 public:
 	Loader obj;
@@ -37,42 +37,75 @@ public:
 	}
 };
 
-TEST_F(LoaderTesting, CheckBinPathSet)
+class CompilerTesting : public ::testing::Test
+{
+public:
+	Loader obj;
+
+	void SetUp() override
+	{
+
+	}
+};
+
+/*											*
+				Init Tests
+ *											*/
+
+TEST_F(InitTesting, BinPathSet)
 {
 	ASSERT_THAT(obj.GetBinPath(), Ne(""));
 }
-TEST_F(LoaderTesting, CheckLibPathsSet)
+TEST_F(InitTesting, LibPathsSet)
 {
 	ASSERT_FALSE(obj.GetLibPaths().empty());
 }
-TEST_F(LoaderTesting, CheckRunPathSet)
+TEST_F(InitTesting, RunPathSet)
 {
 	ASSERT_THAT(obj.GetRunPath(), Ne(""));
 }
-TEST_F(LoaderTesting, ValidateBinPath)
+TEST_F(InitTesting, BinPathValid)
 {	
 	ASSERT_THAT(obj.ValidatePath(Loader::PATH_BIN), Eq(SUCCESS));
 }
-TEST_F(LoaderTesting, ValidateLibPaths)
+TEST_F(InitTesting, LibPathsValid)
 {
 	ASSERT_THAT(obj.ValidatePath(Loader::PATH_LIB), Eq(SUCCESS));
 }
-TEST_F(LoaderTesting, ValidateRunPath)
+TEST_F(InitTesting, RunPathValid)
 {
 	ASSERT_THAT(obj.ValidatePath(Loader::PATH_RUN), Eq(SUCCESS));
 }
-TEST_F(LoaderTesting, ValidateAllPaths)
+TEST_F(InitTesting, AllPathsValid)
 {
 	ASSERT_THAT(obj.ValidatePath(Loader::PATH_ALL), Eq(SUCCESS));
 }
-TEST_F(LoaderTesting, CheckCompilerInstalled)
+
+/*											*
+				Compiler Tests
+ *											*/
+
+TEST_F(CompilerTesting, CompilerInstallChecked)
 {
 	// Check whether compiler is installed on target system, ignore result
 	obj.CompilerInstalled();
 
-	// Verify that it was checked
+	// Verify that installation was checked
 	ASSERT_TRUE(obj.CompilerChecked());
 }
+TEST_F(CompilerTesting, ProcessStdout)
+{
+	obj.SetProcessCmd("echo hexloader");
+	std::string output{ "" };
+	obj.InstallCompiler(&output);
+	ASSERT_THAT(output, Eq("hexloader \n"));
+}
+TEST_F(CompilerTesting, DISABLED_CompilerInstallSuccessful)
+{
+	obj.InstallCompiler(nullptr);
+	ASSERT_TRUE(obj.CompilerInstalled());
+}
+
 #endif
 
 [STAThreadAttribute]
