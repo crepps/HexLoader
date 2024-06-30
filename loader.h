@@ -33,7 +33,7 @@ public:
 	Loader() noexcept
 		:compilerInstalled(false),
 		compilerCheck(false),
-		newProcessCmd("choco install g++") {};
+		newProcessCmd("ping 8.8.8.8") {};
 	void SetError(const std::string& arg) noexcept { error = arg; }
 	std::string GetError() const noexcept { return error; }
 	void SetPath(PATH_TYPE, const std::string&) noexcept;
