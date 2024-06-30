@@ -64,6 +64,7 @@ namespace HexLoader {
 			cursorDelta;
 		const char *binPath,
 					*appName;
+		std::string* loaderOutput;
 		System::Collections::Generic::List<String^> libPaths;
 		System::Windows::Forms::Button^ buttonPtr;
 
@@ -726,7 +727,7 @@ namespace HexLoader {
 			size_t pos = path.find_last_of("\\");
 			path.erase(0, pos + 1);
 			input_lib->AppendText(gcnew String(path.c_str()));
-			input_lib->AppendText(Environment::NewLine);
+			input_lib->AppendText(System::Environment::NewLine);
 		}
 		private: System::Void radio_loader_CheckedChanged(System::Object^ sender, System::EventArgs^ e)
 		{
@@ -806,7 +807,7 @@ namespace HexLoader {
 
 			// Validate file paths
 			text_output->AppendText("Validating file paths.                         <-"
-				+ Environment::NewLine);
+				+ System::Environment::NewLine);
 
 			unsigned int pathResult = loaderPtr->ValidatePath(Loader::PATH_ALL);
 
@@ -827,6 +828,10 @@ namespace HexLoader {
 
 				return FAILURE_CONTINUE;
 			}
+
+			// Check for compiler, install if not found
+			if (!loaderPtr->CompilerInstalled())
+				loaderPtr->InstallCompiler(loaderOutput);
 
 			return SUCCESS;
 		}

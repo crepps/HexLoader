@@ -1,6 +1,6 @@
 #include "loader.h"
 
-void Loader::SetPath(PATH_TYPE type, std::string path) noexcept
+void Loader::SetPath(PATH_TYPE type, const std::string& path) noexcept
 {
 	switch (type)
 	{
@@ -63,4 +63,27 @@ bool Loader::CompilerInstalled() noexcept
 	compilerCheck = true;
 
 	return compilerInstalled;
+}
+unsigned int Loader::InstallCompiler(std::string* pOutput) const noexcept
+{
+	// Redirect process's stderr to stdout stream
+	std::string command(newProcessCmd);
+	command += " 2>&1";
+
+	// Open pipe for reading, execute command
+	FILE* pipe = _popen(command.c_str(), "r");
+	if (!pipe)
+	{
+		//std::cerr << "Couldn't start command." << std::endl;
+		return FAILURE_CONTINUE;
+	}
+
+	// Feed output to caller
+	char buffer[BUFFER_SIZE];
+	while (fgets(buffer, 128, pipe) != NULL)
+		*pOutput += buffer;
+	
+	_pclose(pipe);
+
+	return SUCCESS;
 }
