@@ -1,7 +1,12 @@
 #pragma once
-#include <string>
+#include <sstream>
 #include <vector>
 #include <sys/stat.h>
+#include <thread>
+#include <mutex>
+#include <condition_variable>
+#include <Windows.h>
+#include <iostream>
 
 #define SUCCESS 0
 #define FAILURE_ABORT 1
@@ -14,10 +19,17 @@ private:
 	std::string binPath,
 				runPath,
 				error,
-				newProcessCmd;
+				newProcessCmd,
+				outputBuffer;
+
 	std::vector<std::string> libPaths;
+
 	bool compilerInstalled,
-		compilerCheck;
+		compilerCheck,
+		bufferLoaded;
+
+	std::mutex outputMutex;
+	std::condition_variable waitCondition;
 
 	const char* PATH_COMPILER{ "C:\\ProgramData\\mingw64\\mingw64\\bin\\g++.exe" };
 
@@ -33,7 +45,9 @@ public:
 	Loader() noexcept
 		:compilerInstalled(false),
 		compilerCheck(false),
-		newProcessCmd("ping 8.8.8.8") {};
+		bufferLoaded(false),
+		newProcessCmd("ping 8.8.8.8"),
+		outputBuffer("") {};
 	void SetError(const std::string& arg) noexcept { error = arg; }
 	std::string GetError() const noexcept { return error; }
 	void SetPath(PATH_TYPE, const std::string&) noexcept;
@@ -43,7 +57,12 @@ public:
 	std::string GetRunPath() const noexcept { return runPath; };
 	bool CompilerInstalled() noexcept;
 	bool CompilerChecked() const noexcept { return compilerCheck;  }
-	unsigned int InstallCompiler(std::string*) noexcept;
+	unsigned int InstallCompiler() noexcept;
 	void SetProcessCmd(const std::string& arg) { newProcessCmd = arg; }
+	unsigned int SpawnInstallerThread();
+	void LoadBuffer(const std::string&) noexcept;
+	const char* OffloadBuffer() noexcept;
+	bool GetBufferLoaded() const noexcept { return bufferLoaded; }
+	void ClearBuffer() noexcept;
 	~Loader() noexcept {}
 };

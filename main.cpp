@@ -96,20 +96,40 @@ TEST_F(CompilerTesting, CompilerInstallChecked)
 TEST_F(CompilerTesting, ReadProcessStdout)
 {
 	obj.SetProcessCmd("echo hexloader");
-	std::string output{ "" };
-	obj.InstallCompiler(&output);
+	obj.SpawnInstallerThread();
+	std::string output("");
+	do
+	{
+		output += obj.OffloadBuffer();
+		obj.ClearBuffer();
+		Sleep(100);
+
+	} while (obj.GetBufferLoaded());
+
 	ASSERT_THAT(output, Eq("hexloader \n"));
 }
 TEST_F(CompilerTesting, ReadProcessErrout)
 {
 	obj.SetProcessCmd("tasklist x");
-	std::string output{ "" };
-	obj.InstallCompiler(&output);
-	ASSERT_TRUE(output.find("ERROR") != std::string::npos);
+	obj.SpawnInstallerThread();
+	std::string output("");
+	do
+	{
+		output += obj.OffloadBuffer();
+		obj.ClearBuffer();
+		Sleep(100);
+
+	} while (obj.GetBufferLoaded());
+
+	ASSERT_THAT(output.find("ERROR"), Ne(std::string::npos));
+}
+TEST_F(CompilerTesting, RunProcessAsynchronously)
+{
+	ASSERT_THAT(obj.SpawnInstallerThread(), Eq(SUCCESS));
 }
 TEST_F(CompilerTesting, DISABLED_CompilerInstallSuccessful)
 {
-	obj.InstallCompiler(nullptr);
+	obj.InstallCompiler();
 	ASSERT_TRUE(obj.CompilerInstalled());
 }
 
@@ -135,12 +155,12 @@ int main(array<String^>^ args)
 	}
 	catch (std::exception& e)
 	{
-		MessageBox::Show(gcnew String(e.what()));
+		MessageBox::Show(gcnew String(e.what()), "Exception occured.");
 		return EXIT_FAILURE;
 	}
 	catch (...)
 	{
-		MessageBox::Show("Unknown exception occured.");
+		MessageBox::Show("Unknown exception.", "Exception occured.");
 		return EXIT_FAILURE;
 	}
 

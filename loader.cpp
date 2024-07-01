@@ -64,7 +64,7 @@ bool Loader::CompilerInstalled() noexcept
 
 	return compilerInstalled;
 }
-unsigned int Loader::InstallCompiler(std::string* pOutput) noexcept
+unsigned int Loader::InstallCompiler() noexcept
 {
 	// Redirect process's stderr to stdout stream
 	std::string command(newProcessCmd);
@@ -78,21 +78,21 @@ unsigned int Loader::InstallCompiler(std::string* pOutput) noexcept
 	}
 	catch (...)
 	{
-		*pOutput += "Failed: _popen threw an exception when attempting to install compiler.";
+		LoadBuffer("Failed: _popen threw an exception when attempting to install compiler.");
 		return FAILURE_CONTINUE;
 	}
 	if (!pipe)
 	{
-		*pOutput += "Failed to open pipe when attempting to install compiler.";
+		LoadBuffer("Failed to open pipe when attempting to install compiler.");
 		return FAILURE_CONTINUE;
 	}
 
-	// Feed output to caller
+	// Load buffer with process output
 	try
 	{
-		char buffer[BUFFER_SIZE];
-		while (fgets(buffer, BUFFER_SIZE, pipe) != NULL)
-			*pOutput += buffer;
+		char output[BUFFER_SIZE];
+		while (fgets(output, BUFFER_SIZE, pipe) != NULL)
+			LoadBuffer(output);
 		_pclose(pipe);
 	}
 	catch (...)
@@ -100,6 +100,55 @@ unsigned int Loader::InstallCompiler(std::string* pOutput) noexcept
 		_pclose(pipe);
 		SetError("Failed to read from pipe when attempting to install compiler.");
 		return FAILURE_CONTINUE;
+	}
+
+	return SUCCESS;
+}
+void Loader::LoadBuffer(const std::string& arg) noexcept
+{
+	/*	Block until output buffer unlocked,
+		lock buffer, write data, unlock		*/ 
+
+	{
+		std::lock_guard<std::mutex> lock(outputMutex);
+		outputBuffer += arg;
+	}
+
+	bufferLoaded = true;
+
+	// Sleep until buffer is emptied by client
+	while (bufferLoaded)
+		Sleep(10);
+}
+const char* Loader::OffloadBuffer() noexcept
+{
+	/*	Block until output buffer unlocked,
+		lock buffer, return data, unlock	*/
+
+	std::unique_lock<std::mutex> lock(outputMutex);
+	return outputBuffer.c_str();
+}
+void Loader::ClearBuffer() noexcept
+{
+	outputBuffer.clear();
+	outputBuffer = "";
+	bufferLoaded = false;
+}
+unsigned int Loader::SpawnInstallerThread()
+{
+	try
+	{
+		std::thread installerThread(&Loader::InstallCompiler, this);
+		installerThread.detach();
+	}
+	catch (std::exception& e)
+	{
+		SetError(e.what());
+		return EXIT_FAILURE;
+	}
+	catch (...)
+	{
+		SetError("Exception thrown when attempting to spawn compiler installation thread.");
 	}
 
 	return SUCCESS;
