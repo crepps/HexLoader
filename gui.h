@@ -3,9 +3,6 @@
 #include <string>
 #include <vector>
 
-// Global non-managed object
-std::string g_loaderOutput;
-
 enum AREA
 {
 	BUTTON_SELECT_BIN,
@@ -543,7 +540,6 @@ namespace HexLoader {
 			// 
 			// timer_console
 			// 
-			this->timer_console->Interval = 1;
 			this->timer_console->Tick += gcnew System::EventHandler(this, &gui::timer_console_Tick);
 			// 
 			// gui
@@ -617,23 +613,13 @@ namespace HexLoader {
 		{
 			static int currentFrame{ 0 },
 				ticks{ 0 };
+			static bool build{ false };
 
 			// Animate header text
 			if (++ticks == HEADER_TICK_RATE)
 			{
 				header_1_back->Text = (currentFrame < NUM_HEADER_FRAMES-1 ? gcnew String(headerFrames[++currentFrame].data()) : gcnew String(headerFrames[currentFrame = 0].data()));
 				ticks = 0;
-			}
-		}
-		private: System::Void timer_console_Tick(System::Object^ sender, System::EventArgs^ e)
-		{
-			static bool build{ false };
-
-			// Poll global output string, move contents to console
-			if (g_loaderOutput.length())
-			{
-				text_output->AppendText(gcnew String(g_loaderOutput.c_str()));
-				g_loaderOutput = std::string("");
 			}
 
 			// Expand console
@@ -659,6 +645,20 @@ namespace HexLoader {
 					build = false;
 					timer_console->Stop();
 				}
+			}
+		}
+		private: System::Void timer_console_Tick(System::Object^ sender, System::EventArgs^ e)
+		{
+			static std::stringstream ss;
+			static std::string line;
+
+			// If output buffer from process thread is loaded
+			if (loaderPtr->GetBufferLoaded())
+			{
+				// Offload it into text output area and replace newline characters
+				text_output->AppendText(gcnew String(loaderPtr->OffloadBuffer()));
+				text_output->AppendText(System::Environment::NewLine);
+				loaderPtr->ClearBuffer();
 			}
 		}
 		private: System::Void gui::gui_MouseDown(System::Object^ Sender, System::Windows::Forms::MouseEventArgs^ e)
@@ -874,13 +874,14 @@ namespace HexLoader {
 			// Check for compiler, install if not found
 			if (!loaderPtr->CompilerInstalled())
 			{
-				if (loaderPtr->InstallCompiler(&g_loaderOutput) != SUCCESS)
+				loaderPtr->SpawnInstallerThread();
+				/*if (loaderPtr->InstallCompiler() != SUCCESS)
 					text_output->AppendText(gcnew String(loaderPtr->GetError().c_str())
-						+ System::Environment::NewLine);
+						+ System::Environment::NewLine);*/
 			}
 
 			return SUCCESS;
 		}
-};
+	};
 }
 
