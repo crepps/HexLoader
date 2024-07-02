@@ -526,7 +526,7 @@ namespace HexLoader {
 			this->text_output->BackColor = System::Drawing::SystemColors::InfoText;
 			this->text_output->BorderStyle = System::Windows::Forms::BorderStyle::None;
 			this->text_output->Cursor = System::Windows::Forms::Cursors::Default;
-			this->text_output->Font = (gcnew System::Drawing::Font(L"Cascadia Code", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->text_output->Font = (gcnew System::Drawing::Font(L"Cascadia Code", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
 			this->text_output->ForeColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(170)), static_cast<System::Int32>(static_cast<System::Byte>(0)),
 				static_cast<System::Int32>(static_cast<System::Byte>(0)));
@@ -845,7 +845,7 @@ namespace HexLoader {
 			text_output->Clear();
 
 			// Validate file paths
-			text_output->AppendText("Validating file paths.                         <-"
+			text_output->AppendText("Validating file paths."
 				+ System::Environment::NewLine);
 
 			unsigned int pathResult = loaderPtr->ValidatePath(Loader::PATH_ALL);
@@ -872,13 +872,23 @@ namespace HexLoader {
 			}
 
 			// Check for compiler, install if not found
+			text_output->AppendText("Compiler installed: ");
+
 			if (!loaderPtr->CompilerInstalled())
 			{
-				loaderPtr->SpawnInstallerThread();
+				text_output->AppendText("no"
+					+ System::Environment::NewLine);
+
+				text_output->AppendText("Install g++? (Y/N): ");
+
+				//loaderPtr->SpawnInstallerThread();
 				/*if (loaderPtr->InstallCompiler() != SUCCESS)
 					text_output->AppendText(gcnew String(loaderPtr->GetError().c_str())
 						+ System::Environment::NewLine);*/
 			}
+
+			else
+				text_output->AppendText("yes");
 
 			return SUCCESS;
 		}
