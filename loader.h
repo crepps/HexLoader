@@ -46,6 +46,7 @@ public:
 		:compilerInstalled(false),
 		compilerCheck(false),
 		bufferLoaded(false),
+		runPath("C:\\temp"),
 		newProcessCmd("ping 8.8.8.8"),
 		outputBuffer("") {};
 	void SetError(const std::string& arg) noexcept { error = arg; }
