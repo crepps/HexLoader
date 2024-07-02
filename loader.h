@@ -47,7 +47,7 @@ public:
 		compilerCheck(false),
 		bufferLoaded(false),
 		runPath("C:\\temp"),
-		newProcessCmd("ping 8.8.8.8"),
+		newProcessCmd("ipconfig"),
 		outputBuffer("") {};
 	void SetError(const std::string& arg) noexcept { error = arg; }
 	std::string GetError() const noexcept { return error; }
