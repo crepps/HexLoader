@@ -10,6 +10,11 @@ enum AREA
 	BUTTON_BUILD
 };
 
+enum PROMPT_INDEX
+{
+	INSTALL_COMPILER
+};
+
 struct vec2
 {
 	int x, y;
@@ -38,6 +43,9 @@ const std::vector<std::string> headerFrames =
 	"---           ---"
 };
 
+static const unsigned int NUM_PROMPTS{ 1 };
+bool prompting[NUM_PROMPTS] = { false };
+
 namespace HexLoader {
 
 	using namespace System;
@@ -60,7 +68,6 @@ namespace HexLoader {
 			cursorDelta;
 		const char *binPath,
 					*appName;
-		//std::string g_loaderOutput;
 		System::Collections::Generic::List<String^> libPaths;
 		System::Windows::Forms::Button^ buttonPtr;
 
@@ -406,6 +413,7 @@ namespace HexLoader {
 			this->button_build->UseVisualStyleBackColor = true;
 			this->button_build->Visible = false;
 			this->button_build->Click += gcnew System::EventHandler(this, &gui::button_build_Click);
+			this->button_build->KeyPress += gcnew System::Windows::Forms::KeyPressEventHandler(this, &gui::HandleKeyPress);
 			// 
 			// button_sb
 			// 
@@ -652,6 +660,13 @@ namespace HexLoader {
 			static std::stringstream ss;
 			static std::string line;
 
+			// Keep focus on build button
+			if (!button_build->Focused)
+			{
+				this->ActiveControl = button_build;
+				//button_build->Focus();
+			}
+
 			// If output buffer from process thread is loaded
 			if (loaderPtr->GetBufferLoaded())
 			{
@@ -715,7 +730,6 @@ namespace HexLoader {
 
 			//std::cout << "\nX: " << e->X << ", Y: " << e->Y << '\n';	// debug
 		}
-	
 		private: const char* GetPath(AREA button)
 		{
 			OpenFileDialog^ openFileDialog1 = gcnew OpenFileDialog;
@@ -842,6 +856,7 @@ namespace HexLoader {
 		}
 		private: unsigned int Build()
 		{
+			button_build->Focus();
 			text_output->Clear();
 
 			// Validate file paths
@@ -872,25 +887,43 @@ namespace HexLoader {
 			}
 
 			// Check for compiler, install if not found
-			text_output->AppendText("Compiler installed: ");
-
 			if (!loaderPtr->CompilerInstalled())
 			{
-				text_output->AppendText("no"
+				prompting[INSTALL_COMPILER] = true;
+
+				text_output->AppendText("Could not detect compiler."
 					+ System::Environment::NewLine);
 
-				text_output->AppendText("Install g++? (Y/N): ");
-
-				//loaderPtr->SpawnInstallerThread();
-				/*if (loaderPtr->InstallCompiler() != SUCCESS)
-					text_output->AppendText(gcnew String(loaderPtr->GetError().c_str())
-						+ System::Environment::NewLine);*/
+				text_output->AppendText("Auto install GNU C++ compiler (g++)? (Y/N): ");
 			}
 
 			else
-				text_output->AppendText("yes");
+				text_output->AppendText("Compiler detected.");
 
 			return SUCCESS;
+		}
+		private: void HandleKeyPress(System::Object^ sender, System::Windows::Forms::KeyPressEventArgs^ e)
+		{
+			if (prompting[INSTALL_COMPILER])
+			{
+				if (e->KeyChar == 'y' || e->KeyChar == 'Y')
+				{
+					text_output->AppendText("Y");
+					prompting[INSTALL_COMPILER] = false;
+
+					if (loaderPtr->SpawnInstallerThread() != SUCCESS)
+					{
+						text_output->AppendText(gcnew String(loaderPtr->GetError().c_str())
+							+ System::Environment::NewLine);
+					}
+				}
+
+				else if (e->KeyChar == 'n' || e->KeyChar == 'N')
+				{
+					text_output->AppendText("N");
+					prompting[INSTALL_COMPILER] = false;
+				}
+			}
 		}
 	};
 }
