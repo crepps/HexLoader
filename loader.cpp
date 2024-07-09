@@ -106,14 +106,15 @@ unsigned int Loader::InstallCompiler() noexcept
 }
 void Loader::LoadBuffer(const std::string& arg) noexcept
 {
-	/*	Block until output buffer unlocked,
-		lock buffer, write data, unlock		*/ 
+	/*	Block until output mutex unlocked,
+		lock mutex, write data, unlock		*/ 
 
 	{
 		std::lock_guard<std::mutex> lock(outputMutex);
 		outputBuffer += arg;
 	}
 
+	// Tell front-end that a chunk of output is ready
 	bufferLoaded = true;
 
 	// Sleep until buffer is emptied by client
@@ -122,8 +123,8 @@ void Loader::LoadBuffer(const std::string& arg) noexcept
 }
 const char* Loader::OffloadBuffer() noexcept
 {
-	/*	Block until output buffer unlocked,
-		lock buffer, return data, unlock	*/
+	/*	Block until output mutex unlocked,
+		lock mutex, return data, unlock	*/
 
 	std::unique_lock<std::mutex> lock(outputMutex);
 	return outputBuffer.c_str();
