@@ -47,7 +47,7 @@ public:
 		compilerCheck(false),
 		bufferLoaded(false),
 		runPath("C:\\temp"),
-		newProcessCmd("ipconfig"),
+		newProcessCmd("choco install mingw64"),
 		outputBuffer("") {};
 	void SetError(const std::string& arg) noexcept { error = arg; }
 	std::string GetError() const noexcept { return error; }
