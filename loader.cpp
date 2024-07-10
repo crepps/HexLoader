@@ -109,9 +109,22 @@ void Loader::LoadBuffer(const std::string& arg) noexcept
 	/*	Block until output mutex unlocked,
 		lock mutex, write data, unlock   */ 
 
+	try
 	{
-		std::lock_guard<std::mutex> lock(outputMutex);
-		outputBuffer += arg;
+		{
+			std::lock_guard<std::mutex> lock(outputMutex);
+			outputBuffer += arg;
+		}
+	}
+	catch (std::exception& e)
+	{
+		SetError(e.what());
+		return;
+	}
+	catch (...)
+	{
+		SetError("Exception thrown when attempting to load buffer.");
+		return;
 	}
 
 	// Tell front-end that a chunk of output is ready
@@ -119,22 +132,46 @@ void Loader::LoadBuffer(const std::string& arg) noexcept
 
 	// Sleep until buffer is emptied by client
 	while (bufferLoaded)
-		Sleep(10);
+		Sleep(100);
 }
 const char* Loader::OffloadBuffer() noexcept
 {
 	/*	Block until output mutex unlocked,
 		lock mutex, return data   */
 
-	outputMutex.lock();
+	try
+	{
+		outputMutex.lock();
+	}
+	catch (std::exception& e)
+	{
+		SetError(e.what());
+	}
+	catch (...)
+	{
+		SetError("Exception thrown when attempting to lock output mutex for reading.");
+	}
+
 	return outputBuffer.c_str();
 }
 void Loader::ClearBuffer() noexcept
 {
-	outputBuffer.clear();
-	outputBuffer = "";
-	bufferLoaded = false;
-	outputMutex.unlock();
+	// Clear buffer, unlock mutex, reset flag
+	try
+	{
+		outputBuffer.clear();
+		outputBuffer = "";
+		outputMutex.unlock();
+		bufferLoaded = false;
+	}
+	catch (std::exception& e)
+	{
+		SetError(e.what());
+	}
+	catch (...)
+	{
+		SetError("Exception thrown when attempting to unlock output mutex.");
+	}
 }
 unsigned int Loader::SpawnInstallerThread()
 {
