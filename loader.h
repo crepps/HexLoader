@@ -25,8 +25,9 @@ private:
 	std::vector<std::string> libPaths;
 
 	bool compilerInstalled,
-		compilerCheck,
-		bufferLoaded;
+		compilerCheck;
+		
+	std::atomic<bool> bufferLoaded;
 
 	std::mutex outputMutex;
 	std::condition_variable waitCondition;
@@ -47,7 +48,7 @@ public:
 		compilerCheck(false),
 		bufferLoaded(false),
 		runPath("C:\\temp"),
-		newProcessCmd("choco install mingw64"),
+		newProcessCmd("ping 8.8.8.8"),
 		outputBuffer("") {};
 	void SetError(const std::string& arg) noexcept { error = arg; }
 	std::string GetError() const noexcept { return error; }
