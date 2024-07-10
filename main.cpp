@@ -46,6 +46,21 @@ public:
 	{
 
 	}
+	std::string ExecuteCmd(const std::string& cmd)
+	{
+		obj.SetProcessCmd(cmd);
+		obj.SpawnInstallerThread();
+		std::string output("");
+		do
+		{
+			output += obj.OffloadBuffer();
+			obj.ClearBuffer();
+			Sleep(100);
+
+		} while (obj.GetBufferLoaded());
+
+		return output;
+	}
 };
 
 /*											*
@@ -95,31 +110,13 @@ TEST_F(CompilerTesting, CompilerInstallChecked)
 }
 TEST_F(CompilerTesting, ReadProcessStdout)
 {
-	obj.SetProcessCmd("echo hexloader");
-	obj.SpawnInstallerThread();
-	std::string output("");
-	do
-	{
-		output += obj.OffloadBuffer();
-		obj.ClearBuffer();
-		Sleep(100);
-
-	} while (obj.GetBufferLoaded());
+	std::string output{ ExecuteCmd("echo hexloader") };
 
 	ASSERT_THAT(output, Eq("hexloader \n"));
 }
 TEST_F(CompilerTesting, ReadProcessErrout)
 {
-	obj.SetProcessCmd("tasklist x");
-	obj.SpawnInstallerThread();
-	std::string output("");
-	do
-	{
-		output += obj.OffloadBuffer();
-		obj.ClearBuffer();
-		Sleep(100);
-
-	} while (obj.GetBufferLoaded());
+	std::string output{ ExecuteCmd("tasklist x") };
 
 	ASSERT_THAT(output.find("ERROR"), Ne(std::string::npos));
 }
