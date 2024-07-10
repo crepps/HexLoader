@@ -105,9 +105,10 @@ namespace HexLoader {
 		XPOS_CHECK_UNINSTALLER{ 554 },
 		XPOS_PROMPTS{ 460 },
 
-		// Defaults
+		// Defaults and commands
 		CONSOLE_WIDTH{ 341 };
-		const char* DEFAULT_TEXT_RUN{ "C:\\temp" };
+		const char *DEFAULT_TEXT_RUN{ "C:\\temp" },
+				   *CMD_INSTALL_COMPILER{"choco install mingw64"};
 
 
 	private: System::Windows::Forms::Label^ label2;
@@ -911,7 +912,7 @@ namespace HexLoader {
 					text_output->AppendText("Y");
 					prompting[INSTALL_COMPILER] = false;
 
-					if (loaderPtr->SpawnInstallerThread() != SUCCESS)
+					if (loaderPtr->SpawnProcThread("choco install mingw64") != SUCCESS)
 					{
 						text_output->AppendText(gcnew String(loaderPtr->GetError().c_str())
 							+ System::Environment::NewLine);

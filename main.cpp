@@ -48,8 +48,7 @@ public:
 	}
 	std::string ExecuteCmd(const std::string& cmd)
 	{
-		obj.SetProcessCmd(cmd);
-		obj.SpawnInstallerThread();
+		obj.SpawnProcThread(cmd);
 		std::string output("");
 		do
 		{
@@ -122,14 +121,13 @@ TEST_F(CompilerTesting, ReadProcessErrout)
 }
 TEST_F(CompilerTesting, RunProcessAsynchronously)
 {
-	ASSERT_THAT(obj.SpawnInstallerThread(), Eq(SUCCESS));
+	ASSERT_THAT(obj.SpawnProcThread(""), Eq(SUCCESS));
 }
 TEST_F(CompilerTesting, DISABLED_CompilerInstallSuccessful)
 {
-	obj.InstallCompiler();
+	obj.SpawnProcThread("choco install mingw64");
 	ASSERT_TRUE(obj.CompilerInstalled());
 }
-
 #endif
 
 [STAThreadAttribute]
