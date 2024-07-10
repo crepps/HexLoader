@@ -59,9 +59,9 @@ public:
 	std::string GetRunPath() const noexcept { return runPath; };
 	bool CompilerInstalled() noexcept;
 	bool CompilerChecked() const noexcept { return compilerCheck;  }
-	unsigned int InstallCompiler() noexcept;
-	void SetProcessCmd(const std::string& arg) { newProcessCmd = arg; }
-	unsigned int SpawnInstallerThread();
+	unsigned int SpawnProcThread(const std::string&) noexcept;
+	void SetCommand(const std::string& arg) { newProcessCmd = arg; }
+	unsigned int Command() noexcept;
 	void LoadBuffer(const std::string&) noexcept;
 	const char* OffloadBuffer() noexcept;
 	bool GetBufferLoaded() const noexcept { return bufferLoaded; }

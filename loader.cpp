@@ -64,7 +64,7 @@ bool Loader::CompilerInstalled() noexcept
 
 	return compilerInstalled;
 }
-unsigned int Loader::InstallCompiler() noexcept
+unsigned int Loader::Command() noexcept
 {
 	// Redirect process's stderr to stdout stream
 	std::string command(newProcessCmd);
@@ -173,12 +173,13 @@ void Loader::ClearBuffer() noexcept
 		SetError("Exception thrown when attempting to unlock output mutex.");
 	}
 }
-unsigned int Loader::SpawnInstallerThread()
+unsigned int Loader::SpawnProcThread(const std::string& cmd) noexcept
 {
 	try
 	{
-		std::thread installerThread(&Loader::InstallCompiler, this);
-		installerThread.detach();
+		SetCommand(cmd);
+		std::thread procThread(&Loader::Command, this);
+		procThread.detach();
 	}
 	catch (std::exception& e)
 	{
@@ -187,7 +188,7 @@ unsigned int Loader::SpawnInstallerThread()
 	}
 	catch (...)
 	{
-		SetError("Exception thrown when attempting to spawn compiler installation thread.");
+		SetError("Exception thrown when attempting to spawn process thread.");
 	}
 
 	return SUCCESS;
