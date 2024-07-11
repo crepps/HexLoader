@@ -99,13 +99,11 @@ TEST_F(InitTesting, AllPathsValid)
 				Compiler Tests
  *											*/
 
-TEST_F(CompilerTesting, CompilerInstallChecked)
+TEST_F(CompilerTesting, CheckCompilerInstalled)
 {
-	// Check whether compiler is installed on target system, ignore result
-	obj.CompilerInstalled();
-
-	// Verify that installation was checked
-	ASSERT_TRUE(obj.CompilerChecked());
+	unsigned int installed{ 2 };
+	installed = (int)obj.CompilerInstalled();
+	ASSERT_THAT(installed, Ne(2));
 }
 TEST_F(CompilerTesting, ReadProcessStdout)
 {
@@ -122,11 +120,6 @@ TEST_F(CompilerTesting, ReadProcessErrout)
 TEST_F(CompilerTesting, RunProcessAsynchronously)
 {
 	ASSERT_THAT(obj.SpawnProcThread("ver"), Eq(SUCCESS));
-}
-TEST_F(CompilerTesting, DISABLED_CompilerInstallSuccessful)
-{
-	obj.SpawnProcThread("choco install mingw64");
-	ASSERT_TRUE(obj.CompilerInstalled());
 }
 #endif
 

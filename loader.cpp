@@ -58,11 +58,9 @@ bool Loader::CompilerInstalled() noexcept
 	struct stat statInfo;
 
 	if (stat(PATH_COMPILER, &statInfo) == 0)
-		compilerInstalled = true;
+		return true;
 
-	compilerCheck = true;
-
-	return compilerInstalled;
+	return false;
 }
 unsigned int Loader::Command(const std::string& arg) noexcept
 {
