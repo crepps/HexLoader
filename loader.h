@@ -60,11 +60,10 @@ public:
 	bool CompilerInstalled() noexcept;
 	bool CompilerChecked() const noexcept { return compilerCheck;  }
 	unsigned int SpawnProcThread(const std::string&) noexcept;
-	void SetCommand(const std::string& arg) { newProcessCmd = arg; }
-	unsigned int Command() noexcept;
+	unsigned int Command(const std::string&) noexcept;
 	void LoadBuffer(const std::string&) noexcept;
-	const char* OffloadBuffer() noexcept;
 	bool GetBufferLoaded() const noexcept { return bufferLoaded; }
+	const char* OffloadBuffer() noexcept;
 	void ClearBuffer() noexcept;
 	~Loader() noexcept {}
 };
