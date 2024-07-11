@@ -23,9 +23,6 @@ private:
 				outputBuffer;
 
 	std::vector<std::string> libPaths;
-
-	bool compilerInstalled,
-		compilerCheck;
 		
 	std::atomic<bool> bufferLoaded;
 
@@ -44,11 +41,8 @@ public:
 	};
 
 	Loader() noexcept
-		:compilerInstalled(false),
-		compilerCheck(false),
-		bufferLoaded(false),
+		:bufferLoaded(false),
 		runPath("C:\\temp"),
-		newProcessCmd("ping 8.8.8.8"),
 		outputBuffer("") {};
 	void SetError(const std::string& arg) noexcept { error = arg; }
 	std::string GetError() const noexcept { return error; }
@@ -58,7 +52,6 @@ public:
 	std::vector<std::string> GetLibPaths() const noexcept { return libPaths; };
 	std::string GetRunPath() const noexcept { return runPath; };
 	bool CompilerInstalled() noexcept;
-	bool CompilerChecked() const noexcept { return compilerCheck;  }
 	unsigned int SpawnProcThread(const std::string&) noexcept;
 	unsigned int Command(const std::string&) noexcept;
 	void LoadBuffer(const std::string&) noexcept;
