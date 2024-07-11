@@ -64,10 +64,10 @@ bool Loader::CompilerInstalled() noexcept
 
 	return compilerInstalled;
 }
-unsigned int Loader::Command() noexcept
+unsigned int Loader::Command(const std::string& arg) noexcept
 {
 	// Redirect process's stderr to stdout stream
-	std::string command(newProcessCmd);
+	std::string command(arg);
 	command += " 2>&1";
 
 	// Open pipe for reading, execute command
@@ -78,12 +78,12 @@ unsigned int Loader::Command() noexcept
 	}
 	catch (...)
 	{
-		LoadBuffer("Failed: _popen threw an exception when attempting to install compiler.");
+		LoadBuffer("Failed: _popen threw an exception when attempting to open pipe.");
 		return FAILURE_CONTINUE;
 	}
 	if (!pipe)
 	{
-		LoadBuffer("Failed to open pipe when attempting to install compiler.");
+		LoadBuffer("Failed to open pipe.");
 		return FAILURE_CONTINUE;
 	}
 
@@ -98,7 +98,7 @@ unsigned int Loader::Command() noexcept
 	catch (...)
 	{
 		_pclose(pipe);
-		SetError("Failed to read from pipe when attempting to install compiler.");
+		SetError("Failed to read from pipe when loading output buffer.");
 		return FAILURE_CONTINUE;
 	}
 
@@ -112,7 +112,7 @@ void Loader::LoadBuffer(const std::string& arg) noexcept
 	try
 	{
 		{
-			std::lock_guard<std::mutex> lock(outputMutex);
+			std::scoped_lock<std::mutex> lock(outputMutex);
 			outputBuffer += arg;
 		}
 	}
@@ -123,7 +123,7 @@ void Loader::LoadBuffer(const std::string& arg) noexcept
 	}
 	catch (...)
 	{
-		SetError("Exception thrown when attempting to load buffer.");
+		SetError("Exception thrown when attempting to lock or unlock output mutex.");
 		return;
 	}
 
@@ -177,8 +177,7 @@ unsigned int Loader::SpawnProcThread(const std::string& cmd) noexcept
 {
 	try
 	{
-		SetCommand(cmd);
-		std::thread procThread(&Loader::Command, this);
+		std::thread procThread(&Loader::Command, this, cmd);
 		procThread.detach();
 	}
 	catch (std::exception& e)

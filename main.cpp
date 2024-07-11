@@ -121,7 +121,7 @@ TEST_F(CompilerTesting, ReadProcessErrout)
 }
 TEST_F(CompilerTesting, RunProcessAsynchronously)
 {
-	ASSERT_THAT(obj.SpawnProcThread(""), Eq(SUCCESS));
+	ASSERT_THAT(obj.SpawnProcThread("ver"), Eq(SUCCESS));
 }
 TEST_F(CompilerTesting, DISABLED_CompilerInstallSuccessful)
 {
