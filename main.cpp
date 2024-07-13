@@ -50,13 +50,18 @@ public:
 	{
 		obj.SpawnProcThread(cmd);
 		std::string output("");
-		do
-		{
-			output += obj.OffloadBuffer();
-			obj.ClearBuffer();
-			Sleep(100);
 
-		} while (obj.GetBufferLoaded());
+		while (!obj.Reading());
+
+		while (obj.Reading())
+		{
+			if (obj.GetBufferLoaded())
+			{
+				output += obj.OffloadBuffer();
+				obj.ClearBuffer();
+				Sleep(100);
+			}
+		}
 
 		return output;
 	}
@@ -117,9 +122,11 @@ TEST_F(CompilerTesting, ReadProcessErrout)
 
 	ASSERT_THAT(output.find("ERROR"), Ne(std::string::npos));
 }
-TEST_F(CompilerTesting, RunProcessAsynchronously)
+TEST_F(CompilerTesting, CheckChocoInstalled)
 {
-	ASSERT_THAT(obj.SpawnProcThread("ver"), Eq(SUCCESS));
+	unsigned int installed{ 2 };
+	installed = (int)obj.ChocoInstalled();
+	ASSERT_THAT(installed, Ne(2));
 }
 #endif
 

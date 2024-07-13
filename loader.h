@@ -4,9 +4,9 @@
 #include <sys/stat.h>
 #include <thread>
 #include <mutex>
-#include <condition_variable>
 #include <Windows.h>
 #include <iostream>
+#include <ShlObj_core.h>
 
 #define SUCCESS 0
 #define FAILURE_ABORT 1
@@ -24,12 +24,13 @@ private:
 
 	std::vector<std::string> libPaths;
 		
-	std::atomic<bool> bufferLoaded;
+	std::atomic<bool> bufferLoaded,
+					reading;
 
 	std::mutex outputMutex;
-	std::condition_variable waitCondition;
 
-	const char* PATH_COMPILER{ "C:\\ProgramData\\mingw64\\mingw64\\bin\\g++.exe" };
+	const char *PATH_COMPILER{ "C:\\ProgramData\\mingw64\\mingw64\\bin\\g++.exe" },
+			   *PATH_CHOCO{ "C:\\ProgramData\\chocolately" };
 
 public:
 	enum PATH_TYPE
@@ -51,12 +52,14 @@ public:
 	std::string GetBinPath() const noexcept { return binPath; };
 	std::vector<std::string> GetLibPaths() const noexcept { return libPaths; };
 	std::string GetRunPath() const noexcept { return runPath; };
-	bool CompilerInstalled() noexcept;
+	bool CompilerInstalled() const noexcept;
 	unsigned int SpawnProcThread(const std::string&) noexcept;
 	unsigned int Command(const std::string&) noexcept;
 	void LoadBuffer(const std::string&) noexcept;
 	bool GetBufferLoaded() const noexcept { return bufferLoaded; }
 	const char* OffloadBuffer() noexcept;
 	void ClearBuffer() noexcept;
+	bool Reading() const noexcept { return reading; }
+	bool ChocoInstalled() const noexcept;
 	~Loader() noexcept {}
 };

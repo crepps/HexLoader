@@ -887,7 +887,7 @@ namespace HexLoader {
 				return FAILURE_CONTINUE;
 			}
 
-			// Check for compiler, install if not found
+			// Check for compiler, prompt user whether to auto install
 			if (!loaderPtr->CompilerInstalled())
 			{
 				prompting[INSTALL_COMPILER] = true;
@@ -905,6 +905,7 @@ namespace HexLoader {
 		}
 		private: void HandleKeyPress(System::Object^ sender, System::Windows::Forms::KeyPressEventArgs^ e)
 		{
+			// Install compiler if user selects 'Y'
 			if (prompting[INSTALL_COMPILER])
 			{
 				if (e->KeyChar == 'y' || e->KeyChar == 'Y')
