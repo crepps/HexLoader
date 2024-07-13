@@ -53,7 +53,7 @@ unsigned int Loader::ValidatePath(PATH_TYPE type) const noexcept
 
 	return SUCCESS;
 }
-bool Loader::CompilerInstalled() noexcept
+bool Loader::CompilerInstalled() const noexcept
 {
 	struct stat statInfo;
 
@@ -62,8 +62,30 @@ bool Loader::CompilerInstalled() noexcept
 
 	return false;
 }
+unsigned int Loader::SpawnProcThread(const std::string& cmd) noexcept
+{
+	try
+	{
+		std::thread procThread(&Loader::Command, this, cmd);
+		procThread.detach();
+	}
+	catch (std::exception& e)
+	{
+		SetError(e.what());
+		return EXIT_FAILURE;
+	}
+	catch (...)
+	{
+		SetError("Exception thrown when attempting to spawn process thread.");
+	}
+
+	return SUCCESS;
+}
 unsigned int Loader::Command(const std::string& arg) noexcept
 {
+	// There's output to be read
+	reading = true;
+
 	// Redirect process's stderr to stdout stream
 	std::string command(arg);
 	command += " 2>&1";
@@ -99,6 +121,9 @@ unsigned int Loader::Command(const std::string& arg) noexcept
 		SetError("Failed to read from pipe when loading output buffer.");
 		return FAILURE_CONTINUE;
 	}
+
+	// No more output
+	reading = false;
 
 	return SUCCESS;
 }
@@ -171,22 +196,12 @@ void Loader::ClearBuffer() noexcept
 		SetError("Exception thrown when attempting to unlock output mutex.");
 	}
 }
-unsigned int Loader::SpawnProcThread(const std::string& cmd) noexcept
+bool Loader::ChocoInstalled() const noexcept
 {
-	try
-	{
-		std::thread procThread(&Loader::Command, this, cmd);
-		procThread.detach();
-	}
-	catch (std::exception& e)
-	{
-		SetError(e.what());
-		return EXIT_FAILURE;
-	}
-	catch (...)
-	{
-		SetError("Exception thrown when attempting to spawn process thread.");
-	}
+	struct stat statInfo;
 
-	return SUCCESS;
+	if (stat(PATH_CHOCO, &statInfo) == 0)
+		return true;
+
+	return false;
 }
