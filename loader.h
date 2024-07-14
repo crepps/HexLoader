@@ -6,7 +6,7 @@
 #include <mutex>
 #include <Windows.h>
 #include <iostream>
-#include <ShlObj_core.h>
+#include <ShlObj.h>
 
 #define SUCCESS 0
 #define FAILURE_ABORT 1
@@ -30,7 +30,7 @@ private:
 	std::mutex outputMutex;
 
 	const char *PATH_COMPILER{ "C:\\ProgramData\\mingw64\\mingw64\\bin\\g++.exe" },
-			   *PATH_CHOCO{ "C:\\ProgramData\\chocolately" };
+			   *PATH_CHOCO{ "C:\\ProgramData\\chocolatey" };
 
 public:
 	enum PATH_TYPE
