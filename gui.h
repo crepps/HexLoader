@@ -111,6 +111,10 @@ namespace HexLoader {
 
 		// Defaults and commands
 		CONSOLE_WIDTH{ 341 };
+
+		const float FONT_SIZE_SMALL{ 6.0f },
+					FONT_SIZE_LARGE{ 8.25f };
+
 		const char *DEFAULT_TEXT_RUN{ "C:\\temp" },
 				   *CMD_INSTALL_COMPILER{ "choco install mingw -y --force" },
 				   *CMD_INSTALL_CHOCO{
@@ -701,7 +705,7 @@ namespace HexLoader {
 					installingCompiler = false;
 
 					// Re-enlarge text, reset output delay to longest
-					text_output->Font = gcnew System::Drawing::Font(text_output->Font->FontFamily, 8.25);
+					text_output->Font = gcnew System::Drawing::Font(text_output->Font->FontFamily, FONT_SIZE_LARGE);
 					loaderPtr->DelayOutput(outputDelay = DELAY_OUTPUT_LONG);
 					Print("\n");
 					Print("Successfully installed g++.");
@@ -915,7 +919,7 @@ namespace HexLoader {
 				+ System::Environment::NewLine);
 
 			// Pause thread between lines printed
-			System::Threading::Thread::Sleep(100);
+			System::Threading::Thread::Sleep(outputDelay);
 		}
 		private: unsigned int Build()
 		{
@@ -983,7 +987,7 @@ namespace HexLoader {
 						installingCompiler = true;
 
 						// Shrink text, set output delay to shortest
-						text_output->Font = gcnew System::Drawing::Font(text_output->Font->FontFamily, 6);
+						text_output->Font = gcnew System::Drawing::Font(text_output->Font->FontFamily, FONT_SIZE_SMALL);
 						loaderPtr->DelayOutput(outputDelay = DELAY_OUTPUT_SHORT);
 					}
 
@@ -1001,7 +1005,7 @@ namespace HexLoader {
 				else if (e->KeyChar == 'n' || e->KeyChar == 'N')
 				{
 					// Re-enlarge font, reset output delay
-					text_output->Font = gcnew System::Drawing::Font(text_output->Font->FontFamily, 8.25);
+					text_output->Font = gcnew System::Drawing::Font(text_output->Font->FontFamily, FONT_SIZE_LARGE);
 					loaderPtr->DelayOutput(outputDelay = DELAY_OUTPUT_LONG);
 
 					Print("N");
@@ -1028,15 +1032,15 @@ namespace HexLoader {
 					installingChoco = true;
 
 					// Shrink text, set output delay to shortest
-					text_output->Font = gcnew System::Drawing::Font(text_output->Font->FontFamily, 6);
+					text_output->Font = gcnew System::Drawing::Font(text_output->Font->FontFamily, FONT_SIZE_SMALL);
 					loaderPtr->DelayOutput(outputDelay = DELAY_OUTPUT_SHORT);
 				}
 
 				// 'N' pressed
 				else if (e->KeyChar == 'n' || e->KeyChar == 'N')
 				{
-					// Re-enlarge text
-					text_output->Font = gcnew System::Drawing::Font(text_output->Font->FontFamily, 8.25);
+					// Re-enlarge text, reset output delay
+					text_output->Font = gcnew System::Drawing::Font(text_output->Font->FontFamily, FONT_SIZE_LARGE);
 					loaderPtr->DelayOutput(outputDelay = DELAY_OUTPUT_LONG);
 
 					Print("N");
