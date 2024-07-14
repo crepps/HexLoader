@@ -8,14 +8,21 @@
 #include <iostream>
 #include <ShlObj.h>
 
+// Return codes
 #define SUCCESS 0
 #define FAILURE_ABORT 1
 #define FAILURE_CONTINUE 2
+
+// Console output related
 #define BUFFER_SIZE 128
+#define DELAY_OUTPUT_LONG 100
+#define DELAY_OUTPUT_SHORT 5
 
 class Loader
 {
 private:
+	unsigned int outputDelay;
+
 	std::string binPath,
 				runPath,
 				error,
@@ -42,7 +49,8 @@ public:
 	};
 
 	Loader() noexcept
-		:bufferLoaded(false),
+		:outputDelay(DELAY_OUTPUT_LONG),
+		bufferLoaded(false),
 		runPath("C:\\temp"),
 		outputBuffer("") {};
 	void SetError(const std::string& arg) noexcept { error = arg; }
@@ -61,5 +69,6 @@ public:
 	void ClearBuffer() noexcept;
 	bool Reading() const noexcept { return reading; }
 	bool ChocoInstalled() const noexcept;
+	void DelayOutput(unsigned int arg) { outputDelay = arg; }
 	~Loader() noexcept {}
 };

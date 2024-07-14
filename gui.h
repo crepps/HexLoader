@@ -63,8 +63,11 @@ namespace HexLoader {
 	{
 	private:
 		Loader* loaderPtr;
+		unsigned int outputDelay;
 		bool mouseDown,
-			expandConsole;
+			expandConsole,
+			installingCompiler,
+			installingChoco;
 		Point cursorDownPos,
 			cursorDelta;
 		const char *binPath,
@@ -109,7 +112,7 @@ namespace HexLoader {
 		// Defaults and commands
 		CONSOLE_WIDTH{ 341 };
 		const char *DEFAULT_TEXT_RUN{ "C:\\temp" },
-				   *CMD_INSTALL_COMPILER{ "choco install mingw64 -y" },
+				   *CMD_INSTALL_COMPILER{ "choco install mingw -y --force" },
 				   *CMD_INSTALL_CHOCO{
 										"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe "
 										"-NoProfile -InputFormat None -ExecutionPolicy Bypass -Command \" "
@@ -117,7 +120,7 @@ namespace HexLoader {
 										"((New-Object System.Net.WebClient).DownloadString"
 										"(\'https://chocolatey.org/install.ps1\'))\" && SET \"PATH=%PATH%;"
 										"%ALLUSERSPROFILE%\\chocolatey\\bin\""
-										};
+									 };
 
 
 	private: System::Windows::Forms::Label^ label2;
@@ -141,10 +144,13 @@ namespace HexLoader {
 
 	public:
 		gui(Loader& obj)
-			:binPath(""),
+			:outputDelay(DELAY_OUTPUT_LONG),
+			binPath(""),
 			appName(""), 
 			mouseDown (false),
-			expandConsole(false)
+			expandConsole(false),
+			installingCompiler(false),
+			installingChoco(false)
 		{
 			loaderPtr = &obj;
 			mouseDown = false;
@@ -674,7 +680,7 @@ namespace HexLoader {
 			if (!button_build->Focused)
 			{
 				this->ActiveControl = button_build;
-				//button_build->Focus();
+				button_build->Focus();
 			}
 
 			// If output buffer from process thread is loaded
@@ -683,6 +689,45 @@ namespace HexLoader {
 				// Offload it into text output area and replace newline characters
 				Print(loaderPtr->OffloadBuffer());
 				loaderPtr->ClearBuffer();
+			}
+
+			// Continue build when compiler is done installing
+			if (installingCompiler)
+			{
+				System::Threading::Thread::Sleep(DELAY_OUTPUT_SHORT);
+
+				if (!loaderPtr->Reading())
+				{
+					installingCompiler = false;
+
+					// Re-enlarge text, reset output delay to longest
+					text_output->Font = gcnew System::Drawing::Font(text_output->Font->FontFamily, 8.25);
+					loaderPtr->DelayOutput(outputDelay = DELAY_OUTPUT_LONG);
+					Print("\n");
+					Print("Successfully installed g++.");
+					Print("\n");
+				}
+			}
+
+			// Install compiler when choco is done installing
+			if (installingChoco)
+			{
+				System::Threading::Thread::Sleep(DELAY_OUTPUT_SHORT);
+
+				if (!loaderPtr->Reading())
+				{
+					installingChoco = false;
+
+					Print("\n");
+					Print("Successfully installed chocolatey.");
+					Print("\n");
+					Print("Retrying compiler installation.");
+					Print("\n");
+
+					std::string cmd{ CMD_INSTALL_COMPILER };
+					loaderPtr->SpawnProcThread(cmd);
+					installingCompiler = true;
+				}
 			}
 		}
 		private: System::Void gui::gui_MouseDown(System::Object^ Sender, System::Windows::Forms::MouseEventArgs^ e)
@@ -925,8 +970,6 @@ namespace HexLoader {
 				{
 					Print("Y");
 
-					// If 
-
 					// If chocolatey installed
 					if (loaderPtr->ChocoInstalled())
 					{
@@ -936,7 +979,12 @@ namespace HexLoader {
 						std::string compilerCmd{ CMD_INSTALL_COMPILER };
 						if (loaderPtr->SpawnProcThread(compilerCmd) != SUCCESS)
 							Print(loaderPtr->GetError().c_str());
-						
+
+						installingCompiler = true;
+
+						// Shrink text, set output delay to shortest
+						text_output->Font = gcnew System::Drawing::Font(text_output->Font->FontFamily, 6);
+						loaderPtr->DelayOutput(outputDelay = DELAY_OUTPUT_SHORT);
 					}
 
 					// If chocolatey not installed
@@ -951,7 +999,14 @@ namespace HexLoader {
 
 				// 'N' pressed
 				else if (e->KeyChar == 'n' || e->KeyChar == 'N')
+				{
+					// Re-enlarge font, reset output delay
+					text_output->Font = gcnew System::Drawing::Font(text_output->Font->FontFamily, 8.25);
+					loaderPtr->DelayOutput(outputDelay = DELAY_OUTPUT_LONG);
+
 					Print("N");
+					Print("Aborting. Please manually install mingw.");
+				}
 
 				return;
 			}
@@ -969,11 +1024,24 @@ namespace HexLoader {
 					std::string chocoCmd{ CMD_INSTALL_CHOCO };
 					if (loaderPtr->SpawnProcThread(chocoCmd) != SUCCESS)
 						Print(loaderPtr->GetError().c_str());
+
+					installingChoco = true;
+
+					// Shrink text, set output delay to shortest
+					text_output->Font = gcnew System::Drawing::Font(text_output->Font->FontFamily, 6);
+					loaderPtr->DelayOutput(outputDelay = DELAY_OUTPUT_SHORT);
 				}
 
 				// 'N' pressed
 				else if (e->KeyChar == 'n' || e->KeyChar == 'N')
+				{
+					// Re-enlarge text
+					text_output->Font = gcnew System::Drawing::Font(text_output->Font->FontFamily, 8.25);
+					loaderPtr->DelayOutput(outputDelay = DELAY_OUTPUT_LONG);
+
 					Print("N");
+					Print("Aborting. Please manually install chocolatey.");
+				}
 			}
 		}
 	};
