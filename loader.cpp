@@ -155,7 +155,7 @@ void Loader::LoadBuffer(const std::string& arg) noexcept
 
 	// Sleep until buffer is emptied by client
 	while (bufferLoaded)
-		Sleep(100);
+		Sleep(outputDelay);
 }
 const char* Loader::OffloadBuffer() noexcept
 {
