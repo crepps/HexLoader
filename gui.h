@@ -614,6 +614,9 @@ namespace HexLoader {
 #pragma endregion
 		private: System::Void ConvertString(System::String^ s, std::string& os)
 		{
+			/*	Convert system string
+				to standard string   */
+
 			using namespace System::Runtime::InteropServices;
 			const char* chars =
 				(const char*)(Marshal::StringToHGlobalAnsi(s)).ToPointer();
@@ -639,6 +642,9 @@ namespace HexLoader {
 		}
 		private: System::Void timer_anim_Tick(System::Object^ sender, System::EventArgs^ e)
 		{
+			/*	Animation-related
+				updates   */
+
 			static int currentFrame{ 0 },
 				ticks{ 0 };
 			static bool build{ false };
@@ -677,6 +683,9 @@ namespace HexLoader {
 		}
 		private: System::Void timer_console_Tick(System::Object^ sender, System::EventArgs^ e)
 		{
+			/*	Console area-related
+				updates   */
+
 			static std::stringstream ss;
 			static std::string line;
 
@@ -690,7 +699,7 @@ namespace HexLoader {
 			// If output buffer from process thread is loaded
 			if (loaderPtr->GetBufferLoaded())
 			{
-				// Offload it into text output area and replace newline characters
+				// Offload it into text output area
 				Print(loaderPtr->OffloadBuffer());
 				loaderPtr->ClearBuffer();
 			}
@@ -707,9 +716,15 @@ namespace HexLoader {
 					// Re-enlarge text, reset output delay to longest
 					text_output->Font = gcnew System::Drawing::Font(text_output->Font->FontFamily, FONT_SIZE_LARGE);
 					loaderPtr->DelayOutput(outputDelay = DELAY_OUTPUT_LONG);
+
 					Print("\n");
 					Print("Successfully installed g++.");
 					Print("\n");
+
+					// Sleep for 1.5 seconds, clear and retract console
+					System::Threading::Thread::Sleep(1500);
+					text_output->Text = "";
+					expandConsole = false;
 				}
 			}
 
@@ -946,6 +961,11 @@ namespace HexLoader {
 					break;
 				}
 
+				// Sleep for 1.5 seconds, clear and retract console
+				System::Threading::Thread::Sleep(1500);
+				text_output->Text = "";
+				expandConsole = false;
+
 				return FAILURE_CONTINUE;
 			}
 
@@ -953,7 +973,7 @@ namespace HexLoader {
 			if (!loaderPtr->CompilerInstalled())
 			{
 				Print("Could not detect compiler.");
-				text_output->AppendText("Auto install GNU C++ compiler (g++)? (Y/N): ");
+				text_output->AppendText("Auto install GNU C++ Compiler (g++)? (Y/N): ");
 				prompting[INSTALL_COMPILER] = true;
 			}
 
@@ -995,8 +1015,8 @@ namespace HexLoader {
 					else
 					{
 						// Prompt user whether to auto install
-						Print("Could not detect chocolatey.");
-						text_output->AppendText("Auto install chocolatey? (Y/N): ");
+						Print("Could not detect Chocolatey.");
+						text_output->AppendText("Auto install Chocolatey? (Y/N): ");
 						prompting[INSTALL_CHOCO] = true;
 					}
 				}
@@ -1009,7 +1029,12 @@ namespace HexLoader {
 					loaderPtr->DelayOutput(outputDelay = DELAY_OUTPUT_LONG);
 
 					Print("N");
-					Print("Aborting. Please manually install mingw.");
+					Print("Aborting. Please manually install MinGW.");
+
+					// Sleep for two seconds, clear and retract console
+					System::Threading::Thread::Sleep(2000);
+					text_output->Text = "";
+					expandConsole = false;
 				}
 
 				return;
@@ -1044,7 +1069,12 @@ namespace HexLoader {
 					loaderPtr->DelayOutput(outputDelay = DELAY_OUTPUT_LONG);
 
 					Print("N");
-					Print("Aborting. Please manually install chocolatey.");
+					Print("Aborting. Please manually install Chocolatey or MinGW.");
+
+					// Sleep for two seconds, clear and retract console
+					System::Threading::Thread::Sleep(2000);
+					text_output->Text = "";
+					expandConsole = false;
 				}
 			}
 		}
