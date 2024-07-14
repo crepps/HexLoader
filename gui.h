@@ -12,7 +12,8 @@ enum AREA
 
 enum PROMPT_INDEX
 {
-	INSTALL_COMPILER
+	INSTALL_COMPILER,
+	INSTALL_CHOCO
 };
 
 struct vec2
@@ -43,7 +44,7 @@ const std::vector<std::string> headerFrames =
 	"---           ---"
 };
 
-static const unsigned int NUM_PROMPTS{ 1 };
+static const unsigned int NUM_PROMPTS{ 2 };
 bool prompting[NUM_PROMPTS] = { false };
 
 namespace HexLoader {
@@ -108,7 +109,15 @@ namespace HexLoader {
 		// Defaults and commands
 		CONSOLE_WIDTH{ 341 };
 		const char *DEFAULT_TEXT_RUN{ "C:\\temp" },
-				   *CMD_INSTALL_COMPILER{"choco install mingw64"};
+				   *CMD_INSTALL_COMPILER{ "choco install mingw64 -y" },
+				   *CMD_INSTALL_CHOCO{
+										"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe "
+										"-NoProfile -InputFormat None -ExecutionPolicy Bypass -Command \" "
+										"[System.Net.ServicePointManager]::SecurityProtocol = 3072; iex "
+										"((New-Object System.Net.WebClient).DownloadString"
+										"(\'https://chocolatey.org/install.ps1\'))\" && SET \"PATH=%PATH%;"
+										"%ALLUSERSPROFILE%\\chocolatey\\bin\""
+										};
 
 
 	private: System::Windows::Forms::Label^ label2;
@@ -672,8 +681,7 @@ namespace HexLoader {
 			if (loaderPtr->GetBufferLoaded())
 			{
 				// Offload it into text output area and replace newline characters
-				text_output->AppendText(gcnew String(loaderPtr->OffloadBuffer()));
-				text_output->AppendText(System::Environment::NewLine);
+				Print(loaderPtr->OffloadBuffer());
 				loaderPtr->ClearBuffer();
 			}
 		}
@@ -855,14 +863,22 @@ namespace HexLoader {
 			expandConsole = true;
 			timer_console->Start();
 		}
+		private: void Print(const std::string& arg)
+		{
+			System::String^ str = gcnew String(arg.c_str());
+			text_output->AppendText(gcnew String(str)
+				+ System::Environment::NewLine);
+
+			// Pause thread between lines printed
+			System::Threading::Thread::Sleep(100);
+		}
 		private: unsigned int Build()
 		{
 			button_build->Focus();
 			text_output->Clear();
 
 			// Validate file paths
-			text_output->AppendText("Validating file paths."
-				+ System::Environment::NewLine);
+			Print("Validating file paths.");
 
 			unsigned int pathResult = loaderPtr->ValidatePath(Loader::PATH_ALL);
 
@@ -871,16 +887,13 @@ namespace HexLoader {
 				switch (pathResult)
 				{
 				case Loader::PATH_BIN:
-					text_output->AppendText("Invalid executable path specified."
-						+ System::Environment::NewLine);
+					Print("Invalid executable path specified.");
 					break;
 				case Loader::PATH_LIB:
-					text_output->AppendText("Invalid DLL path(s) specified."
-						+ System::Environment::NewLine);
+					Print("Invalid executable path specified.");
 					break;
 				case Loader::PATH_RUN:
-					text_output->AppendText("Invalid run path specified."
-						+ System::Environment::NewLine);
+					Print("Invalid run path specified.");
 					break;
 				}
 
@@ -890,41 +903,77 @@ namespace HexLoader {
 			// Check for compiler, prompt user whether to auto install
 			if (!loaderPtr->CompilerInstalled())
 			{
-				prompting[INSTALL_COMPILER] = true;
-
-				text_output->AppendText("Could not detect compiler."
-					+ System::Environment::NewLine);
-
+				Print("Could not detect compiler.");
 				text_output->AppendText("Auto install GNU C++ compiler (g++)? (Y/N): ");
+				prompting[INSTALL_COMPILER] = true;
 			}
 
 			else
-				text_output->AppendText("Compiler detected.");
+				Print("Compiler detected.");
 
 			return SUCCESS;
 		}
 		private: void HandleKeyPress(System::Object^ sender, System::Windows::Forms::KeyPressEventArgs^ e)
 		{
-			// Install compiler if user selects 'Y'
+			// 'Auto install compiler' prompt
 			if (prompting[INSTALL_COMPILER])
 			{
+				prompting[INSTALL_COMPILER] = false;
+
+				// 'Y' pressed
 				if (e->KeyChar == 'y' || e->KeyChar == 'Y')
 				{
-					text_output->AppendText("Y");
-					prompting[INSTALL_COMPILER] = false;
+					Print("Y");
 
-					if (loaderPtr->SpawnProcThread("choco install mingw64") != SUCCESS)
+					// If 
+
+					// If chocolatey installed
+					if (loaderPtr->ChocoInstalled())
 					{
-						text_output->AppendText(gcnew String(loaderPtr->GetError().c_str())
-							+ System::Environment::NewLine);
+						Print("Chocolatey is installed.");
+
+						// Install compiler
+						std::string compilerCmd{ CMD_INSTALL_COMPILER };
+						if (loaderPtr->SpawnProcThread(compilerCmd) != SUCCESS)
+							Print(loaderPtr->GetError().c_str());
+						
+					}
+
+					// If chocolatey not installed
+					else
+					{
+						// Prompt user whether to auto install
+						Print("Could not detect chocolatey.");
+						text_output->AppendText("Auto install chocolatey? (Y/N): ");
+						prompting[INSTALL_CHOCO] = true;
 					}
 				}
 
+				// 'N' pressed
 				else if (e->KeyChar == 'n' || e->KeyChar == 'N')
+					Print("N");
+
+				return;
+			}
+
+			// 'Auto install choco' prompt
+			if (prompting[INSTALL_CHOCO])
+			{
+				prompting[INSTALL_CHOCO] = false;
+				// 'Y' pressed
+				if (e->KeyChar == 'y' || e->KeyChar == 'Y')
 				{
-					text_output->AppendText("N");
-					prompting[INSTALL_COMPILER] = false;
+					Print("Y");
+
+					// Install chocolatey
+					std::string chocoCmd{ CMD_INSTALL_CHOCO };
+					if (loaderPtr->SpawnProcThread(chocoCmd) != SUCCESS)
+						Print(loaderPtr->GetError().c_str());
 				}
+
+				// 'N' pressed
+				else if (e->KeyChar == 'n' || e->KeyChar == 'N')
+					Print("N");
 			}
 		}
 	};
