@@ -56,23 +56,23 @@ public:
 		bufferLoaded(false),
 		runPath("C:\\temp"),
 		outputBuffer("") {};
-	void SetError(const std::string& arg) noexcept { error = arg; }
-	std::string GetError() const noexcept { return error; }
+	inline void SetError(const std::string& arg) noexcept { error = arg; }
+	inline std::string GetError() const noexcept { return error; }
 	void SetPath(PATH_TYPE, const std::string&) noexcept;
 	unsigned int ValidatePath(PATH_TYPE) const noexcept;
-	std::string GetBinPath() const noexcept { return binPath; };
-	std::vector<std::string> GetLibPaths() const noexcept { return libPaths; };
-	std::string GetRunPath() const noexcept { return runPath; };
+	inline std::string GetBinPath() const noexcept { return binPath; };
+	inline std::vector<std::string> GetLibPaths() const noexcept { return libPaths; };
+	inline std::string GetRunPath() const noexcept { return runPath; };
 	bool CompilerInstalled() const noexcept;
 	unsigned int SpawnProcThread(const std::string&) noexcept;
 	unsigned int Command(const std::string&) noexcept;
 	void LoadBuffer(const std::string&) noexcept;
-	bool GetBufferLoaded() const noexcept { return bufferLoaded; }
+	inline bool GetBufferLoaded() const noexcept { return bufferLoaded; }
 	const char* OffloadBuffer() noexcept;
 	void ClearBuffer() noexcept;
-	bool Reading() const noexcept { return reading; }
+	inline bool Reading() const noexcept { return reading; }
 	bool ChocoInstalled() const noexcept;
-	void DelayOutput(unsigned int arg) { outputDelay = arg; }
+	inline void DelayOutput(unsigned int arg) { outputDelay = arg; }
 	bool CheckAppData() noexcept;
 	std::string HexDump(const std::string&);
 	unsigned int BuildHeader();
