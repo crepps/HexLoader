@@ -7,6 +7,7 @@
 #include <Windows.h>
 #include <iostream>
 #include <ShlObj.h>
+#include <filesystem>
 
 // Return codes
 #define SUCCESS 0
@@ -27,7 +28,8 @@ private:
 				runPath,
 				error,
 				newProcessCmd,
-				outputBuffer;
+				outputBuffer,
+				appDataPath;
 
 	std::vector<std::string> libPaths;
 		
@@ -70,5 +72,7 @@ public:
 	bool Reading() const noexcept { return reading; }
 	bool ChocoInstalled() const noexcept;
 	void DelayOutput(unsigned int arg) { outputDelay = arg; }
+	bool CheckAppData();
+	unsigned int BuildHeader();
 	~Loader() noexcept {}
 };

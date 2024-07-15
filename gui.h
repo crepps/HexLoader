@@ -954,11 +954,10 @@ namespace HexLoader {
 					Print("Invalid executable path specified.");
 					break;
 				case Loader::PATH_LIB:
-					Print("Invalid executable path specified.");
+					Print("Invalid libary path specified.");
 					break;
 				case Loader::PATH_RUN:
 					Print("Invalid run path specified.");
-					break;
 				}
 
 				// Sleep for 1.5 seconds, clear and retract console
