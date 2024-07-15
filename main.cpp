@@ -42,15 +42,6 @@ class CompilerTesting : public ::testing::Test
 public:
 	Loader obj;
 
-	const char* testFilePath{ "C:\\temp\\hex_test.exe" };
-
-	void SetUp() override
-	{
-		// Create exe file at set location
-		std::ofstream outFile{ testFilePath, std::ios::out };
-		outFile << "data";
-		outFile.close();
-	}
 	std::string ExecuteCmd(const std::string& cmd)
 	{
 		obj.SpawnProcThread(cmd);
@@ -69,6 +60,21 @@ public:
 		}
 
 		return output;
+	}
+};
+
+class BuildTesting : public ::testing::Test
+{
+public:
+	Loader obj;
+	const char* testFilePath{ "C:\\temp\\hex_test.exe" };
+
+	void SetUp() override
+	{
+		// Create exe file at set location
+		std::ofstream outFile{ testFilePath, std::ios::out };
+		outFile << "data";
+		outFile.close();
 	}
 };
 
@@ -133,11 +139,16 @@ TEST_F(CompilerTesting, ChocoInstallChecked)
 	installed = (int)obj.ChocoInstalled();
 	ASSERT_THAT(installed, Ne(2));
 }
-TEST_F(CompilerTesting, AppDataExists)
+
+/*											*
+				Build Tests
+ *											*/
+
+TEST_F(BuildTesting, AppDataExists)
 {
 	ASSERT_TRUE(obj.CheckAppData());
 }
-TEST_F(CompilerTesting, FilesHexDumped)
+TEST_F(BuildTesting, FilesHexDumped)
 {
 	std::string hex{ obj.HexDump(testFilePath) };
 	ASSERT_THAT(hex, Eq("0x64, 0x61, 0x74, 0x61"));
