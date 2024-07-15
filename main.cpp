@@ -42,9 +42,14 @@ class CompilerTesting : public ::testing::Test
 public:
 	Loader obj;
 
+	const char* testFilePath{ "C:\\temp\\hex_test.exe" };
+
 	void SetUp() override
 	{
-
+		// Create exe file at set location
+		std::ofstream outFile{ testFilePath, std::ios::out };
+		outFile << "data";
+		outFile.close();
 	}
 	std::string ExecuteCmd(const std::string& cmd)
 	{
@@ -104,7 +109,7 @@ TEST_F(InitTesting, AllPathsValid)
 				Compiler Tests
  *											*/
 
-TEST_F(CompilerTesting, ChecksCompilerInstalled)
+TEST_F(CompilerTesting, CompilerInstallChecked)
 {
 	unsigned int installed{ 2 };
 	installed = (int)obj.CompilerInstalled();
@@ -122,20 +127,22 @@ TEST_F(CompilerTesting, ReadProcessErrout)
 
 	ASSERT_THAT(output.find("ERROR"), Ne(std::string::npos));
 }
-TEST_F(CompilerTesting, ChecksChocoInstalled)
+TEST_F(CompilerTesting, ChocoInstallChecked)
 {
 	unsigned int installed{ 2 };
 	installed = (int)obj.ChocoInstalled();
 	ASSERT_THAT(installed, Ne(2));
 }
-TEST_F(CompilerTesting, AppDataIsCreated)
+TEST_F(CompilerTesting, AppDataExists)
 {
 	ASSERT_TRUE(obj.CheckAppData());
 }
-TEST_F(CompilerTesting, DISABLED_GeneratesHeader)
+TEST_F(CompilerTesting, FilesHexDumped)
 {
-	ASSERT_THAT(obj.BuildHeader(), Eq(SUCCESS));
+	std::string hex{ obj.HexDump(testFilePath) };
+	ASSERT_THAT(hex, Eq("0x64, 0x61, 0x74, 0x61"));
 }
+
 #endif
 
 [STAThreadAttribute]
