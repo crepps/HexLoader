@@ -205,24 +205,77 @@ bool Loader::ChocoInstalled() const noexcept
 
 	return false;
 }
-bool Loader::CheckAppData()
+bool Loader::CheckAppData() noexcept
 {
-	struct stat statInfo;
-	std::string path{ getenv("LOCALAPPDATA") };
-	path += "\\HexLoader";
+	/*	Check whether app data exists,
+		attempt to create if it doesn't   */
 
-	// Return true if folder exists
-	if (stat(path.c_str(), &statInfo) == 0)
-		return true;
+	try
+	{
+		struct stat statInfo;
+		std::string path{ getenv("LOCALAPPDATA") };
+		path += "\\HexLoader";
 
-	// Attempt to create folder
-	std::error_code err;
-	std::filesystem::create_directories(path, err);
+		// Return true if folder exists
+		if (stat(path.c_str(), &statInfo) == 0)
+			return true;
 
-	// Return whether folder exists
-	return stat(path.c_str(), &statInfo) == 0;
+		// Attempt to create folder
+		std::error_code err;
+		std::filesystem::create_directories(path, err);
+
+		// Return whether folder was created successfully
+		return stat(path.c_str(), &statInfo) == 0;
+	}
+	catch (std::exception& e)
+	{
+		SetError(e.what());
+		return false;
+	}
+	catch (...)
+	{
+		SetError("Exception thrown when attempting to create app data folder.");
+		return false;
+	}
+}
+std::string Loader::HexDump(const std::string& path)
+{
+	/*	
+		Convert file's binary to hex
+									   */
+
+	std::string binData{ "" }, hexData{ "" };
+	std::stringstream ss{ "" };
+	
+	// Read file data, store size
+	std::ifstream inFile(path, std::ios::in | std::ios::binary);
+	while (!inFile.eof())
+	{
+		getline(inFile, binData);
+		ss << binData;
+	}
+	inFile.close();
+	binData = ss.str();
+	unsigned int fileSize = binData.length() / 2;
+
+	// Write comma-separated bytes, return
+	/*for (int i = 0; i < binData.size(); i += 2)
+	{
+		ss.clear();
+		ss.str("");
+		ss << "0x" << binData[i] << binData[i + 1] << ",";
+		ss << ((i + 2) % 24 == 0 ? "\n" : " ");
+		hexData += ss.str();
+	}*/
+	return hexData;
 }
 unsigned int Loader::BuildHeader()
 {
-	return false;
+	//std::string binData;
+	//std::vector<std::string> libData;
+
+	//// Create app data folder if necessary
+	//CheckAppData();
+
+	return FAILURE_ABORT;
 }

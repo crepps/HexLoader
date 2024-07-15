@@ -8,6 +8,7 @@
 #include <iostream>
 #include <ShlObj.h>
 #include <filesystem>
+#include <fstream>
 
 // Return codes
 #define SUCCESS 0
@@ -72,7 +73,8 @@ public:
 	bool Reading() const noexcept { return reading; }
 	bool ChocoInstalled() const noexcept;
 	void DelayOutput(unsigned int arg) { outputDelay = arg; }
-	bool CheckAppData();
+	bool CheckAppData() noexcept;
+	std::string HexDump(const std::string&);
 	unsigned int BuildHeader();
 	~Loader() noexcept {}
 };
