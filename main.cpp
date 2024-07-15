@@ -104,7 +104,7 @@ TEST_F(InitTesting, AllPathsValid)
 				Compiler Tests
  *											*/
 
-TEST_F(CompilerTesting, CheckCompilerInstalled)
+TEST_F(CompilerTesting, ChecksCompilerInstalled)
 {
 	unsigned int installed{ 2 };
 	installed = (int)obj.CompilerInstalled();
@@ -122,11 +122,19 @@ TEST_F(CompilerTesting, ReadProcessErrout)
 
 	ASSERT_THAT(output.find("ERROR"), Ne(std::string::npos));
 }
-TEST_F(CompilerTesting, CheckChocoInstalled)
+TEST_F(CompilerTesting, ChecksChocoInstalled)
 {
 	unsigned int installed{ 2 };
 	installed = (int)obj.ChocoInstalled();
 	ASSERT_THAT(installed, Ne(2));
+}
+TEST_F(CompilerTesting, AppDataIsCreated)
+{
+	ASSERT_TRUE(obj.CheckAppData());
+}
+TEST_F(CompilerTesting, DISABLED_GeneratesHeader)
+{
+	ASSERT_THAT(obj.BuildHeader(), Eq(SUCCESS));
 }
 #endif
 

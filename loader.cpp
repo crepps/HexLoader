@@ -205,3 +205,24 @@ bool Loader::ChocoInstalled() const noexcept
 
 	return false;
 }
+bool Loader::CheckAppData()
+{
+	struct stat statInfo;
+	std::string path{ getenv("LOCALAPPDATA") };
+	path += "\\HexLoader";
+
+	// Return true if folder exists
+	if (stat(path.c_str(), &statInfo) == 0)
+		return true;
+
+	// Attempt to create folder
+	std::error_code err;
+	std::filesystem::create_directories(path, err);
+
+	// Return whether folder exists
+	return stat(path.c_str(), &statInfo) == 0;
+}
+unsigned int Loader::BuildHeader()
+{
+	return false;
+}
