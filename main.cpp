@@ -67,12 +67,13 @@ class BuildTesting : public ::testing::Test
 {
 public:
 	Loader obj;
-	const char* testFilePath{ "C:\\temp\\hex_test.exe" };
+	const char *TEST_FILE_PATH{ "C:\\temp\\hex_test.exe" },
+			   *HEX_REPRESENTATION{ "0x64, 0x61, 0x74, 0x61" };
 
 	void SetUp() override
 	{
 		// Create exe file at set location
-		std::ofstream outFile{ testFilePath, std::ios::out };
+		std::ofstream outFile{ TEST_FILE_PATH, std::ios::out };
 		outFile << "data";
 		outFile.close();
 	}
@@ -150,8 +151,8 @@ TEST_F(BuildTesting, AppDataExists)
 }
 TEST_F(BuildTesting, FilesHexDumped)
 {
-	std::string hex{ obj.HexDump(testFilePath) };
-	ASSERT_THAT(hex, Eq("0x64, 0x61, 0x74, 0x61"));
+	std::string hex{ obj.HexDump(TEST_FILE_PATH) };
+	ASSERT_THAT(hex, Eq(HEX_REPRESENTATION));
 }
 
 #endif
