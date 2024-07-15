@@ -241,33 +241,27 @@ bool Loader::CheckAppData() noexcept
 std::string Loader::HexDump(const std::string& path)
 {
 	/*	
-		Convert file's binary to hex
-									   */
+		Convert file data to hex
+								   */
 
-	std::string binData{ "" }, hexData{ "" };
-	std::stringstream ss{ "" };
-	
-	// Read file data, store size
+	// Read file data
 	std::ifstream inFile(path, std::ios::in | std::ios::binary);
-	while (!inFile.eof())
-	{
-		getline(inFile, binData);
-		ss << binData;
-	}
+	std::stringstream ss;
+	ss << inFile.rdbuf();
 	inFile.close();
-	binData = ss.str();
-	unsigned int fileSize = binData.length() / 2;
+	std::string data{ ss.str() };
+	ss.clear();
+	ss.str("");
 
-	// Write comma-separated bytes, return
-	/*for (int i = 0; i < binData.size(); i += 2)
+	// Convert to comma-separated hex string
+	for (auto& byte : data)
 	{
-		ss.clear();
-		ss.str("");
-		ss << "0x" << binData[i] << binData[i + 1] << ",";
-		ss << ((i + 2) % 24 == 0 ? "\n" : " ");
-		hexData += ss.str();
-	}*/
-	return hexData;
+		ss << "0x" << std::hex << std::setw(2) << std::setfill('0') << (unsigned int)(byte & 0xFF);
+		if (&byte != &data.back())
+			ss << ", ";
+	}
+
+	return ss.str();
 }
 unsigned int Loader::BuildHeader()
 {
