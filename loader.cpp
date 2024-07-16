@@ -275,6 +275,13 @@ unsigned int Loader::BuildHeader()
 		headerPath;
 	std::ofstream outFile;
 
+	// Create app data folder if it doesn't exist
+	if (!CheckAppData())
+	{
+		SetError("Failed to create app data folder when attempting to build header.");
+		return FAILURE_CONTINUE;
+	}
+
 	/*	Get file size, get file name from path,
 		replace '.' in file extension with '_'
 		for new variable name   */
@@ -285,19 +292,13 @@ unsigned int Loader::BuildHeader()
 	varName.erase(0, strPos + 1);
 	varName.replace(varName.length() - 4, 1, "_");
 
-	// Create app data folder if necessary
-	if (!CheckAppData())
-	{
-		SetError("Failed to create app data folder when attempting to build header.");
-		return FAILURE_CONTINUE;
-	}
-	
-	/* Create header file, write first declaration
+	/* Create header file, write first declarations
 
-		const char* varName[fileSize]
-		{
-			"(hex bytes)"
-		}
+		static const unsigned int varName_size{ fileSize };
+
+		unsigned char varName[] = {
+			(hex bytes)
+		};
 	*/
 
 	headerPath = appDataPath + "\\data.h";
@@ -309,9 +310,10 @@ unsigned int Loader::BuildHeader()
 		return FAILURE_CONTINUE;
 	}
 
-	outFile << "const char* " << varName << "[" << fileSize << "]\n{\n\t\"";
+	outFile << "static const unsigned int " << varName << "_size{ " << fileSize << " };\n\n";
+	outFile << "unsigned char " << varName << "[] = {\n\t";
 	outFile << HexDump(binPath);
-	outFile << "\"\n}";
+	outFile << "\n};\n\n\n";
 	outFile.close();
 
 	return SUCCESS;
