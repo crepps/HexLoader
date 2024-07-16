@@ -213,19 +213,21 @@ bool Loader::CheckAppData() noexcept
 	try
 	{
 		struct stat statInfo;
-		std::string path{ getenv("LOCALAPPDATA") };
-		path += "\\HexLoader";
+		
+		// Set path
+		appDataPath = getenv("LOCALAPPDATA");
+		appDataPath += "\\HexLoader";
 
 		// Return true if folder exists
-		if (stat(path.c_str(), &statInfo) == 0)
+		if (stat(appDataPath.c_str(), &statInfo) == 0)
 			return true;
 
 		// Attempt to create folder
 		std::error_code err;
-		std::filesystem::create_directories(path, err);
+		std::filesystem::create_directories(appDataPath, err);
 
 		// Return whether folder was created successfully
-		return stat(path.c_str(), &statInfo) == 0;
+		return stat(appDataPath.c_str(), &statInfo) == 0;
 	}
 	catch (std::exception& e)
 	{
@@ -253,7 +255,7 @@ std::string Loader::HexDump(const std::string& path)
 	ss.clear();
 	ss.str("");
 
-	// Convert to comma-separated hex string
+	// Convert to comma-separated hex bytes and return string
 	for (auto& byte : data)
 	{
 		ss << "0x" << std::hex << std::setw(2) << std::setfill('0') << (unsigned int)(byte & 0xFF);
@@ -265,11 +267,52 @@ std::string Loader::HexDump(const std::string& path)
 }
 unsigned int Loader::BuildHeader()
 {
-	//std::string binData;
-	//std::vector<std::string> libData;
+	/*	Write C instructions to store hex data
+		in char array inside new header file   */
 
-	//// Create app data folder if necessary
-	//CheckAppData();
+	uint64_t fileSize{ 0 };
+	std::string varName,
+		headerPath;
+	std::ofstream outFile;
 
-	return FAILURE_ABORT;
+	/*	Get file size, get file name from path,
+		replace '.' in file extension with '_'
+		for new variable name   */
+
+	fileSize = std::filesystem::file_size(binPath);
+	varName = binPath;
+	size_t strPos = varName.find_last_of("\\");
+	varName.erase(0, strPos + 1);
+	varName.replace(varName.length() - 4, 1, "_");
+
+	// Create app data folder if necessary
+	if (!CheckAppData())
+	{
+		SetError("Failed to create app data folder when attempting to build header.");
+		return FAILURE_CONTINUE;
+	}
+	
+	/* Create header file, write first declaration
+
+		const char* varName[fileSize]
+		{
+			"(hex bytes)"
+		}
+	*/
+
+	headerPath = appDataPath + "\\data.h";
+	outFile.open(headerPath, std::ios::out);
+
+	if (!outFile.is_open())
+	{
+		SetError("Failed to create header file.");
+		return FAILURE_CONTINUE;
+	}
+
+	outFile << "const char* " << varName << "[" << fileSize << "]\n{\n\t\"";
+	outFile << HexDump(binPath);
+	outFile << "\"\n}";
+	outFile.close();
+
+	return SUCCESS;
 }

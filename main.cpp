@@ -27,13 +27,17 @@ public:
 		obj.SetPath(Loader::PATH_RUN, "C:\\temp");
 
 		// Create exe file at set location
-		std::ofstream outFile(obj.GetBinPath().c_str(), std::ios::out);
+		std::ofstream outFile1(obj.GetBinPath().c_str(), std::ios::out);
+		outFile1 << "bin data";
+		outFile1.close();
 
 		// Create two dll files at set location
-		std::ofstream outFile1(obj.GetLibPaths()[0].c_str(), std::ios::out),
-			outFile2(obj.GetLibPaths()[1].c_str(), std::ios::out);
+		std::ofstream outFile2(obj.GetLibPaths()[0].c_str(), std::ios::out),
+			outFile3(obj.GetLibPaths()[1].c_str(), std::ios::out);
+		outFile2 << "lib data1";
+		outFile3 << "lib data2";
 		outFile2.close();
-		outFile1.close();
+		outFile3.close();
 	}
 };
 
@@ -76,6 +80,7 @@ public:
 		std::ofstream outFile{ TEST_FILE_PATH, std::ios::out };
 		outFile << "data";
 		outFile.close();
+		obj.SetPath(Loader::PATH_BIN, TEST_FILE_PATH);
 	}
 };
 
@@ -154,7 +159,10 @@ TEST_F(BuildTesting, FilesHexDumped)
 	std::string hex{ obj.HexDump(TEST_FILE_PATH) };
 	ASSERT_THAT(hex, Eq(HEX_REPRESENTATION));
 }
-
+TEST_F(BuildTesting, HeaderGenerated)
+{
+	ASSERT_THAT(obj.BuildHeader(), Eq(SUCCESS));
+}
 #endif
 
 [STAThreadAttribute]

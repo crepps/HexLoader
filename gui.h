@@ -979,6 +979,12 @@ namespace HexLoader {
 			else
 				Print("Compiler detected.");
 
+			// Hex dump files, build header
+			Print("Building header file.");
+
+			if (loaderPtr->BuildHeader() == SUCCESS)
+				Print("Success.");
+
 			return SUCCESS;
 		}
 		private: void HandleKeyPress(System::Object^ sender, System::Windows::Forms::KeyPressEventArgs^ e)
