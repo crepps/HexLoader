@@ -275,6 +275,13 @@ unsigned int Loader::BuildHeader()
 		headerPath;
 	std::ofstream outFile;
 
+	// Load file paths into vector
+	std::vector<std::string> paths;
+	paths.push_back(binPath);
+
+	for (auto& path : libPaths)
+		paths.push_back(path);
+
 	// Create app data folder if it doesn't exist
 	if (!CheckAppData())
 	{
@@ -282,39 +289,47 @@ unsigned int Loader::BuildHeader()
 		return FAILURE_CONTINUE;
 	}
 
-	/*	Get file size, get file name from path,
-		replace '.' in file extension with '_'
-		for new variable name   */
-
-	fileSize = std::filesystem::file_size(binPath);
-	varName = binPath;
-	size_t strPos = varName.find_last_of("\\");
-	varName.erase(0, strPos + 1);
-	varName.replace(varName.length() - 4, 1, "_");
-
-	/* Create header file, write first declarations
-
-		static const unsigned int varName_size{ fileSize };
-
-		unsigned char varName[] = {
-			(hex bytes)
-		};
-	*/
-
+	// Create empty file
 	headerPath = appDataPath + "\\data.h";
 	outFile.open(headerPath, std::ios::out);
-
-	if (!outFile.is_open())
-	{
-		SetError("Failed to create header file.");
-		return FAILURE_CONTINUE;
-	}
-
-	outFile << "static const unsigned int " << varName << "_size{ " << fileSize << " };\n\n";
-	outFile << "unsigned char " << varName << "[] = {\n\t";
-	outFile << HexDump(binPath);
-	outFile << "\n};\n\n\n";
 	outFile.close();
+
+	// For all paths
+	for (auto& path : paths)
+	{
+		/*	Get file size, get file name from path,
+			replace '.' in file extension with '_'
+			for new variable name   */
+
+		fileSize = std::filesystem::file_size(path);
+		varName = path;
+		size_t strPos = varName.find_last_of("\\");
+		varName.erase(0, strPos + 1);
+		varName.replace(varName.length() - 4, 1, "_");
+
+		/* Create header file, write first declarations
+
+			static const unsigned int varName_size{ fileSize };
+
+			unsigned char varName[] = {
+				(hex bytes)
+			};
+		*/
+
+		outFile.open(headerPath, std::ios::app);
+
+		if (!outFile.is_open())
+		{
+			SetError("Failed to create header file.");
+			return FAILURE_CONTINUE;
+		}
+
+		outFile << "static const unsigned int " << varName << "_size{ " << fileSize << " };\n\n";
+		outFile << "unsigned char " << varName << "[] = {\n\t";
+		outFile << HexDump(path);
+		outFile << "\n};\n\n\n";
+		outFile.close();
+	}
 
 	return SUCCESS;
 }
