@@ -116,7 +116,7 @@ namespace HexLoader {
 					FONT_SIZE_LARGE{ 8.25f };
 
 		const char *DEFAULT_TEXT_RUN{ "C:\\temp" },
-				   *CMD_INSTALL_COMPILER{ "choco install mingw -y --force" },
+				   *CMD_INSTALL_COMPILER{ "C:\\ProgramData\\chocolatey\\bin\\choco.exe install mingw -y --force" },
 				   *CMD_INSTALL_CHOCO{
 										"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe "
 										"-NoProfile -InputFormat None -ExecutionPolicy Bypass -Command \" "
@@ -974,6 +974,7 @@ namespace HexLoader {
 				Print("Could not detect compiler.");
 				text_output->AppendText("Auto install GNU C++ Compiler (g++)? (Y/N): ");
 				prompting[INSTALL_COMPILER] = true;
+				return FAILURE_CONTINUE;
 			}
 
 			else
