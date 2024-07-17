@@ -240,95 +240,133 @@ bool Loader::CheckAppData() noexcept
 		return false;
 	}
 }
-std::string Loader::HexDump(const std::string& path)
+std::string Loader::HexDump(const std::string& path) noexcept
 {
 	/*	
 		Convert file data to hex
 								   */
 
-	// Read file data
-	std::ifstream inFile(path, std::ios::in | std::ios::binary);
-	std::stringstream ss;
-	ss << inFile.rdbuf();
-	inFile.close();
-	std::string data{ ss.str() };
-	ss.clear();
-	ss.str("");
-
-	// Convert to comma-separated hex bytes and return string
-	for (auto& byte : data)
+	try
 	{
-		ss << "0x" << std::hex << std::setw(2) << std::setfill('0') << (unsigned int)(byte & 0xFF);
-		if (&byte != &data.back())
-			ss << ", ";
+		// Read file data
+		std::ifstream inFile(path, std::ios::in | std::ios::binary);
+		std::stringstream ss;
+		ss << inFile.rdbuf();
+		inFile.close();
+		std::string data{ ss.str() };
+		ss.clear();
+		ss.str("");
+
+		// Convert to comma-separated hex bytes and return string
+		for (auto& byte : data)
+		{
+			ss << "0x" << std::hex << std::setw(2) << std::setfill('0') << (unsigned int)(byte & 0xFF);
+			if (&byte != &data.back())
+				ss << ", ";
+		}
+
+		return ss.str();
+	}
+	catch (std::exception& e)
+	{
+		SetError(e.what());
+	}
+	catch (...)
+	{
+		SetError("Exception thrown while attempting to hex dump files.");
 	}
 
-	return ss.str();
+	return "FAILURE_CONTINUE";
 }
-unsigned int Loader::BuildHeader()
+unsigned int Loader::BuildHeader() noexcept
 {
 	/*	Write C instructions to store hex data
 		in char array inside new header file   */
 
-	uint64_t fileSize{ 0 };
-	std::string varName,
-		headerPath;
-	std::ofstream outFile;
-
-	// Load file paths into vector
-	std::vector<std::string> paths;
-	paths.push_back(binPath);
-
-	for (auto& path : libPaths)
-		paths.push_back(path);
-
-	// Create app data folder if it doesn't exist
-	if (!CheckAppData())
+	try
 	{
-		SetError("Failed to create app data folder when attempting to build header.");
-		return FAILURE_CONTINUE;
-	}
+		uint64_t fileSize{ 0 };
+		std::string varName,
+			headerPath;
+		std::ofstream outFile;
 
-	// Create empty file
-	headerPath = appDataPath + "\\data.h";
-	outFile.open(headerPath, std::ios::out);
-	outFile.close();
+		varNames.clear();
+		fileSizes.clear();
 
-	// For all paths
-	for (auto& path : paths)
-	{
-		/*	Get file size, get file name from path,
-			replace '.' in file extension with '_'
-			for new variable name   */
+		// Load file paths into one vector
+		std::vector<std::string> paths;
+		paths.push_back(binPath);
 
-		fileSize = std::filesystem::file_size(path);
-		varName = path;
-		size_t strPos = varName.find_last_of("\\");
-		varName.erase(0, strPos + 1);
-		varName.replace(varName.length() - 4, 1, "_");
+		for (auto& path : libPaths)
+			paths.push_back(path);
 
-		/* Create header file, write first declarations
-
-			static const unsigned int varName_size{ fileSize };
-
-			unsigned char varName[] = {
-				(hex bytes)
-			};
-		*/
-
-		outFile.open(headerPath, std::ios::app);
-
-		if (!outFile.is_open())
+		// Create app data folder if it doesn't exist
+		if (!CheckAppData())
 		{
-			SetError("Failed to create header file.");
+			SetError("Failed to create app data folder when attempting to build header.");
 			return FAILURE_CONTINUE;
 		}
 
-		outFile << "static const unsigned int " << varName << "_size{ " << fileSize << " };\n\n";
-		outFile << "unsigned char " << varName << "[] = {\n\t";
-		outFile << HexDump(path);
-		outFile << "\n};\n\n\n";
+		// Create empty file
+		headerPath = appDataPath + "\\data.h";
+		outFile.open(headerPath, std::ios::out);
 		outFile.close();
+
+		// For all paths
+		for (auto& path : paths)
+		{
+			/*	Get file size, get file name from path,
+				replace '.' in file extension with '_'
+				for new variable name   */
+
+			fileSize = std::filesystem::file_size(path);
+			varName = path;
+			size_t strPos = varName.find_last_of("\\");
+			varName.erase(0, strPos + 1);
+			varName.replace(varName.length() - 4, 1, "_");
+
+			// Push both into parallel member vectors
+			varNames.push_back(varName);
+			fileSizes.push_back(fileSize);
+
+			/* Hex dump bin file, open header file, write declarations
+
+					static const unsigned int varName_size{ fileSize };
+
+					unsigned char varName[] = {
+						(hex bytes)
+					};
+			*/
+
+			std::string hex{ HexDump(path) };
+
+			if (hex == "FAILURE_CONTINUE")
+				return FAILURE_CONTINUE;
+
+			outFile.open(headerPath, std::ios::app);
+
+			if (!outFile.is_open())
+			{
+				SetError("Failed to create header file.");
+				return FAILURE_CONTINUE;
+			}
+
+			outFile << "static const unsigned int " << varName << "_size{ " << fileSize << " };\n\n";
+			outFile << "unsigned char " << varName << "[] = {\n\t";
+			outFile << hex;
+			outFile << "\n};\n\n\n";
+			outFile.close();
+		}
+	}
+	catch (std::exception& e)
+	{
+		SetError(e.what());
+		return FAILURE_CONTINUE;
+	}
+	catch (...)
+	{
+		SetError("Exception thrown while attempting to generate header file.");
+		return FAILURE_CONTINUE;
 	}
 
 	return SUCCESS;

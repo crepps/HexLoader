@@ -32,7 +32,10 @@ private:
 				outputBuffer,
 				appDataPath;
 
-	std::vector<std::string> libPaths;
+	std::vector<std::string> libPaths,
+		varNames;
+
+	std::vector<uint64_t> fileSizes;
 		
 	std::atomic<bool> bufferLoaded,
 					reading;
@@ -74,7 +77,7 @@ public:
 	bool ChocoInstalled() const noexcept;
 	inline void DelayOutput(unsigned int arg) { outputDelay = arg; }
 	bool CheckAppData() noexcept;
-	std::string HexDump(const std::string&);
-	unsigned int BuildHeader();
+	std::string HexDump(const std::string&) noexcept;
+	unsigned int BuildHeader() noexcept;
 	~Loader() noexcept {}
 };
