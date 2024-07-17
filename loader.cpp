@@ -1,5 +1,40 @@
 #include "loader.h"
 
+Loader::Loader() noexcept
+	:outputDelay(DELAY_OUTPUT_LONG),
+	bufferLoaded(false),
+	runPath("C:\\temp"),
+	outputBuffer("")
+{
+	unsigned char loader_impl_0[] = {
+	"#pragma once\n"
+	"#include <filesystem>\n"
+	"#include <fstream>\n"
+	"#include \"data.h\"\n"
+	"\n"
+	"int main()\n"
+	"{\n"
+		"std::string path;\n"
+		"std::vector<std::string> fileNames;\n"
+		"std::vector<char*> data;\n"
+		"std::vector<uint64_t> sizes;\n"
+		"std::ofstream outFile;\n"
+		"\n"
+	};
+
+	unsigned char loader_impl_1[] = {
+			"for (int i = 0; i < data.size(); ++i)\n"
+			"{\n"
+				"outFile.open(path + \"\\\" + fileNames[i], std::ios::out | std::ios::binary);\n"
+				"outFile.write(data[i], sizes[i]);\n"
+				"outFile.close();\n"
+			"}\n"
+			"\n"
+			"return 0;\n"
+		"}\n"
+	};
+}
+
 void Loader::SetPath(PATH_TYPE type, const std::string& path) noexcept
 {
 	switch (type)
@@ -315,7 +350,7 @@ unsigned int Loader::BuildHeader() noexcept
 		// For all paths
 		for (auto& path : paths)
 		{
-			/*	Get file size, get file name from path,
+			/*	Get file size, store original file name,
 				replace '.' in file extension with '_'
 				for new variable name   */
 
@@ -323,6 +358,7 @@ unsigned int Loader::BuildHeader() noexcept
 			varName = path;
 			size_t strPos = varName.find_last_of("\\");
 			varName.erase(0, strPos + 1);
+			fileNames.push_back(varName);
 			varName.replace(varName.length() - 4, 1, "_");
 
 			// Push both into parallel member vectors
@@ -366,6 +402,60 @@ unsigned int Loader::BuildHeader() noexcept
 	catch (...)
 	{
 		SetError("Exception thrown while attempting to generate header file.");
+		return FAILURE_CONTINUE;
+	}
+
+	return SUCCESS;
+}
+
+unsigned int Loader::BuildImplFile() noexcept
+{
+	/*	Write C instructions to create
+		files in specified location   */
+
+	try
+	{
+		// Open file and write first instructions
+		std::ofstream outFile(appDataPath + "\\impl.cpp", std::ios::out);
+
+		if (!outFile.is_open())
+		{
+			SetError("Failed to open file when attempting to generate implementation file.");
+			return FAILURE_CONTINUE;
+		}
+
+		outFile << loader_impl_0;
+
+		// Write variables
+		outFile << "path = " << runPath << ";\n\n";
+
+		for (auto& fileName : fileNames)
+			outFile << "fileNames.push_back(" << fileName << ");\n";
+
+		outFile << "\n";
+
+		for (auto& varName : varNames)
+			outFile << "data.push_bacK(" << varName << ");\n";
+
+		outFile << "\n";
+
+		for (auto& fileSize : fileSizes)
+			outFile << "sizes.push_back(" << fileSize << ");\n";
+
+		outFile << "\n";
+
+		// Write remaining instructions and close file
+		outFile << loader_impl_1;
+		outFile.close();
+	}
+	catch (std::exception& e)
+	{
+		SetError(e.what());
+		return FAILURE_CONTINUE;
+	}
+	catch (...)
+	{
+		SetError("Exception thrown while attempting to generate implementation file.");
 		return FAILURE_CONTINUE;
 	}
 

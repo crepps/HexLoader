@@ -163,6 +163,10 @@ TEST_F(BuildTesting, HeaderGenerated)
 {
 	ASSERT_THAT(obj.BuildHeader(), Eq(SUCCESS));
 }
+TEST_F(BuildTesting, ImplFileGenerated)
+{
+	ASSERT_THAT(obj.BuildImplFile(), Eq(SUCCESS));
+}
 #endif
 
 [STAThreadAttribute]
