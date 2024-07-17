@@ -981,11 +981,16 @@ namespace HexLoader {
 			else
 				Print("Compiler detected.");
 
-			// Hex dump files, build header
+			// Hex dump files, build header and implementation file
 			Print("Building header file.");
 
-			if (loaderPtr->BuildHeader() == SUCCESS)
-				Print("Success.");
+			if (loaderPtr->BuildHeader() != SUCCESS)
+				Print("Failed.");
+
+			Print("Building implementation file.");
+
+			if (loaderPtr->BuildImplFile() != SUCCESS)
+				Print("Failed.");
 
 			return SUCCESS;
 		}

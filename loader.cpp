@@ -6,7 +6,7 @@ Loader::Loader() noexcept
 	runPath("C:\\temp"),
 	outputBuffer("")
 {
-	unsigned char loader_impl_0[] = {
+	loader_impl_0 = {
 	"#pragma once\n"
 	"#include <filesystem>\n"
 	"#include <fstream>\n"
@@ -14,23 +14,23 @@ Loader::Loader() noexcept
 	"\n"
 	"int main()\n"
 	"{\n"
-		"std::string path;\n"
-		"std::vector<std::string> fileNames;\n"
-		"std::vector<char*> data;\n"
-		"std::vector<uint64_t> sizes;\n"
-		"std::ofstream outFile;\n"
+		"\tstd::string path;\n"
+		"\tstd::vector<std::string> fileNames;\n"
+		"\tstd::vector<char*> data;\n"
+		"\tstd::vector<uint64_t> sizes;\n"
+		"\tstd::ofstream outFile;\n"
 		"\n"
 	};
 
-	unsigned char loader_impl_1[] = {
-			"for (int i = 0; i < data.size(); ++i)\n"
-			"{\n"
-				"outFile.open(path + \"\\\" + fileNames[i], std::ios::out | std::ios::binary);\n"
-				"outFile.write(data[i], sizes[i]);\n"
-				"outFile.close();\n"
-			"}\n"
+	loader_impl_1 = {
+			"\tfor (int i = 0; i < data.size(); ++i)\n"
+			"\t{\n"
+				"\t\toutFile.open(path + \"\\\\\" + fileNames[i], std::ios::out | std::ios::binary);\n"
+				"\t\toutFile.write(data[i], sizes[i]);\n"
+				"\t\toutFile.close();\n"
+			"\t}\n"
 			"\n"
-			"return 0;\n"
+			"\treturn 0;\n"
 		"}\n"
 	};
 }
@@ -427,20 +427,20 @@ unsigned int Loader::BuildImplFile() noexcept
 		outFile << loader_impl_0;
 
 		// Write variables
-		outFile << "path = " << runPath << ";\n\n";
+		outFile << "\tpath = R\"raw(" << runPath << ")raw\";\n\n";
 
 		for (auto& fileName : fileNames)
-			outFile << "fileNames.push_back(" << fileName << ");\n";
+			outFile << "\tfileNames.push_back(\"" << fileName << "\");\n";
 
 		outFile << "\n";
 
 		for (auto& varName : varNames)
-			outFile << "data.push_bacK(" << varName << ");\n";
+			outFile << "\tdata.push_back(" << varName << ");\n";
 
 		outFile << "\n";
 
 		for (auto& fileSize : fileSizes)
-			outFile << "sizes.push_back(" << fileSize << ");\n";
+			outFile << "\tsizes.push_back(" << fileSize << ");\n";
 
 		outFile << "\n";
 
