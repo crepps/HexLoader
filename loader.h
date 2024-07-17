@@ -24,15 +24,6 @@
 class Loader
 {
 private:
-	const char* PATH_COMPILER{ "C:\\ProgramData\\mingw64\\mingw64\\bin\\g++.exe" },
-		* PATH_CHOCO{ "C:\\ProgramData\\chocolatey" };
-
-	static const unsigned int IMPL_SIZE_0{ 219 },
-							  IMPL_SIZE_1{ 182 };
-
-	unsigned char loader_impl_0[IMPL_SIZE_0],
-				  loader_impl_1[IMPL_SIZE_1];
-
 	unsigned int outputDelay;
 
 	std::string binPath,
@@ -40,7 +31,9 @@ private:
 				error,
 				newProcessCmd,
 				outputBuffer,
-				appDataPath;
+				appDataPath,
+				loader_impl_0,
+				loader_impl_1;
 
 	std::vector<std::string> libPaths,
 		fileNames,
@@ -53,7 +46,8 @@ private:
 
 	std::mutex outputMutex;
 
-	
+	const char* PATH_COMPILER{ "C:\\ProgramData\\mingw64\\mingw64\\bin\\g++.exe" },
+		* PATH_CHOCO{ "C:\\ProgramData\\chocolatey" };
 
 public:
 	enum PATH_TYPE
