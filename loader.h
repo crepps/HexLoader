@@ -1,4 +1,5 @@
 #pragma once
+
 #include <sstream>
 #include <vector>
 #include <sys/stat.h>
@@ -23,6 +24,15 @@
 class Loader
 {
 private:
+	const char* PATH_COMPILER{ "C:\\ProgramData\\mingw64\\mingw64\\bin\\g++.exe" },
+		* PATH_CHOCO{ "C:\\ProgramData\\chocolatey" };
+
+	static const unsigned int IMPL_SIZE_0{ 219 },
+							  IMPL_SIZE_1{ 182 };
+
+	unsigned char loader_impl_0[IMPL_SIZE_0],
+				  loader_impl_1[IMPL_SIZE_1];
+
 	unsigned int outputDelay;
 
 	std::string binPath,
@@ -33,6 +43,7 @@ private:
 				appDataPath;
 
 	std::vector<std::string> libPaths,
+		fileNames,
 		varNames;
 
 	std::vector<uint64_t> fileSizes;
@@ -42,8 +53,7 @@ private:
 
 	std::mutex outputMutex;
 
-	const char *PATH_COMPILER{ "C:\\ProgramData\\mingw64\\mingw64\\bin\\g++.exe" },
-			   *PATH_CHOCO{ "C:\\ProgramData\\chocolatey" };
+	
 
 public:
 	enum PATH_TYPE
@@ -54,11 +64,7 @@ public:
 		PATH_RUN
 	};
 
-	Loader() noexcept
-		:outputDelay(DELAY_OUTPUT_LONG),
-		bufferLoaded(false),
-		runPath("C:\\temp"),
-		outputBuffer("") {};
+	Loader() noexcept;
 	inline void SetError(const std::string& arg) noexcept { error = arg; }
 	inline std::string GetError() const noexcept { return error; }
 	void SetPath(PATH_TYPE, const std::string&) noexcept;
@@ -75,9 +81,10 @@ public:
 	void ClearBuffer() noexcept;
 	inline bool Reading() const noexcept { return reading; }
 	bool ChocoInstalled() const noexcept;
-	inline void DelayOutput(unsigned int arg) { outputDelay = arg; }
+	inline void DelayOutput(unsigned int arg) noexcept { outputDelay = arg; }
 	bool CheckAppData() noexcept;
 	std::string HexDump(const std::string&) noexcept;
 	unsigned int BuildHeader() noexcept;
+	unsigned int BuildImplFile() noexcept;
 	~Loader() noexcept {}
 };
