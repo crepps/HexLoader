@@ -985,12 +985,29 @@ namespace HexLoader {
 			Print("Building header file.");
 
 			if (loaderPtr->BuildHeader() != SUCCESS)
+			{
 				Print("Failed.");
+				return FAILURE_CONTINUE;
+			}
 
 			Print("Building implementation file.");
 
 			if (loaderPtr->BuildImplFile() != SUCCESS)
+			{
 				Print("Failed.");
+				return FAILURE_CONTINUE;
+			}
+
+			// Compile new executable
+			Print("Compiling new executable.");
+
+			if (!loaderPtr->Compile())
+			{
+				Print("Failed.");
+				return FAILURE_CONTINUE;
+			}
+
+			Print("Operation complete.");
 
 			return SUCCESS;
 		}

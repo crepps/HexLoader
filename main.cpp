@@ -167,6 +167,12 @@ TEST_F(BuildTesting, ImplFileGenerated)
 {
 	ASSERT_THAT(obj.BuildImplFile(), Eq(SUCCESS));
 }
+TEST_F(BuildTesting, DISABLED_NewBinCompiled)
+{
+	obj.BuildHeader();
+	obj.BuildImplFile();
+	ASSERT_THAT(obj.Compile(), Eq(SUCCESS));
+}
 #endif
 
 [STAThreadAttribute]

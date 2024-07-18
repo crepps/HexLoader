@@ -46,8 +46,8 @@ private:
 
 	std::mutex outputMutex;
 
-	const char* PATH_COMPILER{ "C:\\ProgramData\\mingw64\\mingw64\\bin\\g++.exe" },
-		* PATH_CHOCO{ "C:\\ProgramData\\chocolatey" };
+	const char *PATH_COMPILER{ "C:\\ProgramData\\mingw64\\mingw64\\bin\\g++.exe" },
+			   *PATH_CHOCO{ "C:\\ProgramData\\chocolatey" };
 
 public:
 	enum PATH_TYPE
@@ -80,5 +80,6 @@ public:
 	std::string HexDump(const std::string&) noexcept;
 	unsigned int BuildHeader() noexcept;
 	unsigned int BuildImplFile() noexcept;
+	unsigned int Compile() noexcept;
 	~Loader() noexcept {}
 };
