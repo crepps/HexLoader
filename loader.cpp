@@ -116,11 +116,12 @@ unsigned int Loader::SpawnProcThread(const std::string& cmd) noexcept
 	catch (std::exception& e)
 	{
 		SetError(e.what());
-		return EXIT_FAILURE;
+		return FAILURE_CONTINUE;
 	}
 	catch (...)
 	{
 		SetError("Exception thrown when attempting to spawn process thread.");
+		return FAILURE_CONTINUE;
 	}
 
 	return SUCCESS;
@@ -464,9 +465,29 @@ unsigned int Loader::BuildImplFile() noexcept
 	}
 	catch (...)
 	{
-		SetError("Exception thrown while attempting to generate implementation file.");
+		SetError("Exception thrown when attempting to generate implementation file.");
 		return FAILURE_CONTINUE;
 	}
 
 	return SUCCESS;
+}
+
+unsigned int Loader::Compile() noexcept
+{
+	try
+	{
+		std::string cmd{ PATH_COMPILER };
+		cmd += " " + appDataPath + "\\impl.cpp - o " + runPath + "\\" + fileNames[0];
+		return SpawnProcThread(cmd.c_str());
+	}
+	catch (std::exception& e)
+	{
+		SetError(e.what());
+	}
+	catch (...)
+	{
+		SetError("Exception thrown when attempting to append output filename to compile command string.");
+	}
+
+	return FAILURE_CONTINUE;
 }
