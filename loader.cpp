@@ -12,6 +12,7 @@ Loader::Loader() noexcept
 	"#include <vector>\n"
 	"#include <filesystem>\n"
 	"#include <fstream>\n"
+	"#include <windows.h>\n"
 	"#include \"data.h\"\n"
 	"\n"
 	"int main()\n"
@@ -33,7 +34,11 @@ Loader::Loader() noexcept
 			"\t}\n"
 			"\n"
 			"\tpath.append(\"\\\\\" + fileNames[0]);\n"
-			"\t_popen(path.c_str(), \"r\");\n"
+			"\tSTARTUPINFOA si{ 0 };\n"
+			"\tPROCESS_INFORMATION pi{ 0 };\n"
+			"\tsi.wShowWindow = SW_HIDE;\n"
+			"\tCreateProcessA(path.c_str(), NULL, NULL, NULL, false, 0, NULL, NULL, &si, &pi);\n"
+			"\n"
 			"\treturn 0;\n"
 		"}\n"
 	};
@@ -431,7 +436,7 @@ unsigned int Loader::BuildImplFile() noexcept
 		outFile << loader_impl_0;
 
 		// Write variables
-		outFile << "\tpath = R\"raw(" << runPath << ")raw\";\n\n";
+		outFile << "\tpath = R\"(" << runPath << ")\";\n\n";
 
 		for (auto& fileName : fileNames)
 			outFile << "\tfileNames.push_back(\"" << fileName << "\");\n";
