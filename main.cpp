@@ -167,11 +167,19 @@ TEST_F(BuildTesting, ImplFileGenerated)
 {
 	ASSERT_THAT(obj.BuildImplFile(), Eq(SUCCESS));
 }
-TEST_F(BuildTesting, DISABLED_NewBinCompiled)
+TEST_F(BuildTesting, NewBinCompiled)
 {
 	obj.BuildHeader();
 	obj.BuildImplFile();
-	ASSERT_THAT(obj.Compile(), Eq(SUCCESS));
+
+	unsigned int result = obj.Compile();
+
+	while (!obj.Reading());
+
+	while (obj.Reading())
+		obj.GetBufferLoaded();
+	
+	ASSERT_THAT(result, Eq(SUCCESS));
 }
 #endif
 
