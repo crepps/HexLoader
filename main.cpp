@@ -169,17 +169,20 @@ TEST_F(BuildTesting, ImplFileGenerated)
 }
 TEST_F(BuildTesting, NewBinCompiled)
 {
-	obj.BuildHeader();
-	obj.BuildImplFile();
+	if (obj.CompilerInstalled())
+	{
+		obj.BuildHeader();
+		obj.BuildImplFile();
 
-	unsigned int result = obj.Compile();
+		unsigned int result = obj.Compile();
 
-	while (!obj.Reading());
+		while (!obj.Reading());
 
-	while (obj.Reading())
-		obj.GetBufferLoaded();
-	
-	ASSERT_THAT(result, Eq(SUCCESS));
+		while (obj.Reading())
+			obj.GetBufferLoaded();
+
+		ASSERT_THAT(result, Eq(SUCCESS));
+	}
 }
 #endif
 

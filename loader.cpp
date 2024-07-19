@@ -475,7 +475,7 @@ unsigned int Loader::Compile() noexcept
 	try
 	{
 		std::string cmd{ PATH_COMPILER };
-		cmd += " " + appDataPath + "\\impl.cpp -o " + runPath + "\\" + fileNames[0];
+		cmd += " " + appDataPath + "\\impl.cpp -o " + runPath + "\\" + "new_" + fileNames[0];
 		return SpawnProcThread(cmd.c_str());
 	}
 	catch (std::exception& e)

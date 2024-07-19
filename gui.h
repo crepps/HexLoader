@@ -68,7 +68,8 @@ namespace HexLoader {
 		bool mouseDown,
 			expandConsole,
 			installingCompiler,
-			installingChoco;
+			installingChoco,
+			compiling;
 		Point cursorDownPos,
 			cursorDelta;
 		const char *binPath,
@@ -155,7 +156,8 @@ namespace HexLoader {
 			mouseDown (false),
 			expandConsole(false),
 			installingCompiler(false),
-			installingChoco(false)
+			installingChoco(false),
+			compiling(false)
 		{
 			loaderPtr = &obj;
 			mouseDown = false;
@@ -722,10 +724,12 @@ namespace HexLoader {
 					Print("Successfully installed g++.");
 					Print("\n");
 
-					// Sleep for 1.5 seconds, clear and retract console
-					System::Threading::Thread::Sleep(1500);
-					text_output->Text = "";
-					expandConsole = false;
+					// Retry build
+					if (Build() != SUCCESS)
+					{
+						Print("\n");
+						Print("Build failed.");
+					}
 				}
 			}
 
@@ -747,6 +751,25 @@ namespace HexLoader {
 					std::string cmd{ CMD_INSTALL_COMPILER };
 					loaderPtr->SpawnProcThread(cmd);
 					installingCompiler = true;
+				}
+			}
+
+			// Print success message when finished compiling
+			if (compiling)
+			{
+				System::Threading::Thread::Sleep(DELAY_OUTPUT_SHORT);
+
+				if (!loaderPtr->Reading())
+				{
+					compiling = false;
+
+					Print("\n");
+					Print("Operation complete.");
+
+					// Sleep for 1.5 seconds, clear and retract console
+					System::Threading::Thread::Sleep(1500);
+					text_output->Text = "";
+					expandConsole = false;
 				}
 			}
 		}
@@ -981,12 +1004,12 @@ namespace HexLoader {
 			else
 				Print("Compiler detected.");
 
-			// Hex dump files, build header and implementation file
+			// Hex dump files, build header and implementation files
 			Print("Building header file.");
 
 			if (loaderPtr->BuildHeader() != SUCCESS)
 			{
-				Print("Failed.");
+				Print(loaderPtr->GetError());
 				return FAILURE_CONTINUE;
 			}
 
@@ -994,20 +1017,20 @@ namespace HexLoader {
 
 			if (loaderPtr->BuildImplFile() != SUCCESS)
 			{
-				Print("Failed.");
+				Print(loaderPtr->GetError());
 				return FAILURE_CONTINUE;
 			}
 
 			// Compile new executable
-			Print("Compiling new executable.");
+			Print("Compiling loader.");
 
 			if (loaderPtr->Compile() != SUCCESS)
 			{
-				Print("Failed.");
+				Print(loaderPtr->GetError());
 				return FAILURE_CONTINUE;
 			}
 
-			Print("Operation complete.");
+			compiling = true;
 
 			return SUCCESS;
 		}
