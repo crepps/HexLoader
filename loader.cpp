@@ -417,7 +417,6 @@ unsigned int Loader::BuildHeader() noexcept
 
 	return SUCCESS;
 }
-
 unsigned int Loader::BuildImplFile() noexcept
 {
 	/*	Write C instructions to create
@@ -471,13 +470,12 @@ unsigned int Loader::BuildImplFile() noexcept
 
 	return SUCCESS;
 }
-
 unsigned int Loader::Compile() noexcept
 {
 	try
 	{
 		std::string cmd{ PATH_COMPILER };
-		cmd += " " + appDataPath + "\\impl.cpp - o " + runPath + "\\" + fileNames[0];
+		cmd += " " + appDataPath + "\\impl.cpp -o " + runPath + "\\" + fileNames[0];
 		return SpawnProcThread(cmd.c_str());
 	}
 	catch (std::exception& e)
