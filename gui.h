@@ -1001,7 +1001,7 @@ namespace HexLoader {
 			// Compile new executable
 			Print("Compiling new executable.");
 
-			if (!loaderPtr->Compile())
+			if (loaderPtr->Compile() != SUCCESS)
 			{
 				Print("Failed.");
 				return FAILURE_CONTINUE;
