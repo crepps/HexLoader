@@ -65,7 +65,8 @@ namespace HexLoader {
 	private:
 		Loader* loaderPtr;
 		unsigned int outputDelay;
-		bool mouseDown,
+		bool inputEnabled,
+			mouseDown,
 			expandConsole,
 			installingCompiler,
 			installingChoco,
@@ -153,6 +154,7 @@ namespace HexLoader {
 			:outputDelay(DELAY_OUTPUT_LONG),
 			binPath(""),
 			appName(""), 
+			inputEnabled(true),
 			mouseDown (false),
 			expandConsole(false),
 			installingCompiler(false),
@@ -628,6 +630,9 @@ namespace HexLoader {
 		}
 		private: bool CheckMouseover(vec2 cursorPos, AREA area)
 		{
+			if (!inputEnabled)
+				return false;
+
 			switch (area)
 			{
 			case BUTTON_SELECT_BIN:
@@ -664,6 +669,8 @@ namespace HexLoader {
 			{
 				if (text_output->Size.Width < CONSOLE_WIDTH)
 					text_output->Width += 25;
+
+				// Begin build
 				else if (!build)
 				{
 					build = true;
@@ -754,7 +761,7 @@ namespace HexLoader {
 				}
 			}
 
-			// Print success message when finished compiling
+			// Waiting for compilation to finish
 			if (compiling)
 			{
 				System::Threading::Thread::Sleep(DELAY_OUTPUT_SHORT);
@@ -770,6 +777,7 @@ namespace HexLoader {
 					System::Threading::Thread::Sleep(1500);
 					text_output->Text = "";
 					expandConsole = false;
+					ToggleInput(true);
 				}
 			}
 		}
@@ -945,6 +953,9 @@ namespace HexLoader {
 		}
 		private: System::Void button_build_Click(System::Object^ sender, System::EventArgs^ e)
 		{
+			// Disabled graphical input
+			ToggleInput(false);
+
 			/* Reveal text output area, call Build() from
 				timer_anim_tick() when area is fully expanded */
 
@@ -988,6 +999,7 @@ namespace HexLoader {
 				System::Threading::Thread::Sleep(1500);
 				text_output->Text = "";
 				expandConsole = false;
+				ToggleInput(true);
 
 				return FAILURE_CONTINUE;
 			}
@@ -998,6 +1010,7 @@ namespace HexLoader {
 				Print("Could not detect compiler.");
 				text_output->AppendText("Auto install GNU C++ Compiler (g++)? (Y/N): ");
 				prompting[INSTALL_COMPILER] = true;
+
 				return FAILURE_CONTINUE;
 			}
 
@@ -1087,6 +1100,7 @@ namespace HexLoader {
 					System::Threading::Thread::Sleep(2000);
 					text_output->Text = "";
 					expandConsole = false;
+					ToggleInput(true);
 				}
 
 				return;
@@ -1127,8 +1141,15 @@ namespace HexLoader {
 					System::Threading::Thread::Sleep(2000);
 					text_output->Text = "";
 					expandConsole = false;
+					ToggleInput(true);
 				}
 			}
+		}
+		private: void ToggleInput(bool enabled)
+		{
+			inputEnabled = enabled;
+			input_bin->Enabled = enabled;
+			input_lib->Enabled = enabled;
 		}
 	};
 }
