@@ -873,12 +873,19 @@ namespace HexLoader {
 		{
 			// Store full path, add only filename to input_lib text
 			std::string path = GetPath(BUTTON_SELECT_LIB);
-			libPaths.Add(gcnew String(path.c_str()));
+
+			if (!libPaths.Contains(gcnew String(path.c_str())))
+				libPaths.Add(gcnew String(path.c_str()));
+			
 			loaderPtr->SetPath(Loader::PATH_LIB, path);
 			size_t pos = path.find_last_of("\\");
 			path.erase(0, pos + 1);
-			input_lib->AppendText(gcnew String(path.c_str()));
-			input_lib->AppendText(System::Environment::NewLine);
+
+			if (!input_lib->Text->Contains(gcnew String(path.c_str())))
+			{
+				input_lib->AppendText(gcnew String(path.c_str()));
+				input_lib->AppendText(System::Environment::NewLine);
+			}
 		}
 		private: System::Void radio_loader_CheckedChanged(System::Object^ sender, System::EventArgs^ e)
 		{
