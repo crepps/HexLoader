@@ -51,6 +51,7 @@ void Loader::SetPath(PATH_TYPE type, const std::string& path) noexcept
 	case PATH_BIN:
 		binPath = path;
 		break;
+
 	case PATH_LIB:
 		try
 		{
@@ -61,6 +62,11 @@ void Loader::SetPath(PATH_TYPE type, const std::string& path) noexcept
 			SetError("Exeception thrown while attempting to push lib path.");
 		}
 		break;
+
+	case PATH_EXPORT:
+		exportPath = path;
+		break;
+
 	case PATH_RUN:
 		runPath = path;
 	}
@@ -87,6 +93,12 @@ unsigned int Loader::ValidatePath(PATH_TYPE type) const noexcept
 			if (stat(path.c_str(), &statInfo) != 0)
 				return (unsigned int)PATH_LIB;
 		}
+		if (type)
+			break;
+
+	case PATH_EXPORT:
+		if (stat(exportPath.c_str(), &statInfo) != 0 || exportPath == "")
+			return (unsigned int)PATH_EXPORT;
 		if (type)
 			break;
 
@@ -475,7 +487,7 @@ unsigned int Loader::Compile() noexcept
 	try
 	{
 		std::string cmd{ PATH_COMPILER };
-		cmd += " " + appDataPath + "\\impl.cpp -o " + runPath + "\\" + "new_" + fileNames[0];
+		cmd += " " + appDataPath + "\\impl.cpp -o " + exportPath + "\\" + fileNames[0];
 		return SpawnProcThread(cmd.c_str());
 	}
 	catch (std::exception& e)

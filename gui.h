@@ -74,7 +74,8 @@ namespace HexLoader {
 		Point cursorDownPos,
 			cursorDelta;
 		const char *binPath,
-					*appName;
+				   *exportPath,
+				   *appName;
 		System::Collections::Generic::List<String^> libPaths;
 		System::Windows::Forms::Button^ buttonPtr;
 
@@ -141,10 +142,14 @@ namespace HexLoader {
 	private: System::Windows::Forms::CheckBox^ check_startup;
 
 
-	private: System::Windows::Forms::CheckBox^ check_uninstaller;
+
 	private: System::Windows::Forms::LinkLabel^ linkLabel1;
 	private: System::Windows::Forms::TextBox^ text_output;
 	private: System::Windows::Forms::Timer^ timer_console;
+	private: System::Windows::Forms::Label^ label_export;
+
+	private: System::Windows::Forms::TextBox^ input_export;
+
 
 
 	private: System::Windows::Forms::Label^ header_1;
@@ -153,7 +158,8 @@ namespace HexLoader {
 		gui(Loader& obj)
 			:outputDelay(DELAY_OUTPUT_LONG),
 			binPath(""),
-			appName(""), 
+			exportPath(""),
+			appName(""),
 			inputEnabled(true),
 			mouseDown (false),
 			expandConsole(false),
@@ -165,6 +171,9 @@ namespace HexLoader {
 			mouseDown = false;
 
 			InitializeComponent();
+
+			exportPath = getenv("USERPROFILE");
+			input_export->Text = gcnew String(exportPath);
 
 			timer_anim->Start();
 
@@ -242,10 +251,11 @@ namespace HexLoader {
 			this->check_shortcut = (gcnew System::Windows::Forms::CheckBox());
 			this->label_prompts = (gcnew System::Windows::Forms::Label());
 			this->check_startup = (gcnew System::Windows::Forms::CheckBox());
-			this->check_uninstaller = (gcnew System::Windows::Forms::CheckBox());
 			this->linkLabel1 = (gcnew System::Windows::Forms::LinkLabel());
 			this->text_output = (gcnew System::Windows::Forms::TextBox());
 			this->timer_console = (gcnew System::Windows::Forms::Timer(this->components));
+			this->label_export = (gcnew System::Windows::Forms::Label());
+			this->input_export = (gcnew System::Windows::Forms::TextBox());
 			this->SuspendLayout();
 			// 
 			// radio_loader
@@ -257,7 +267,7 @@ namespace HexLoader {
 			this->radio_loader->Font = (gcnew System::Drawing::Font(L"Lucida Sans Unicode", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
 			this->radio_loader->ForeColor = System::Drawing::SystemColors::ButtonFace;
-			this->radio_loader->Location = System::Drawing::Point(505, 119);
+			this->radio_loader->Location = System::Drawing::Point(503, 114);
 			this->radio_loader->Name = L"radio_loader";
 			this->radio_loader->Size = System::Drawing::Size(67, 20);
 			this->radio_loader->TabIndex = 2;
@@ -274,7 +284,7 @@ namespace HexLoader {
 			this->radio_installer->Font = (gcnew System::Drawing::Font(L"Lucida Sans Unicode", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
 			this->radio_installer->ForeColor = System::Drawing::SystemColors::ButtonFace;
-			this->radio_installer->Location = System::Drawing::Point(610, 119);
+			this->radio_installer->Location = System::Drawing::Point(608, 114);
 			this->radio_installer->Name = L"radio_installer";
 			this->radio_installer->Size = System::Drawing::Size(76, 20);
 			this->radio_installer->TabIndex = 1;
@@ -354,7 +364,7 @@ namespace HexLoader {
 				static_cast<System::Int32>(static_cast<System::Byte>(32)));
 			this->check_cleanup->Font = (gcnew System::Drawing::Font(L"Lucida Sans Unicode", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
-			this->check_cleanup->Location = System::Drawing::Point(538, 199);
+			this->check_cleanup->Location = System::Drawing::Point(530, 230);
 			this->check_cleanup->Name = L"check_cleanup";
 			this->check_cleanup->Size = System::Drawing::Size(111, 19);
 			this->check_cleanup->TabIndex = 4;
@@ -367,7 +377,7 @@ namespace HexLoader {
 				static_cast<System::Int32>(static_cast<System::Byte>(35)));
 			this->label_run->Font = (gcnew System::Drawing::Font(L"Lucida Sans Unicode", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
-			this->label_run->Location = System::Drawing::Point(432, 162);
+			this->label_run->Location = System::Drawing::Point(418, 191);
 			this->label_run->Name = L"label_run";
 			this->label_run->Size = System::Drawing::Size(99, 16);
 			this->label_run->TabIndex = 9;
@@ -382,7 +392,7 @@ namespace HexLoader {
 			this->input_run->Font = (gcnew System::Drawing::Font(L"Consolas", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
 			this->input_run->ForeColor = System::Drawing::SystemColors::ButtonFace;
-			this->input_run->Location = System::Drawing::Point(543, 163);
+			this->input_run->Location = System::Drawing::Point(529, 192);
 			this->input_run->Name = L"input_run";
 			this->input_run->Size = System::Drawing::Size(196, 16);
 			this->input_run->TabIndex = 3;
@@ -489,7 +499,7 @@ namespace HexLoader {
 				static_cast<System::Int32>(static_cast<System::Byte>(25)));
 			this->check_shortcut->Font = (gcnew System::Drawing::Font(L"Lucida Sans Unicode", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
-			this->check_shortcut->Location = System::Drawing::Point(860, 243);
+			this->check_shortcut->Location = System::Drawing::Point(852, 254);
 			this->check_shortcut->Name = L"check_shortcut";
 			this->check_shortcut->Size = System::Drawing::Size(72, 19);
 			this->check_shortcut->TabIndex = 16;
@@ -502,7 +512,7 @@ namespace HexLoader {
 				static_cast<System::Int32>(static_cast<System::Byte>(29)));
 			this->label_prompts->Font = (gcnew System::Drawing::Font(L"Lucida Sans Unicode", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
-			this->label_prompts->Location = System::Drawing::Point(860, 223);
+			this->label_prompts->Location = System::Drawing::Point(852, 234);
 			this->label_prompts->Name = L"label_prompts";
 			this->label_prompts->Size = System::Drawing::Size(65, 15);
 			this->label_prompts->TabIndex = 17;
@@ -515,26 +525,12 @@ namespace HexLoader {
 				static_cast<System::Int32>(static_cast<System::Byte>(20)));
 			this->check_startup->Font = (gcnew System::Drawing::Font(L"Lucida Sans Unicode", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
-			this->check_startup->Location = System::Drawing::Point(860, 264);
+			this->check_startup->Location = System::Drawing::Point(852, 275);
 			this->check_startup->Name = L"check_startup";
 			this->check_startup->Size = System::Drawing::Size(65, 19);
 			this->check_startup->TabIndex = 18;
 			this->check_startup->Text = L"Startup";
 			this->check_startup->UseVisualStyleBackColor = false;
-			// 
-			// check_uninstaller
-			// 
-			this->check_uninstaller->AutoSize = true;
-			this->check_uninstaller->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(32)),
-				static_cast<System::Int32>(static_cast<System::Byte>(32)), static_cast<System::Int32>(static_cast<System::Byte>(32)));
-			this->check_uninstaller->Font = (gcnew System::Drawing::Font(L"Lucida Sans Unicode", 8.25F, System::Drawing::FontStyle::Regular,
-				System::Drawing::GraphicsUnit::Point, static_cast<System::Byte>(0)));
-			this->check_uninstaller->Location = System::Drawing::Point(954, 199);
-			this->check_uninstaller->Name = L"check_uninstaller";
-			this->check_uninstaller->Size = System::Drawing::Size(84, 19);
-			this->check_uninstaller->TabIndex = 19;
-			this->check_uninstaller->Text = L"Uninstaller";
-			this->check_uninstaller->UseVisualStyleBackColor = false;
 			// 
 			// linkLabel1
 			// 
@@ -575,6 +571,33 @@ namespace HexLoader {
 			// 
 			this->timer_console->Tick += gcnew System::EventHandler(this, &gui::timer_console_Tick);
 			// 
+			// label_export
+			// 
+			this->label_export->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(35)), static_cast<System::Int32>(static_cast<System::Byte>(35)),
+				static_cast<System::Int32>(static_cast<System::Byte>(35)));
+			this->label_export->Font = (gcnew System::Drawing::Font(L"Lucida Sans Unicode", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->label_export->Location = System::Drawing::Point(419, 159);
+			this->label_export->Name = L"label_export";
+			this->label_export->Size = System::Drawing::Size(99, 16);
+			this->label_export->TabIndex = 23;
+			this->label_export->Text = L"Export Location";
+			this->label_export->TextAlign = System::Drawing::ContentAlignment::MiddleRight;
+			// 
+			// input_export
+			// 
+			this->input_export->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(45)), static_cast<System::Int32>(static_cast<System::Byte>(45)),
+				static_cast<System::Int32>(static_cast<System::Byte>(45)));
+			this->input_export->BorderStyle = System::Windows::Forms::BorderStyle::None;
+			this->input_export->Font = (gcnew System::Drawing::Font(L"Consolas", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->input_export->ForeColor = System::Drawing::SystemColors::ButtonFace;
+			this->input_export->Location = System::Drawing::Point(529, 160);
+			this->input_export->Name = L"input_export";
+			this->input_export->Size = System::Drawing::Size(196, 16);
+			this->input_export->TabIndex = 22;
+			this->input_export->TextChanged += gcnew System::EventHandler(this, &gui::input_export_TextChanged);
+			// 
 			// gui
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
@@ -584,8 +607,9 @@ namespace HexLoader {
 			this->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"$this.BackgroundImage")));
 			this->ClientSize = System::Drawing::Size(793, 325);
 			this->Controls->Add(this->text_output);
+			this->Controls->Add(this->label_export);
+			this->Controls->Add(this->input_export);
 			this->Controls->Add(this->linkLabel1);
-			this->Controls->Add(this->check_uninstaller);
 			this->Controls->Add(this->check_startup);
 			this->Controls->Add(this->label_prompts);
 			this->Controls->Add(this->check_shortcut);
@@ -893,7 +917,6 @@ namespace HexLoader {
 			if (radio_loader->Checked == true)
 			{
 				// Displace installer input
-				check_uninstaller->Location = System::Drawing::Point(XPOS_CHECK_UNINSTALLER + XPOS_OFFSET, check_uninstaller->Location.Y);
 				label_prompts->Location = System::Drawing::Point(XPOS_PROMPTS + XPOS_OFFSET, label_prompts->Location.Y);
 				check_shortcut->Location = System::Drawing::Point(XPOS_PROMPTS + XPOS_OFFSET, check_shortcut->Location.Y);
 				check_startup->Location = System::Drawing::Point(XPOS_PROMPTS + XPOS_OFFSET, check_startup->Location.Y);
@@ -915,7 +938,6 @@ namespace HexLoader {
 				check_cleanup->Location = System::Drawing::Point(XPOS_CHECK_CLEANUP + XPOS_OFFSET, check_cleanup->Location.Y);
 
 				// Restore installer input
-				check_uninstaller->Location = System::Drawing::Point(XPOS_CHECK_UNINSTALLER, check_uninstaller->Location.Y);
 				label_prompts->Location = System::Drawing::Point(XPOS_PROMPTS, label_prompts->Location.Y);
 				check_shortcut->Location = System::Drawing::Point(XPOS_PROMPTS, check_shortcut->Location.Y);
 				check_startup->Location = System::Drawing::Point(XPOS_PROMPTS, check_startup->Location.Y);
@@ -938,7 +960,6 @@ namespace HexLoader {
 			input_lib->Text = "";
 			input_run->Text = gcnew String(DEFAULT_TEXT_RUN);
 			check_cleanup->Checked = false;
-			check_uninstaller->Checked = false;
 			check_shortcut->Checked = false;
 			check_startup->Checked = false;
 		}
@@ -951,6 +972,12 @@ namespace HexLoader {
 			std::string path;
 			ConvertString(input_bin->Text, path);
 			loaderPtr->SetPath(Loader::PATH_BIN, path);
+		}
+		private: System::Void input_export_TextChanged(System::Object^ sender, System::EventArgs^ e)
+		{
+			std::string path;
+			ConvertString(input_export->Text, path);
+			loaderPtr->SetPath(Loader::PATH_EXPORT, path);
 		}
 		private: System::Void input_run_TextChanged(System::Object^ sender, System::EventArgs^ e)
 		{
@@ -1002,8 +1029,8 @@ namespace HexLoader {
 					Print("Invalid run path specified.");
 				}
 
-				// Sleep for 1.5 seconds, clear and retract console
-				System::Threading::Thread::Sleep(1500);
+				// Sleep for 3.0 seconds, clear and retract console
+				System::Threading::Thread::Sleep(3000);
 				text_output->Text = "";
 				expandConsole = false;
 				ToggleInput(true);
@@ -1158,6 +1185,6 @@ namespace HexLoader {
 			input_bin->Enabled = enabled;
 			input_lib->Enabled = enabled;
 		}
-	};
+};
 }
 

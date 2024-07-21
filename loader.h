@@ -28,6 +28,7 @@ private:
 
 	std::string binPath,
 				runPath,
+				exportPath,
 				error,
 				newProcessCmd,
 				outputBuffer,
@@ -55,6 +56,7 @@ public:
 		PATH_ALL,
 		PATH_BIN,
 		PATH_LIB,
+		PATH_EXPORT,
 		PATH_RUN
 	};
 
@@ -65,6 +67,7 @@ public:
 	unsigned int ValidatePath(PATH_TYPE) const noexcept;
 	inline std::string GetBinPath() const noexcept { return binPath; };
 	inline std::vector<std::string> GetLibPaths() const noexcept { return libPaths; };
+	inline std::string GetExportPath() const noexcept { return exportPath; }
 	inline std::string GetRunPath() const noexcept { return runPath; };
 	bool CompilerInstalled() const noexcept;
 	unsigned int SpawnProcThread(const std::string&) noexcept;

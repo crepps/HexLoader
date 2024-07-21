@@ -24,6 +24,7 @@ public:
 		obj.SetPath(Loader::PATH_BIN, "C:\\temp\\hl_mock_bin.exe");
 		obj.SetPath(Loader::PATH_LIB, "C:\\temp\\hl_mock_lib1.dll");
 		obj.SetPath(Loader::PATH_LIB, "C:\\temp\\hl_mock_lib2.dll");
+		obj.SetPath(Loader::PATH_EXPORT, getenv("USERPROFILE"));
 		obj.SetPath(Loader::PATH_RUN, "C:\\temp");
 
 		// Create exe file at set location
@@ -100,6 +101,10 @@ TEST_F(InitTesting, RunPathSet)
 {
 	ASSERT_THAT(obj.GetRunPath(), Ne(""));
 }
+TEST_F(InitTesting, ExportPathSet)
+{
+	ASSERT_THAT(obj.GetExportPath(), Ne(""));
+}
 TEST_F(InitTesting, BinPathValid)
 {	
 	ASSERT_THAT(obj.ValidatePath(Loader::PATH_BIN), Eq(SUCCESS));
@@ -107,6 +112,10 @@ TEST_F(InitTesting, BinPathValid)
 TEST_F(InitTesting, LibPathsValid)
 {
 	ASSERT_THAT(obj.ValidatePath(Loader::PATH_LIB), Eq(SUCCESS));
+}
+TEST_F(InitTesting, ExportPathValid)
+{
+	ASSERT_THAT(obj.ValidatePath(Loader::PATH_EXPORT), Eq(SUCCESS));
 }
 TEST_F(InitTesting, RunPathValid)
 {
