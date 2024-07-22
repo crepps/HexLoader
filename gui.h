@@ -8,6 +8,7 @@ enum AREA
 {
 	BUTTON_SELECT_BIN,
 	BUTTON_SELECT_LIB,
+	BUTTON_EXPORT,
 	BUTTON_BUILD
 };
 
@@ -84,7 +85,7 @@ namespace HexLoader {
 		*/
 
 		// Text animation-related
-		const unsigned int NUM_BUTTONS{ 3 },
+		const unsigned int NUM_BUTTONS{ 4 },
 		NUM_HEADER_FRAMES{ 16 },
 		HEADER_TICK_RATE{ 9 },
 
@@ -95,12 +96,17 @@ namespace HexLoader {
 		BSB_AREA_L{ 329 },	// BUTTON_SELECT_BIN left, right, top, bottom
 		BSB_AREA_R{ 352 },
 		BSB_AREA_T{ 121 },
-		BSB_AREA_B{ 136 },
+		BSB_AREA_B{ 135 },
 
 		BSL_AREA_L{ 333 },	// BUTTON_SELECT_LIB
 		BSL_AREA_R{ 349 },
 		BSL_AREA_T{ 172 },
 		BSL_AREA_B{ 188 },
+
+		BEX_AREA_L{ 735 },	// BUTTON_EXPORT
+		BEX_AREA_R{ 758 },
+		BEX_AREA_T{ 160 },
+		BEX_AREA_B{ 174 },
 
 		BB_AREA_L{ 657 },	// BUTTON_BUILD
 		BB_AREA_R{ 733 },
@@ -149,6 +155,8 @@ namespace HexLoader {
 	private: System::Windows::Forms::Label^ label_export;
 
 	private: System::Windows::Forms::TextBox^ input_export;
+	private: System::Windows::Forms::Button^ button_ex;
+
 
 
 
@@ -180,9 +188,11 @@ namespace HexLoader {
 			button_build->FlatStyle = FlatStyle::Flat;
 			button_sb->FlatStyle = FlatStyle::Flat;
 			button_sl->FlatStyle = FlatStyle::Flat;
+			button_ex->FlatStyle = FlatStyle::Flat;
 			button_build->FlatAppearance->BorderSize = 0;
 			button_sb->FlatAppearance->BorderSize = 0;
 			button_sl->FlatAppearance->BorderSize = 0;
+			button_ex->FlatAppearance->BorderSize = 0;
 		}
 
 	protected:
@@ -256,6 +266,7 @@ namespace HexLoader {
 			this->timer_console = (gcnew System::Windows::Forms::Timer(this->components));
 			this->label_export = (gcnew System::Windows::Forms::Label());
 			this->input_export = (gcnew System::Windows::Forms::TextBox());
+			this->button_ex = (gcnew System::Windows::Forms::Button());
 			this->SuspendLayout();
 			// 
 			// radio_loader
@@ -598,6 +609,20 @@ namespace HexLoader {
 			this->input_export->TabIndex = 22;
 			this->input_export->TextChanged += gcnew System::EventHandler(this, &gui::input_export_TextChanged);
 			// 
+			// button_ex
+			// 
+			this->button_ex->AutoSize = true;
+			this->button_ex->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"button_ex.BackgroundImage")));
+			this->button_ex->ForeColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(30)), static_cast<System::Int32>(static_cast<System::Byte>(30)),
+				static_cast<System::Int32>(static_cast<System::Byte>(30)));
+			this->button_ex->Location = System::Drawing::Point(735, 160);
+			this->button_ex->Name = L"button_ex";
+			this->button_ex->Size = System::Drawing::Size(24, 15);
+			this->button_ex->TabIndex = 24;
+			this->button_ex->UseVisualStyleBackColor = true;
+			this->button_ex->Visible = false;
+			this->button_ex->Click += gcnew System::EventHandler(this, &gui::button_ex_Click);
+			// 
 			// gui
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
@@ -606,6 +631,7 @@ namespace HexLoader {
 				static_cast<System::Int32>(static_cast<System::Byte>(30)));
 			this->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"$this.BackgroundImage")));
 			this->ClientSize = System::Drawing::Size(793, 325);
+			this->Controls->Add(this->button_ex);
 			this->Controls->Add(this->text_output);
 			this->Controls->Add(this->label_export);
 			this->Controls->Add(this->input_export);
@@ -666,6 +692,10 @@ namespace HexLoader {
 			case BUTTON_SELECT_LIB:
 				return (cursorPos.x >= BSL_AREA_L && cursorPos.x <= BSL_AREA_R
 					&& cursorPos.y >= BSL_AREA_T && cursorPos.y <= BSL_AREA_B);
+
+			case BUTTON_EXPORT:
+				return (cursorPos.x >= BEX_AREA_L && cursorPos.x <= BEX_AREA_R
+					&& cursorPos.y >= BEX_AREA_T && cursorPos.y <= BEX_AREA_B);
 
 			case BUTTON_BUILD:
 				return (cursorPos.x >= BB_AREA_L && cursorPos.x <= BB_AREA_R
@@ -846,6 +876,9 @@ namespace HexLoader {
 				case BUTTON_SELECT_LIB:
 					buttonPtr = button_sl;
 					break;
+				case BUTTON_EXPORT:
+					buttonPtr = button_ex;
+					break;
 				case BUTTON_BUILD:
 					buttonPtr = button_build;
 				}
@@ -862,26 +895,41 @@ namespace HexLoader {
 		private: const char* GetPath(AREA button)
 		{
 			OpenFileDialog^ openFileDialog1 = gcnew OpenFileDialog;
-			static std::string str;
-			const char* result{ nullptr };
-
 			openFileDialog1->InitialDirectory = gcnew String(getenv("USERPROFILE"));
 			openFileDialog1->FilterIndex = 2;
 			openFileDialog1->RestoreDirectory = true;
+
+			FolderBrowserDialog^ folderBrowserDialog = gcnew FolderBrowserDialog;
+
+			static std::string str;
+			const char* result{ nullptr };
 
 			switch (button)
 			{
 			case BUTTON_SELECT_BIN:
 				openFileDialog1->Filter = "Exe Files (.exe)|*.exe";
+				if (openFileDialog1->ShowDialog() == System::Windows::Forms::DialogResult::OK)
+				{
+					ConvertString(openFileDialog1->FileName, str);
+					result = str.c_str();
+				}
 				break;
+
 			case BUTTON_SELECT_LIB:
 				openFileDialog1->Filter = "DLL Files (.dll)|*.dll";
-			}
+				if (openFileDialog1->ShowDialog() == System::Windows::Forms::DialogResult::OK)
+				{
+					ConvertString(openFileDialog1->FileName, str);
+					result = str.c_str();
+				}
+				break;
 
-			if (openFileDialog1->ShowDialog() == System::Windows::Forms::DialogResult::OK)
-			{
-				ConvertString(openFileDialog1->FileName, str);
-				result = str.c_str();
+			case BUTTON_EXPORT:
+				if (folderBrowserDialog->ShowDialog() == System::Windows::Forms::DialogResult::OK)
+				{
+					ConvertString(folderBrowserDialog->SelectedPath, str);
+					result = str.c_str();
+				}
 			}
 
 			return result;
@@ -892,6 +940,7 @@ namespace HexLoader {
 			binPath = GetPath(BUTTON_SELECT_BIN);
 			input_bin->Text = gcnew String(binPath);
 			input_bin->Select(input_bin->Text->Length, 0);
+			button_sb->Visible = false;
 		}
 		private: System::Void button_sl_Click(System::Object^ sender, System::EventArgs^ e)
 		{
@@ -910,6 +959,27 @@ namespace HexLoader {
 				input_lib->AppendText(gcnew String(path.c_str()));
 				input_lib->AppendText(System::Environment::NewLine);
 			}
+
+			button_sl->Visible = false;
+		}
+		private: System::Void button_ex_Click(System::Object^ sender, System::EventArgs^ e)
+		{
+			// Store full path, set input cursor to end
+			exportPath = GetPath(BUTTON_EXPORT);
+			input_export->Text = gcnew String(exportPath);
+			input_export->Select(input_export->Text->Length, 0);
+			button_ex->Visible = false;
+		}
+		private: System::Void button_build_Click(System::Object^ sender, System::EventArgs^ e)
+		{
+			// Disabled graphical input
+			ToggleInput(false);
+
+			/* Reveal text output area, call Build() from
+				timer_anim_tick() when area is fully expanded */
+
+			expandConsole = true;
+			timer_console->Start();
 		}
 		private: System::Void radio_loader_CheckedChanged(System::Object^ sender, System::EventArgs^ e)
 		{
@@ -984,17 +1054,6 @@ namespace HexLoader {
 			std::string path;
 			ConvertString(input_run->Text, path);
 			loaderPtr->SetPath(Loader::PATH_RUN, path);
-		}
-		private: System::Void button_build_Click(System::Object^ sender, System::EventArgs^ e)
-		{
-			// Disabled graphical input
-			ToggleInput(false);
-
-			/* Reveal text output area, call Build() from
-				timer_anim_tick() when area is fully expanded */
-
-			expandConsole = true;
-			timer_console->Start();
 		}
 		private: void Print(const std::string& arg)
 		{
@@ -1185,6 +1244,6 @@ namespace HexLoader {
 			input_bin->Enabled = enabled;
 			input_lib->Enabled = enabled;
 		}
-};
+	};
 }
 
