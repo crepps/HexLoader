@@ -71,7 +71,8 @@ namespace HexLoader {
 			expandConsole,
 			installingCompiler,
 			installingChoco,
-			compiling;
+			compiling,
+			complete;
 		Point cursorDownPos,
 			cursorDelta;
 		const char *binPath,
@@ -118,9 +119,15 @@ namespace HexLoader {
 		XPOS_CHECK_CLEANUP{ 538 },
 		XPOS_CHECK_UNINSTALLER{ 554 },
 		XPOS_PROMPTS{ 460 },
+		XPOS_RESET_LINK_0{ 593 },
+		XPOS_RESET_LINK_1{ 520 },
+
+		YPOS_RESET_LINK_0{ 276 },
+		YPOS_RESET_LINK_1{ 209 },
 
 		// Defaults and commands
-		CONSOLE_WIDTH{ 341 };
+		CONSOLE_WIDTH{ 353 },
+		CONSOLE_RESIZE_INCREMENT{ 25 };
 
 		const float FONT_SIZE_SMALL{ 6.0f },
 					FONT_SIZE_LARGE{ 8.25f };
@@ -146,16 +153,19 @@ namespace HexLoader {
 
 	private: System::Windows::Forms::Label^ label_prompts;
 	private: System::Windows::Forms::CheckBox^ check_startup;
+	private: System::Windows::Forms::LinkLabel^ link_reset;
 
 
 
-	private: System::Windows::Forms::LinkLabel^ linkLabel1;
+
 	private: System::Windows::Forms::TextBox^ text_output;
 	private: System::Windows::Forms::Timer^ timer_console;
 	private: System::Windows::Forms::Label^ label_export;
 
 	private: System::Windows::Forms::TextBox^ input_export;
 	private: System::Windows::Forms::Button^ button_ex;
+	private: System::Windows::Forms::Label^ label_success;
+	private: System::Windows::Forms::LinkLabel^ link_open;
 
 
 
@@ -173,7 +183,8 @@ namespace HexLoader {
 			expandConsole(false),
 			installingCompiler(false),
 			installingChoco(false),
-			compiling(false)
+			compiling(false),
+			complete(false)
 		{
 			loaderPtr = &obj;
 			mouseDown = false;
@@ -261,12 +272,14 @@ namespace HexLoader {
 			this->check_shortcut = (gcnew System::Windows::Forms::CheckBox());
 			this->label_prompts = (gcnew System::Windows::Forms::Label());
 			this->check_startup = (gcnew System::Windows::Forms::CheckBox());
-			this->linkLabel1 = (gcnew System::Windows::Forms::LinkLabel());
+			this->link_reset = (gcnew System::Windows::Forms::LinkLabel());
 			this->text_output = (gcnew System::Windows::Forms::TextBox());
 			this->timer_console = (gcnew System::Windows::Forms::Timer(this->components));
 			this->label_export = (gcnew System::Windows::Forms::Label());
 			this->input_export = (gcnew System::Windows::Forms::TextBox());
 			this->button_ex = (gcnew System::Windows::Forms::Button());
+			this->label_success = (gcnew System::Windows::Forms::Label());
+			this->link_open = (gcnew System::Windows::Forms::LinkLabel());
 			this->SuspendLayout();
 			// 
 			// radio_loader
@@ -371,8 +384,8 @@ namespace HexLoader {
 			// check_cleanup
 			// 
 			this->check_cleanup->AutoSize = true;
-			this->check_cleanup->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(32)), static_cast<System::Int32>(static_cast<System::Byte>(32)),
-				static_cast<System::Int32>(static_cast<System::Byte>(32)));
+			this->check_cleanup->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(30)), static_cast<System::Int32>(static_cast<System::Byte>(30)),
+				static_cast<System::Int32>(static_cast<System::Byte>(30)));
 			this->check_cleanup->Font = (gcnew System::Drawing::Font(L"Lucida Sans Unicode", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
 			this->check_cleanup->Location = System::Drawing::Point(530, 230);
@@ -405,7 +418,7 @@ namespace HexLoader {
 			this->input_run->ForeColor = System::Drawing::SystemColors::ButtonFace;
 			this->input_run->Location = System::Drawing::Point(529, 192);
 			this->input_run->Name = L"input_run";
-			this->input_run->Size = System::Drawing::Size(196, 16);
+			this->input_run->Size = System::Drawing::Size(190, 16);
 			this->input_run->TabIndex = 3;
 			this->input_run->Text = L"C:\\temp";
 			this->input_run->TextChanged += gcnew System::EventHandler(this, &gui::input_run_TextChanged);
@@ -543,23 +556,23 @@ namespace HexLoader {
 			this->check_startup->Text = L"Startup";
 			this->check_startup->UseVisualStyleBackColor = false;
 			// 
-			// linkLabel1
+			// link_reset
 			// 
-			this->linkLabel1->AutoSize = true;
-			this->linkLabel1->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(20)), static_cast<System::Int32>(static_cast<System::Byte>(20)),
+			this->link_reset->AutoSize = true;
+			this->link_reset->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(20)), static_cast<System::Int32>(static_cast<System::Byte>(20)),
 				static_cast<System::Int32>(static_cast<System::Byte>(20)));
-			this->linkLabel1->ForeColor = System::Drawing::SystemColors::ButtonFace;
-			this->linkLabel1->LinkColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(150)), static_cast<System::Int32>(static_cast<System::Byte>(0)),
+			this->link_reset->ForeColor = System::Drawing::SystemColors::ButtonFace;
+			this->link_reset->LinkColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(150)), static_cast<System::Int32>(static_cast<System::Byte>(0)),
 				static_cast<System::Int32>(static_cast<System::Byte>(0)));
-			this->linkLabel1->Location = System::Drawing::Point(593, 276);
-			this->linkLabel1->Name = L"linkLabel1";
-			this->linkLabel1->Size = System::Drawing::Size(35, 13);
-			this->linkLabel1->TabIndex = 20;
-			this->linkLabel1->TabStop = true;
-			this->linkLabel1->Text = L"Reset";
-			this->linkLabel1->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
-			this->linkLabel1->VisitedLinkColor = System::Drawing::SystemColors::ButtonFace;
-			this->linkLabel1->LinkClicked += gcnew System::Windows::Forms::LinkLabelLinkClickedEventHandler(this, &gui::linkLabel1_LinkClicked);
+			this->link_reset->Location = System::Drawing::Point(593, 276);
+			this->link_reset->Name = L"link_reset";
+			this->link_reset->Size = System::Drawing::Size(35, 13);
+			this->link_reset->TabIndex = 20;
+			this->link_reset->TabStop = true;
+			this->link_reset->Text = L"Reset";
+			this->link_reset->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
+			this->link_reset->VisitedLinkColor = System::Drawing::SystemColors::ButtonFace;
+			this->link_reset->LinkClicked += gcnew System::Windows::Forms::LinkLabelLinkClickedEventHandler(this, &gui::linkLabel1_LinkClicked);
 			// 
 			// text_output
 			// 
@@ -605,7 +618,7 @@ namespace HexLoader {
 			this->input_export->ForeColor = System::Drawing::SystemColors::ButtonFace;
 			this->input_export->Location = System::Drawing::Point(529, 160);
 			this->input_export->Name = L"input_export";
-			this->input_export->Size = System::Drawing::Size(196, 16);
+			this->input_export->Size = System::Drawing::Size(190, 16);
 			this->input_export->TabIndex = 22;
 			this->input_export->TextChanged += gcnew System::EventHandler(this, &gui::input_export_TextChanged);
 			// 
@@ -615,13 +628,40 @@ namespace HexLoader {
 			this->button_ex->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"button_ex.BackgroundImage")));
 			this->button_ex->ForeColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(30)), static_cast<System::Int32>(static_cast<System::Byte>(30)),
 				static_cast<System::Int32>(static_cast<System::Byte>(30)));
-			this->button_ex->Location = System::Drawing::Point(735, 160);
+			this->button_ex->Location = System::Drawing::Point(729, 160);
 			this->button_ex->Name = L"button_ex";
 			this->button_ex->Size = System::Drawing::Size(24, 15);
 			this->button_ex->TabIndex = 24;
 			this->button_ex->UseVisualStyleBackColor = true;
 			this->button_ex->Visible = false;
 			this->button_ex->Click += gcnew System::EventHandler(this, &gui::button_ex_Click);
+			// 
+			// label_success
+			// 
+			this->label_success->Font = (gcnew System::Drawing::Font(L"Lucida Console", 18, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->label_success->Location = System::Drawing::Point(926, 159);
+			this->label_success->Name = L"label_success";
+			this->label_success->Size = System::Drawing::Size(124, 23);
+			this->label_success->TabIndex = 25;
+			this->label_success->Text = L"COMPLETE";
+			// 
+			// link_open
+			// 
+			this->link_open->AutoSize = true;
+			this->link_open->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(30)), static_cast<System::Int32>(static_cast<System::Byte>(30)),
+				static_cast<System::Int32>(static_cast<System::Byte>(30)));
+			this->link_open->ForeColor = System::Drawing::SystemColors::ButtonFace;
+			this->link_open->LinkColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(150)), static_cast<System::Int32>(static_cast<System::Byte>(0)),
+				static_cast<System::Int32>(static_cast<System::Byte>(0)));
+			this->link_open->Location = System::Drawing::Point(981, 209);
+			this->link_open->Name = L"link_open";
+			this->link_open->Size = System::Drawing::Size(77, 13);
+			this->link_open->TabIndex = 26;
+			this->link_open->TabStop = true;
+			this->link_open->Text = L"Open Location";
+			this->link_open->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
+			this->link_open->VisitedLinkColor = System::Drawing::SystemColors::ButtonFace;
 			// 
 			// gui
 			// 
@@ -631,11 +671,13 @@ namespace HexLoader {
 				static_cast<System::Int32>(static_cast<System::Byte>(30)));
 			this->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"$this.BackgroundImage")));
 			this->ClientSize = System::Drawing::Size(793, 325);
-			this->Controls->Add(this->button_ex);
 			this->Controls->Add(this->text_output);
+			this->Controls->Add(this->link_open);
+			this->Controls->Add(this->label_success);
+			this->Controls->Add(this->button_ex);
 			this->Controls->Add(this->label_export);
 			this->Controls->Add(this->input_export);
-			this->Controls->Add(this->linkLabel1);
+			this->Controls->Add(this->link_reset);
 			this->Controls->Add(this->check_startup);
 			this->Controls->Add(this->label_prompts);
 			this->Controls->Add(this->check_shortcut);
@@ -722,7 +764,13 @@ namespace HexLoader {
 			if (expandConsole)
 			{
 				if (text_output->Size.Width < CONSOLE_WIDTH)
-					text_output->Width += 25;
+				{
+					if (text_output->Width + CONSOLE_RESIZE_INCREMENT < CONSOLE_WIDTH)
+						text_output->Width += CONSOLE_RESIZE_INCREMENT;
+
+					else
+						text_output->Width += CONSOLE_WIDTH - text_output->Width;
+				}
 
 				// Begin build
 				else if (!build)
@@ -736,7 +784,7 @@ namespace HexLoader {
 			else
 			{
 				if (text_output->Size.Width > 0)
-					text_output->Width -= 25;
+					text_output->Width -= CONSOLE_RESIZE_INCREMENT;
 
 				else
 				{
@@ -826,6 +874,9 @@ namespace HexLoader {
 
 					Print("\n");
 					Print("Operation complete.");
+
+					// Swap input under console with success dialog
+					SuccessDialog(true);
 
 					// Sleep for 1.5 seconds, clear and retract console
 					System::Threading::Thread::Sleep(1500);
@@ -925,6 +976,7 @@ namespace HexLoader {
 				break;
 
 			case BUTTON_EXPORT:
+				folderBrowserDialog->Description = "Select the destination folder for the new executable.";
 				if (folderBrowserDialog->ShowDialog() == System::Windows::Forms::DialogResult::OK)
 				{
 					ConvertString(folderBrowserDialog->SelectedPath, str);
@@ -980,6 +1032,7 @@ namespace HexLoader {
 
 			expandConsole = true;
 			timer_console->Start();
+			button_build->Visible = false;
 		}
 		private: System::Void radio_loader_CheckedChanged(System::Object^ sender, System::EventArgs^ e)
 		{
@@ -1088,7 +1141,7 @@ namespace HexLoader {
 					Print("Invalid run path specified.");
 				}
 
-				// Sleep for 3.0 seconds, clear and retract console
+				// Sleep for three seconds, clear and retract console
 				System::Threading::Thread::Sleep(3000);
 				text_output->Text = "";
 				expandConsole = false;
@@ -1203,6 +1256,7 @@ namespace HexLoader {
 			if (prompting[INSTALL_CHOCO])
 			{
 				prompting[INSTALL_CHOCO] = false;
+
 				// 'Y' pressed
 				if (e->KeyChar == 'y' || e->KeyChar == 'Y')
 				{
@@ -1243,6 +1297,22 @@ namespace HexLoader {
 			inputEnabled = enabled;
 			input_bin->Enabled = enabled;
 			input_lib->Enabled = enabled;
+		}
+		private: void SuccessDialog(bool shown)
+		{
+			// Hide or reveal the elements on right side of window
+			radio_loader->Visible = !shown;
+			radio_installer->Visible = !shown;
+			label_export->Visible = !shown;
+			label_run->Visible = !shown;
+			input_export->Visible = !shown;
+			input_run->Visible = !shown;
+			check_cleanup->Visible = !shown;
+
+			// Snap success message and links
+			label_success->Location = System::Drawing::Point(label_success->Location.X - XPOS_OFFSET, label_success->Location.Y);
+			link_open->Location = System::Drawing::Point(link_open->Location.X - XPOS_OFFSET, link_open->Location.Y);
+			link_reset->Location = System::Drawing::Point(XPOS_RESET_LINK_1, YPOS_RESET_LINK_1);
 		}
 	};
 }
