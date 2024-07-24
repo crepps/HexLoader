@@ -675,6 +675,7 @@ private: System::Windows::Forms::Button^ patch_build;
 			this->link_open->Text = L"Open Location";
 			this->link_open->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
 			this->link_open->VisitedLinkColor = System::Drawing::SystemColors::ButtonFace;
+			this->link_open->LinkClicked += gcnew System::Windows::Forms::LinkLabelLinkClickedEventHandler(this, &gui::link_open_LinkClicked);
 			// 
 			// patch_export
 			// 
@@ -1360,6 +1361,10 @@ private: System::Windows::Forms::Button^ patch_build;
 				static_cast<System::Int32>(static_cast<System::Byte>(color)));
 			patch_export->Location = System::Drawing::Point(patch_export->Location.X - offset, patch_export->Location.Y);
 			patch_build->Location = System::Drawing::Point(patch_build->Location.X - offset, patch_build->Location.Y);
+		}
+		private: System::Void link_open_LinkClicked(System::Object^ sender, System::Windows::Forms::LinkLabelLinkClickedEventArgs^ e)
+		{
+			System::Diagnostics::Process::Start("C:\\Windows\\explorer.exe", gcnew String(exportPath));
 		}
 	};
 }
