@@ -120,10 +120,14 @@ namespace HexLoader {
 		XPOS_CHECK_UNINSTALLER{ 554 },
 		XPOS_PROMPTS{ 460 },
 		XPOS_RESET_LINK_0{ 593 },
-		XPOS_RESET_LINK_1{ 520 },
+		XPOS_RESET_LINK_1{ 521 },
 
 		YPOS_RESET_LINK_0{ 276 },
-		YPOS_RESET_LINK_1{ 209 },
+		YPOS_RESET_LINK_1{ 219 },
+
+		// Colors
+		COLOR_RESET_LINK_0{ 20 },
+		COLOR_RESET_LINK_1{ 30 },
 
 		// Defaults and commands
 		CONSOLE_WIDTH{ 353 },
@@ -166,6 +170,9 @@ namespace HexLoader {
 	private: System::Windows::Forms::Button^ button_ex;
 	private: System::Windows::Forms::Label^ label_success;
 	private: System::Windows::Forms::LinkLabel^ link_open;
+private: System::Windows::Forms::Button^ patch_export;
+private: System::Windows::Forms::Button^ patch_build;
+
 
 
 
@@ -200,10 +207,14 @@ namespace HexLoader {
 			button_sb->FlatStyle = FlatStyle::Flat;
 			button_sl->FlatStyle = FlatStyle::Flat;
 			button_ex->FlatStyle = FlatStyle::Flat;
-			button_build->FlatAppearance->BorderSize = 0;
+			patch_export->FlatStyle = FlatStyle::Flat;
+			patch_build->FlatStyle = FlatStyle::Flat;
+			patch_build->FlatAppearance->BorderSize = 0;
 			button_sb->FlatAppearance->BorderSize = 0;
 			button_sl->FlatAppearance->BorderSize = 0;
 			button_ex->FlatAppearance->BorderSize = 0;
+			patch_export->FlatAppearance->BorderSize = 0;
+			patch_build->FlatAppearance->BorderSize = 0;
 		}
 
 	protected:
@@ -280,6 +291,8 @@ namespace HexLoader {
 			this->button_ex = (gcnew System::Windows::Forms::Button());
 			this->label_success = (gcnew System::Windows::Forms::Label());
 			this->link_open = (gcnew System::Windows::Forms::LinkLabel());
+			this->patch_export = (gcnew System::Windows::Forms::Button());
+			this->patch_build = (gcnew System::Windows::Forms::Button());
 			this->SuspendLayout();
 			// 
 			// radio_loader
@@ -640,11 +653,11 @@ namespace HexLoader {
 			// 
 			this->label_success->Font = (gcnew System::Drawing::Font(L"Lucida Console", 18, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
-			this->label_success->Location = System::Drawing::Point(926, 159);
+			this->label_success->Location = System::Drawing::Point(911, 169);
 			this->label_success->Name = L"label_success";
-			this->label_success->Size = System::Drawing::Size(124, 23);
+			this->label_success->Size = System::Drawing::Size(150, 23);
 			this->label_success->TabIndex = 25;
-			this->label_success->Text = L"COMPLETE";
+			this->label_success->Text = L"[complete]";
 			// 
 			// link_open
 			// 
@@ -654,7 +667,7 @@ namespace HexLoader {
 			this->link_open->ForeColor = System::Drawing::SystemColors::ButtonFace;
 			this->link_open->LinkColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(150)), static_cast<System::Int32>(static_cast<System::Byte>(0)),
 				static_cast<System::Int32>(static_cast<System::Byte>(0)));
-			this->link_open->Location = System::Drawing::Point(981, 209);
+			this->link_open->Location = System::Drawing::Point(974, 219);
 			this->link_open->Name = L"link_open";
 			this->link_open->Size = System::Drawing::Size(77, 13);
 			this->link_open->TabIndex = 26;
@@ -662,6 +675,30 @@ namespace HexLoader {
 			this->link_open->Text = L"Open Location";
 			this->link_open->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
 			this->link_open->VisitedLinkColor = System::Drawing::SystemColors::ButtonFace;
+			// 
+			// patch_export
+			// 
+			this->patch_export->AutoSize = true;
+			this->patch_export->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"patch_export.BackgroundImage")));
+			this->patch_export->ForeColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(30)), static_cast<System::Int32>(static_cast<System::Byte>(30)),
+				static_cast<System::Int32>(static_cast<System::Byte>(30)));
+			this->patch_export->Location = System::Drawing::Point(1129, 159);
+			this->patch_export->Name = L"patch_export";
+			this->patch_export->Size = System::Drawing::Size(26, 17);
+			this->patch_export->TabIndex = 27;
+			this->patch_export->UseVisualStyleBackColor = true;
+			// 
+			// patch_build
+			// 
+			this->patch_build->AutoSize = true;
+			this->patch_build->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"patch_build.BackgroundImage")));
+			this->patch_build->ForeColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(30)), static_cast<System::Int32>(static_cast<System::Byte>(30)),
+				static_cast<System::Int32>(static_cast<System::Byte>(30)));
+			this->patch_build->Location = System::Drawing::Point(1057, 271);
+			this->patch_build->Name = L"patch_build";
+			this->patch_build->Size = System::Drawing::Size(77, 25);
+			this->patch_build->TabIndex = 28;
+			this->patch_build->UseVisualStyleBackColor = true;
 			// 
 			// gui
 			// 
@@ -671,6 +708,8 @@ namespace HexLoader {
 				static_cast<System::Int32>(static_cast<System::Byte>(30)));
 			this->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"$this.BackgroundImage")));
 			this->ClientSize = System::Drawing::Size(793, 325);
+			this->Controls->Add(this->patch_build);
+			this->Controls->Add(this->patch_export);
 			this->Controls->Add(this->text_output);
 			this->Controls->Add(this->link_open);
 			this->Controls->Add(this->label_success);
@@ -882,7 +921,6 @@ namespace HexLoader {
 					System::Threading::Thread::Sleep(1500);
 					text_output->Text = "";
 					expandConsole = false;
-					ToggleInput(true);
 				}
 			}
 		}
@@ -1024,7 +1062,7 @@ namespace HexLoader {
 		}
 		private: System::Void button_build_Click(System::Object^ sender, System::EventArgs^ e)
 		{
-			// Disabled graphical input
+			// Disable graphical input
 			ToggleInput(false);
 
 			/* Reveal text output area, call Build() from
@@ -1085,6 +1123,8 @@ namespace HexLoader {
 			check_cleanup->Checked = false;
 			check_shortcut->Checked = false;
 			check_startup->Checked = false;
+			SuccessDialog(false);
+			ToggleInput(true);
 		}
 		private: System::Void linkLabel1_LinkClicked(System::Object^ sender, System::Windows::Forms::LinkLabelLinkClickedEventArgs^ e)
 		{
@@ -1309,10 +1349,17 @@ namespace HexLoader {
 			input_run->Visible = !shown;
 			check_cleanup->Visible = !shown;
 
-			// Snap success message and links
-			label_success->Location = System::Drawing::Point(label_success->Location.X - XPOS_OFFSET, label_success->Location.Y);
-			link_open->Location = System::Drawing::Point(link_open->Location.X - XPOS_OFFSET, link_open->Location.Y);
-			link_reset->Location = System::Drawing::Point(XPOS_RESET_LINK_1, YPOS_RESET_LINK_1);
+			// Snap success message, links and patches
+			int offset = (shown ? XPOS_OFFSET : XPOS_OFFSET * -1),
+				color = (shown ? COLOR_RESET_LINK_1 : COLOR_RESET_LINK_0);
+
+			label_success->Location = System::Drawing::Point(label_success->Location.X - offset, label_success->Location.Y);
+			link_open->Location = System::Drawing::Point(link_open->Location.X - offset, link_open->Location.Y);
+			link_reset->Location = System::Drawing::Point((shown ? XPOS_RESET_LINK_1 : XPOS_RESET_LINK_0), (shown ? YPOS_RESET_LINK_1 : YPOS_RESET_LINK_0));
+			link_reset->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(color)), static_cast<System::Int32>(static_cast<System::Byte>(color)),
+				static_cast<System::Int32>(static_cast<System::Byte>(color)));
+			patch_export->Location = System::Drawing::Point(patch_export->Location.X - offset, patch_export->Location.Y);
+			patch_build->Location = System::Drawing::Point(patch_build->Location.X - offset, patch_build->Location.Y);
 		}
 	};
 }
