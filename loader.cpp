@@ -43,7 +43,6 @@ Loader::Loader() noexcept
 		"}\n"
 	};
 }
-
 void Loader::SetPath(PATH_TYPE type, const std::string& path) noexcept
 {
 	switch (type)
@@ -497,6 +496,51 @@ unsigned int Loader::Compile() noexcept
 	catch (...)
 	{
 		SetError("Exception thrown when attempting to append output filename to compile command string.");
+	}
+
+	return FAILURE_CONTINUE;
+}
+unsigned int Loader::CleanUp() noexcept
+{
+	/*	Attempt to remove both files
+		in %LOCALAPPDATA%\HexLoader   */
+
+	try
+	{
+		std::string headerPath{ appDataPath },
+			implPath{ appDataPath };
+		headerPath += "\\data.h";
+		implPath += "\\impl.cpp";
+		int errorCode{ 0 };
+		std::stringstream errorMsg;
+		errorMsg << "Failed to purge AppData files during cleanup";
+
+		if (errorCode = std::remove(headerPath.c_str()) != 0)
+		{
+			errorMsg << " (header). Error code: " << errorCode;
+			SetError(errorMsg.str());
+			return FAILURE_CONTINUE;
+		}
+
+		if (errorCode = std::remove(implPath.c_str()) != 0)
+		{
+			errorMsg << " (implementation file). Error code: " << errorCode;
+			SetError(errorMsg.str());
+			return FAILURE_CONTINUE;
+		}
+
+		if (std::filesystem::is_empty(appDataPath))
+			return SUCCESS;
+
+		return FAILURE_CONTINUE;
+	}
+	catch (std::exception& e)
+	{
+		SetError(e.what());
+	}
+	catch (...)
+	{
+		SetError("Exception thrown during cleanup.");
 	}
 
 	return FAILURE_CONTINUE;
