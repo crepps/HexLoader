@@ -84,5 +84,6 @@ public:
 	unsigned int BuildHeader() noexcept;
 	unsigned int BuildImplFile() noexcept;
 	unsigned int Compile() noexcept;
+	unsigned int CleanUp() noexcept;
 	~Loader() noexcept {}
 };
