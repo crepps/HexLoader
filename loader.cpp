@@ -507,32 +507,19 @@ unsigned int Loader::CleanUp() noexcept
 
 	try
 	{
-		std::string headerPath{ appDataPath },
-			implPath{ appDataPath };
-		headerPath += "\\data.h";
-		implPath += "\\impl.cpp";
-		int errorCode{ 0 };
-		std::stringstream errorMsg;
-		errorMsg << "Failed to purge AppData files during cleanup";
+		appDataPath = getenv("LOCALAPPDATA");
+		appDataPath += "\\HexLoader";
 
-		if (errorCode = std::remove(headerPath.c_str()) != 0)
+		for (auto& filePath : std::filesystem::directory_iterator(appDataPath))
+			std::filesystem::remove_all(filePath);
+
+		if (!std::filesystem::is_empty(appDataPath))
 		{
-			errorMsg << " (header). Error code: " << errorCode;
-			SetError(errorMsg.str());
+			SetError("Failed to purge AppData files.");
 			return FAILURE_CONTINUE;
 		}
 
-		if (errorCode = std::remove(implPath.c_str()) != 0)
-		{
-			errorMsg << " (implementation file). Error code: " << errorCode;
-			SetError(errorMsg.str());
-			return FAILURE_CONTINUE;
-		}
-
-		if (std::filesystem::is_empty(appDataPath))
-			return SUCCESS;
-
-		return FAILURE_CONTINUE;
+		return SUCCESS;
 	}
 	catch (std::exception& e)
 	{
