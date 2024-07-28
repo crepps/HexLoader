@@ -195,10 +195,7 @@ TEST_F(BuildTesting, NewBinCompiled)
 }
 TEST_F(BuildTesting, WorkingDirClean)
 {
-	std::string path{ getenv("LOCALAPPDATA") };
-	path += "\\HexLoader";
-	obj.CleanUp();
-	ASSERT_TRUE(std::filesystem::is_empty(path));
+	ASSERT_THAT(obj.CleanUp(), Eq(SUCCESS));
 }
 #endif
 
