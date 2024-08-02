@@ -365,7 +365,7 @@ unsigned int Loader::BuildHeader() noexcept
 
 		// Create empty file
 		headerPath = appDataPath + "\\data.h";
-		outFile.open(headerPath, std::ios::out);
+		outFile.open(headerPath, std::ios::trunc);
 		outFile.close();
 
 		// For all paths
@@ -502,11 +502,13 @@ unsigned int Loader::Compile() noexcept
 }
 unsigned int Loader::CleanUp() noexcept
 {
-	/*	Attempt to remove both files
+	/*	Clear lib paths vector and
+		attempt to remove all files
 		in %LOCALAPPDATA%\HexLoader   */
 
 	try
 	{
+		libPaths.clear();
 		appDataPath = getenv("LOCALAPPDATA");
 		appDataPath += "\\HexLoader";
 
