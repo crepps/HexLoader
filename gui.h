@@ -76,8 +76,8 @@ namespace HexLoader {
 		Point cursorDownPos,
 			cursorDelta;
 		const char *binPath,
-				   *exportPath,
 				   *appName;
+		String^ exportPath;
 		System::Collections::Generic::List<String^> libPaths;
 		System::Windows::Forms::Button^ buttonPtr;
 
@@ -183,8 +183,8 @@ private: System::Windows::Forms::Button^ patch_build;
 		gui(Loader& obj)
 			:outputDelay(DELAY_OUTPUT_LONG),
 			binPath(""),
-			exportPath(""),
 			appName(""),
+			exportPath(""),
 			inputEnabled(true),
 			mouseDown (false),
 			expandConsole(false),
@@ -198,8 +198,8 @@ private: System::Windows::Forms::Button^ patch_build;
 
 			InitializeComponent();
 
-			exportPath = getenv("USERPROFILE");
-			input_export->Text = gcnew String(exportPath);
+			exportPath = gcnew String(getenv("USERPROFILE"));
+			input_export->Text = exportPath;
 
 			timer_anim->Start();
 
@@ -585,7 +585,7 @@ private: System::Windows::Forms::Button^ patch_build;
 			this->link_reset->Text = L"Reset";
 			this->link_reset->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
 			this->link_reset->VisitedLinkColor = System::Drawing::SystemColors::ButtonFace;
-			this->link_reset->LinkClicked += gcnew System::Windows::Forms::LinkLabelLinkClickedEventHandler(this, &gui::linkLabel1_LinkClicked);
+			this->link_reset->LinkClicked += gcnew System::Windows::Forms::LinkLabelLinkClickedEventHandler(this, &gui::link_reset_LinkClicked);
 			// 
 			// text_output
 			// 
@@ -912,6 +912,9 @@ private: System::Windows::Forms::Button^ patch_build;
 				{
 					compiling = false;
 
+					// Run clean-up
+					loaderPtr->CleanUp();
+
 					Print("\n");
 					Print("Operation complete.");
 
@@ -1056,8 +1059,8 @@ private: System::Windows::Forms::Button^ patch_build;
 		private: System::Void button_ex_Click(System::Object^ sender, System::EventArgs^ e)
 		{
 			// Store full path, set input cursor to end
-			exportPath = GetPath(BUTTON_EXPORT);
-			input_export->Text = gcnew String(exportPath);
+			exportPath = gcnew String(GetPath(BUTTON_EXPORT));
+			input_export->Text = exportPath;
 			input_export->Select(input_export->Text->Length, 0);
 			button_ex->Visible = false;
 		}
@@ -1127,7 +1130,7 @@ private: System::Windows::Forms::Button^ patch_build;
 			SuccessDialog(false);
 			ToggleInput(true);
 		}
-		private: System::Void linkLabel1_LinkClicked(System::Object^ sender, System::Windows::Forms::LinkLabelLinkClickedEventArgs^ e)
+		private: System::Void link_reset_LinkClicked(System::Object^ sender, System::Windows::Forms::LinkLabelLinkClickedEventArgs^ e)
 		{
 			Reset();
 		}
