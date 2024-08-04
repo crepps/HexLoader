@@ -10,6 +10,7 @@
 #include <ShlObj.h>
 #include <filesystem>
 #include <fstream>
+#include "resource.h"
 
 // Return codes
 #define SUCCESS 0
@@ -60,7 +61,11 @@ public:
 		PATH_RUN
 	};
 
-	Loader() noexcept;
+	Loader() noexcept
+		:outputDelay(DELAY_OUTPUT_LONG),
+		bufferLoaded(false),
+		runPath("C:\\temp"),
+		outputBuffer("") {}
 	inline void SetError(const std::string& arg) noexcept { error = arg; }
 	inline std::string GetError() const noexcept { return error; }
 	void SetPath(PATH_TYPE, const std::string&) noexcept;
@@ -87,3 +92,6 @@ public:
 	unsigned int CleanUp() noexcept;
 	~Loader() noexcept {}
 };
+
+extern HMODULE GetModule();
+extern std::string GetResourceData(unsigned int);
