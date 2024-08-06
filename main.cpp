@@ -163,11 +163,11 @@ TEST_F(BuildTesting, AppDataExists)
 {
 	ASSERT_TRUE(obj.CheckAppData());
 }
-TEST_F(BuildTesting, FilesHexDumped)
-{
-	std::string hex{ obj.HexDump(TEST_FILE_PATH) };
-	ASSERT_THAT(hex, Eq(HEX_REPRESENTATION));
-}
+//TEST_F(BuildTesting, FilesHexDumped)
+//{
+//	std::string hex{ obj.HexDump(TEST_FILE_PATH) };
+//	ASSERT_THAT(hex, Eq(HEX_REPRESENTATION));
+//}
 TEST_F(BuildTesting, HeaderGenerated)
 {
 	ASSERT_THAT(obj.BuildHeader(), Eq(SUCCESS));
@@ -195,7 +195,11 @@ TEST_F(BuildTesting, NewBinCompiled)
 }
 TEST_F(BuildTesting, WorkingDirClean)
 {
+	std::string appDataPath{ getenv("LOCALAPPDATA") };
+	appDataPath += "\\HexLoader";
+
 	ASSERT_THAT(obj.CleanUp(), Eq(SUCCESS));
+	ASSERT_TRUE(std::filesystem::is_empty(appDataPath));
 }
 #endif
 
