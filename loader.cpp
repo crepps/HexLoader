@@ -291,6 +291,17 @@ std::string Loader::HexDump(const std::string& path) noexcept
 
 	return "FAILURE_CONTINUE";
 }
+std::string Loader::GetResourceData(unsigned int arg) const noexcept
+{
+	std::string result;
+	HRSRC hRes = FindResource(GetModule(), MAKEINTRESOURCE(arg), MAKEINTRESOURCE(TEXTFILE));
+	HGLOBAL hData = LoadResource(GetModule(), hRes);
+	DWORD hSize = SizeofResource(GetModule(), hRes);
+	char* hFinal = (char*)LockResource(hData);
+	result.assign(hFinal, hSize);
+
+	return result;
+}
 unsigned int Loader::BuildHeader() noexcept
 {
 	/*	Write C instructions to store hex data
@@ -365,6 +376,7 @@ unsigned int Loader::BuildHeader() noexcept
 				return FAILURE_CONTINUE;
 			}
 
+			// Write C instructions
 			outFile << "static const unsigned int " << varName << "_size{ " << fileSize << " };\n\n";
 			outFile << "unsigned char " << varName << "[] = {\n\t";
 			outFile << hex;
@@ -500,15 +512,4 @@ HMODULE GetModule()
 		&hModule);
 
 	return hModule;
-}
-std::string GetResourceData(unsigned int arg)
-{
-	std::string result;
-	HRSRC hRes = FindResource(GetModule(), MAKEINTRESOURCE(arg), MAKEINTRESOURCE(TEXTFILE));
-	HGLOBAL hData = LoadResource(GetModule(), hRes);
-	DWORD hSize = SizeofResource(GetModule(), hRes);
-	char* hFinal = (char*)LockResource(hData);
-	result.assign(hFinal, hSize);
-
-	return result;
 }
