@@ -25,6 +25,10 @@ void Loader::SetPath(PATH_TYPE type, const std::string& path) noexcept
 
 	case PATH_RUN:
 		runPath = path;
+		break;
+
+	case PATH_INSTALLER:
+		installerPath = path;
 	}
 }
 unsigned int Loader::ValidatePath(PATH_TYPE type) const noexcept
@@ -59,8 +63,14 @@ unsigned int Loader::ValidatePath(PATH_TYPE type) const noexcept
 			break;
 
 	case PATH_RUN:
-		if (stat(runPath.c_str(), &statInfo) != 0 || runPath == "")
+		if ((stat(runPath.c_str(), &statInfo) != 0 || runPath == "") && !installer)
 			return (unsigned int)PATH_RUN;
+		if (type)
+			break;
+
+	case PATH_INSTALLER:
+		if ((stat(runPath.c_str(), &statInfo) != 0 || runPath == "") && installer)
+			return (unsigned int)PATH_INSTALLER;
 	}
 
 	return SUCCESS;
@@ -416,7 +426,7 @@ unsigned int Loader::BuildImplFile() noexcept
 		outFile << GetResourceData(LOADER_DATA_0);
 
 		// Write variables
-		outFile << "\tpath = R\"(" << runPath << ")\";\n\n";
+		outFile << "path = R\"(" << runPath << ")\";\n\n";
 
 		for (auto& fileName : fileNames)
 			outFile << "\tfileNames.push_back(\"" << fileName << "\");\n";
@@ -477,6 +487,7 @@ unsigned int Loader::CleanUp() noexcept
 
 	try
 	{
+		fileNames.clear();
 		libPaths.clear();
 		appDataPath = getenv("LOCALAPPDATA");
 		appDataPath += "\\HexLoader";

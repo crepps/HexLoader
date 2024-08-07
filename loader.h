@@ -27,9 +27,12 @@ class Loader
 private:
 	unsigned int outputDelay;
 
+	bool installer;
+
 	std::string binPath,
-				runPath,
 				exportPath,
+				runPath,
+				installerPath,
 				error,
 				newProcessCmd,
 				outputBuffer,
@@ -64,15 +67,19 @@ public:
 		PATH_BIN,
 		PATH_LIB,
 		PATH_EXPORT,
-		PATH_RUN
+		PATH_RUN,
+		PATH_INSTALLER
 	};
 
 	Loader() noexcept
-		:outputDelay(DELAY_OUTPUT_LONG),
+		:installer(false),
+		outputDelay(DELAY_OUTPUT_LONG),
 		bufferLoaded(false),
 		runPath("C:\\temp"),
 		outputBuffer("") {}
 	inline std::string GetError() const noexcept { return error; }
+	inline void SelectInstaller(bool arg) { installer = arg; }
+	inline bool CheckInstaller() { return installer; }
 	void SetPath(PATH_TYPE, const std::string&) noexcept;
 	unsigned int ValidatePath(PATH_TYPE) const noexcept;
 	inline std::string GetBinPath() const noexcept { return binPath; };
