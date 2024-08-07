@@ -1081,6 +1081,9 @@ private: System::Windows::Forms::Button^ patch_build;
 			// Loader selected
 			if (radio_loader->Checked == true)
 			{
+				// Specify loader
+				loaderPtr->SelectInstaller(false);
+
 				// Displace installer input
 				label_prompts->Location = System::Drawing::Point(XPOS_PROMPTS + XPOS_OFFSET, label_prompts->Location.Y);
 				check_shortcut->Location = System::Drawing::Point(XPOS_PROMPTS + XPOS_OFFSET, check_shortcut->Location.Y);
@@ -1099,6 +1102,9 @@ private: System::Windows::Forms::Button^ patch_build;
 			// Installer selected
 			else
 			{
+				// Specify installer
+				loaderPtr->SelectInstaller(true);
+
 				// Displace loader input
 				check_cleanup->Location = System::Drawing::Point(XPOS_CHECK_CLEANUP + XPOS_OFFSET, check_cleanup->Location.Y);
 
@@ -1150,7 +1156,13 @@ private: System::Windows::Forms::Button^ patch_build;
 		{
 			std::string path;
 			ConvertString(input_run->Text, path);
-			loaderPtr->SetPath(Loader::PATH_RUN, path);
+
+			// Set run path or installer path
+			if (loaderPtr->CheckInstaller())
+				loaderPtr->SetPath(Loader::PATH_INSTALLER, path);
+
+			else
+				loaderPtr->SetPath(Loader::PATH_RUN, path);
 		}
 		private: void Print(const std::string& arg)
 		{
