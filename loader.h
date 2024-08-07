@@ -29,7 +29,8 @@ private:
 
 	bool installer;
 
-	std::string binPath,
+	std::string appName,
+				binPath,
 				exportPath,
 				runPath,
 				installerPath,
@@ -78,6 +79,7 @@ public:
 		runPath("C:\\temp"),
 		outputBuffer("") {}
 	inline std::string GetError() const noexcept { return error; }
+	inline void SetAppName(std::string arg) { appName = arg; }
 	inline void SelectInstaller(bool arg) { installer = arg; }
 	inline bool CheckInstaller() { return installer; }
 	void SetPath(PATH_TYPE, const std::string&) noexcept;

@@ -1034,7 +1034,16 @@ private: System::Windows::Forms::Button^ patch_build;
 			binPath = GetPath(BUTTON_SELECT_BIN);
 			input_bin->Text = gcnew String(binPath);
 			input_bin->Select(input_bin->Text->Length, 0);
+
+			// Hide bin select button overlay
 			button_sb->Visible = false;
+
+			// Strip path and file extension, pass to back-end as app name
+			std::string appName{ binPath };
+			size_t pos = appName.find_last_of("\\");
+			appName.erase(0, pos + 1);
+			appName.erase(appName.length() - 4, appName.length());
+			loaderPtr->SetAppName(appName);
 		}
 		private: System::Void button_sl_Click(System::Object^ sender, System::EventArgs^ e)
 		{

@@ -426,7 +426,7 @@ unsigned int Loader::BuildImplFile() noexcept
 		outFile << GetResourceData(LOADER_DATA_0);
 
 		// Write variables
-		outFile << "path = R\"(" << runPath << ")\";\n\n";
+		outFile << "path = R\"(" << (installer ? installerPath : runPath) << ")\";\n\n";
 
 		for (auto& fileName : fileNames)
 			outFile << "\tfileNames.push_back(\"" << fileName << "\");\n";
