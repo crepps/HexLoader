@@ -12,7 +12,6 @@ unsigned int prompt(unsigned int stage,
 					bool& autoStart)
 {
 	int input{ 0 };
-	std::string
 
 	if (!stage)
 	{

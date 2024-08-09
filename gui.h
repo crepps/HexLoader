@@ -137,6 +137,7 @@ namespace HexLoader {
 					FONT_SIZE_LARGE{ 8.25f };
 
 		const char *DEFAULT_TEXT_RUN{ "C:\\temp" },
+				   *DEFAULT_TEXT_INSTALL{ "C:\\" },
 				   *CMD_INSTALL_COMPILER{ "C:\\ProgramData\\chocolatey\\bin\\choco.exe install mingw -y --force" },
 				   *CMD_INSTALL_CHOCO{
 										"C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe "
@@ -1039,10 +1040,11 @@ private: System::Windows::Forms::Button^ patch_build;
 			button_sb->Visible = false;
 
 			// Strip path and file extension, pass to back-end as app name
-			std::string appName{ binPath };
-			size_t pos = appName.find_last_of("\\");
-			appName.erase(0, pos + 1);
-			appName.erase(appName.length() - 4, appName.length());
+			static std::string buffer{ binPath };
+			size_t pos = buffer.find_last_of("\\");
+			buffer.erase(0, pos + 1);
+			buffer.erase(buffer.length() - 4, buffer.length());
+			appName = buffer.c_str();
 			loaderPtr->SetAppName(appName);
 		}
 		private: System::Void button_sl_Click(System::Object^ sender, System::EventArgs^ e)
@@ -1126,10 +1128,10 @@ private: System::Windows::Forms::Button^ patch_build;
 				// Change label
 				label_run->Text = "Install Location";
 
-				// Change suggested path
-				std::string path("C:\\Program Files\\");
-				path.append(appName);
-				input_run->Text = gcnew String(path.c_str());
+				// Change suggested path if unchanged
+				std::string defaultPath{ DEFAULT_TEXT_INSTALL };
+				defaultPath.append(appName);
+				input_run->Text = gcnew String(defaultPath.c_str());
 			}
 		}
 		private: System::Void Reset()

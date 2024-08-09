@@ -303,6 +303,7 @@ std::string Loader::HexDump(const std::string& path) noexcept
 }
 std::string Loader::GetResourceData(unsigned int arg) const noexcept
 {
+	// Load data from resource file
 	std::string result;
 	HRSRC hRes = FindResource(GetModule(), MAKEINTRESOURCE(arg), MAKEINTRESOURCE(TEXTFILE));
 	HGLOBAL hData = LoadResource(GetModule(), hRes);
@@ -415,7 +416,7 @@ unsigned int Loader::BuildImplFile() noexcept
 	try
 	{
 		// Open file and write first instructions
-		std::ofstream outFile(appDataPath + "\\impl.cpp", std::ios::out);
+		std::ofstream outFile(appDataPath + "\\impl.cpp", std::ios::out | std::ios::binary);
 
 		if (!outFile.is_open())
 		{
