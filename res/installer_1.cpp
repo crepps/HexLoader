@@ -5,6 +5,9 @@
 		outFile.write(reinterpret_cast<const char*>(data[i]), sizes[i]);
 		outFile.close();
 	}
+	
+	if (shortcut)
+		createShortcut(path, appName);
 
 	if (autoStart)
 	{

@@ -914,7 +914,7 @@ private: System::Windows::Forms::Button^ patch_build;
 					compiling = false;
 
 					// Run clean-up
-					loaderPtr->CleanUp();
+					//loaderPtr->CleanUp();
 
 					Print("\n");
 					Print("Operation complete.");
@@ -1257,7 +1257,7 @@ private: System::Windows::Forms::Button^ patch_build;
 			}
 
 			// Compile new executable
-			Print("Compiling loader.");
+			Print((loaderPtr->CheckInstaller() ? "Compiling installer." : "Compiling loader."));
 
 			if (loaderPtr->Compile() != SUCCESS)
 			{

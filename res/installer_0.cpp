@@ -1,55 +1,20 @@
-#include <string>
+#include <sstream>
 #include <vector>
 #include <filesystem>
 #include <fstream>
 #include <windows.h>
+#include <shlobj.h>
+#include <locale>
+#include <codecvt>
 #include "data.h"
 
-unsigned int prompt(unsigned int stage,
-					const std::string& appName,
-					std::string& path,
-					bool& shortcut,
-					bool& autoStart)
-{
-	int input{ 0 };
-
-	if (!stage)
-	{
-		input = MessageBoxA(0, "Press OK to install " + appName + ".", appName + " Installer", MB_OKCANCEL);
-
-		if (input == IDCANCEL)
-			return 1;
-
-		input = MessageBoxA(0, "Installation location: " + path + "\n\nInstall to default location ? ", "Install Location", MB_YESNO);
-
-		if (input == IDNO)
-		{
-			std::string buffer{ browsePath(appName) };
-			path = (buffer == "CANCEL" ? path : buffer);
-		}
-
-		input = MessageBoxA(0, "Create a desktop shortcut?", "Shortcut", MB_YESNO);
-
-		if (input == IDYES)
-			shortcut = true;
-	}
-
-	else
-	{
-		input = MessageBoxA(0, "Installation complete.\n\nLaunch " + appName + " now?", "Success", MB_YESNO);
-
-		if (input == IDNO)
-			autoStart = false;
-	}
-}
-
-std::string Installer::browsePath(const std::string appName)
+std::string browsePath(const std::string appName)
 {
 	BROWSEINFO bi{ 0 };
 	LPITEMIDLIST list;
-	TCHAR buffer[MAX_PATH] = L"\0";
+	TCHAR buffer[MAX_PATH] = "\0";
 
-	bi.lpszTitle = L"Select installation location...";
+	bi.lpszTitle = "Select installation location...";
 	list = SHBrowseForFolder(&bi);
 
 	if (SHGetPathFromIDList(list, buffer))
@@ -62,11 +27,71 @@ std::string Installer::browsePath(const std::string appName)
 	return "CANCEL";
 }
 
+unsigned int prompt(unsigned int stage,
+					const std::string& appName,
+					std::string& path,
+					bool& shortcut)
+{
+	int input{ 0 };
+	LPCSTR msg1{ "" },
+		   msg2{ "" },
+		   msg3{ "" },
+		   title1{ "" };
+	std::stringstream ss;
+
+	// Concatenate into LPCSTR messages with stringstream
+	ss << "Press OK to install " << appName << ".";
+	msg1 = ss.str().c_str();
+	
+	ss.str("");
+	ss << appName << " Installer";
+	title1 = ss.str().c_str();
+
+	ss.str("");
+	ss << "Installation location: " << path << "\n\nInstall to default location?";
+	msg2 = ss.str().c_str();
+
+	ss.str("");
+	ss << "Installation complete.\n\nLaunch " << appName << " now?";
+	msg3 = ss.str().c_str();
+
+	// Spawn message boxes, two stages
+	if (!stage)
+	{
+		input = MessageBoxA(0, msg1, title1, MB_OKCANCEL);
+
+		if (input == IDCANCEL)
+			return 1;
+
+		input = MessageBoxA(0, msg2, "Install Location", MB_YESNO);
+
+		if (input == IDNO)
+		{
+			std::string buffer{ browsePath(appName) };
+			path = (buffer == "CANCEL" ? path : buffer);
+		}
+
+		input = MessageBoxA(0, "Create a desktop shortcut?", "Shortcut", MB_YESNO);
+
+		if (input == IDYES)
+			shortcut = true;
+		
+		return 0;
+	}
+
+	else
+	{
+		input = MessageBoxA(0, msg3, "Success", MB_YESNO);
+
+		if (input == IDYES)
+			return 1;
+		return 0;
+	}
+}
+
 int createShortcut(const std::string& path, const std::string& appName)
 {
 	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-	std::wstring wPath{ converter.from_bytes(path) },
-				 wAppName{ converter.from_bytes(appName) };
 
 	CoInitialize(NULL);
 	IShellLink* pShellLink = NULL;
@@ -76,10 +101,9 @@ int createShortcut(const std::string& path, const std::string& appName)
 
 	if (SUCCEEDED(hres))
 	{
-		std::wstring filePath{ wPath + L"\\" + wAppName};
-
+		std::string filePath{ path + "\\" + appName};
 		pShellLink->SetPath(filePath.c_str());
-		pShellLink->SetDescription(wAppName);
+		pShellLink->SetDescription(appName.c_str());
 		pShellLink->SetIconLocation(filePath.c_str(), 0);
 
 		IPersistFile* pPersistFile;
@@ -87,7 +111,8 @@ int createShortcut(const std::string& path, const std::string& appName)
 
 		if (SUCCEEDED(hres))
 		{
-			std::string linkPath{ getenv("USERPROFILE") + "\\Desktop\\" + appName + ".lnk" };
+			std::string linkPath{ getenv("USERPROFILE") };
+			linkPath += "\\Desktop\\" + appName + ".lnk";
 			std::wstring wLinkPath = converter.from_bytes(linkPath);
 			hres = pPersistFile->Save(wLinkPath.c_str(), TRUE);
 			pPersistFile->Release();
@@ -107,10 +132,17 @@ int createShortcut(const std::string& path, const std::string& appName)
 
 int main()
 {
+	ShowWindow(GetConsoleWindow(), SW_HIDE);
+	
 	std::string appName, path;
 	std::vector<std::string> fileNames;
 	std::vector<unsigned char*> data;
 	std::vector<uint64_t> sizes;
 	std::ofstream outFile;
+	bool shortcut{ false },
+		 autoStart{ false };
+		 
+	const unsigned int STAGE1{0},
+					   STAGE2{1};
 
 	
