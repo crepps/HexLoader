@@ -249,6 +249,12 @@ bool Loader::CheckAppData() noexcept
 		std::error_code err;
 		std::filesystem::create_directories(appDataPath, err);
 
+		if (err)
+		{
+			SetError("Failed to create app data folder: " + err.message());
+			return false;
+		}
+
 		// Return whether folder was created successfully
 		return stat(appDataPath.c_str(), &statInfo) == 0;
 	}

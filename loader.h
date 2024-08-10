@@ -7,7 +7,7 @@
 #include <mutex>
 #include <Windows.h>
 #include <iostream>
-#include <ShlObj.h>
+#include <shlobj.h>
 #include <filesystem>
 #include <fstream>
 #include "resource.h"
