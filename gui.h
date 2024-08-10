@@ -1046,6 +1046,14 @@ private: System::Windows::Forms::Button^ patch_build;
 			buffer.erase(buffer.length() - 4, buffer.length());
 			appName = buffer.c_str();
 			loaderPtr->SetAppName(appName);
+
+			// Update default install path if unchanged, if installer selected
+			if (loaderPtr->CheckInstaller())
+			{
+				String^ defaultPath = gcnew String(DEFAULT_TEXT_INSTALL);
+				if (input_run->Text == defaultPath)
+					input_run->Text += gcnew String(appName);
+			}
 		}
 		private: System::Void button_sl_Click(System::Object^ sender, System::EventArgs^ e)
 		{
@@ -1138,6 +1146,7 @@ private: System::Windows::Forms::Button^ patch_build;
 		{
 			radio_loader->Checked = true;
 			libPaths.Clear();
+			appName = "";
 			input_bin->Text = "";
 			input_lib->Text = "";
 			input_run->Text = gcnew String(DEFAULT_TEXT_RUN);
