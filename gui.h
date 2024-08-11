@@ -914,7 +914,7 @@ private: System::Windows::Forms::Button^ patch_build;
 					compiling = false;
 
 					// Run clean-up
-					//loaderPtr->CleanUp();
+					loaderPtr->CleanUp();
 
 					Print("\n");
 					Print("Operation complete.");

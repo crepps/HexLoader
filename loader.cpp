@@ -480,7 +480,7 @@ unsigned int Loader::Compile() noexcept
 	try
 	{
 		std::string cmd{ PATH_COMPILER };
-		cmd += " " + appDataPath + "\\impl.cpp -o " + exportPath + "\\" + fileNames[0];
+		cmd += " " + appDataPath + "\\impl.cpp -o " + exportPath + "\\" + fileNames[0] + " -lole32 -luuid";
 		return SpawnProcThread(cmd.c_str());
 	}
 	catch (std::exception& e)

@@ -2,10 +2,10 @@
 #include <vector>
 #include <filesystem>
 #include <fstream>
-#include <windows.h>
 #include <shlobj.h>
 #include <locale>
 #include <codecvt>
+#include <windows.h>
 #include "data.h"
 
 std::string browsePath(const std::string appName)
@@ -33,37 +33,37 @@ unsigned int prompt(unsigned int stage,
 					bool& shortcut)
 {
 	int input{ 0 };
-	LPCSTR msg1{ "" },
+	std::string msg1{ "" },
 		   msg2{ "" },
 		   msg3{ "" },
 		   title1{ "" };
 	std::stringstream ss;
 
-	// Concatenate into LPCSTR messages with stringstream
+	// Concatenate messages with stringstream
 	ss << "Press OK to install " << appName << ".";
-	msg1 = ss.str().c_str();
+	msg1 = ss.str();
 	
 	ss.str("");
 	ss << appName << " Installer";
-	title1 = ss.str().c_str();
+	title1 = ss.str();
 
 	ss.str("");
 	ss << "Installation location: " << path << "\n\nInstall to default location?";
-	msg2 = ss.str().c_str();
+	msg2 = ss.str();
 
 	ss.str("");
 	ss << "Installation complete.\n\nLaunch " << appName << " now?";
-	msg3 = ss.str().c_str();
+	msg3 = ss.str();
 
 	// Spawn message boxes, two stages
 	if (!stage)
 	{
-		input = MessageBoxA(0, msg1, title1, MB_OKCANCEL);
+		input = MessageBoxA(0, msg1.c_str(), title1.c_str(), MB_OKCANCEL);
 
 		if (input == IDCANCEL)
 			return 1;
 
-		input = MessageBoxA(0, msg2, "Install Location", MB_YESNO);
+		input = MessageBoxA(0, msg2.c_str(), "Install Location", MB_YESNO);
 
 		if (input == IDNO)
 		{
@@ -81,10 +81,11 @@ unsigned int prompt(unsigned int stage,
 
 	else
 	{
-		input = MessageBoxA(0, msg3, "Success", MB_YESNO);
+		input = MessageBoxA(0, msg3.c_str(), "Success", MB_YESNO);
 
 		if (input == IDYES)
 			return 1;
+
 		return 0;
 	}
 }
