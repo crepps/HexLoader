@@ -11,7 +11,7 @@ void Loader::SetPath(PATH_TYPE type, const std::string& path) noexcept
 	case PATH_LIB:
 		try
 		{
-			libPaths.push_back(path);
+			libPaths.push_back(std::move(path));
 		}
 		catch (...)
 		{
@@ -84,16 +84,16 @@ bool Loader::CompilerInstalled() const noexcept
 
 	return false;
 }
-unsigned int Loader::SpawnProcThread(const std::string& cmd) noexcept
+unsigned int Loader::SpawnProcThread(std::string&& cmd) noexcept
 {
 	try
 	{
-		std::thread procThread(&Loader::Command, this, cmd);
+		std::thread procThread(&Loader::Command, this, std::move(cmd));
 		procThread.detach();
 	}
 	catch (std::exception& e)
 	{
-		SetError(e.what());
+		SetError(std::move(e.what()));
 		return FAILURE_CONTINUE;
 	}
 	catch (...)
@@ -104,7 +104,7 @@ unsigned int Loader::SpawnProcThread(const std::string& cmd) noexcept
 
 	return SUCCESS;
 }
-unsigned int Loader::Command(const std::string& arg) noexcept
+unsigned int Loader::Command(std::string&& arg) noexcept
 {
 	// There's output to be read
 	reading = true;
@@ -164,7 +164,7 @@ void Loader::LoadBuffer(const std::string& arg) noexcept
 	}
 	catch (std::exception& e)
 	{
-		SetError(e.what());
+		SetError(std::move(e.what()));
 		return;
 	}
 	catch (...)
@@ -191,7 +191,7 @@ const char* Loader::OffloadBuffer() noexcept
 	}
 	catch (std::exception& e)
 	{
-		SetError(e.what());
+		SetError(std::move(e.what()));
 	}
 	catch (...)
 	{
@@ -212,7 +212,7 @@ void Loader::ClearBuffer() noexcept
 	}
 	catch (std::exception& e)
 	{
-		SetError(e.what());
+		SetError(std::move(e.what()));
 	}
 	catch (...)
 	{
@@ -260,7 +260,7 @@ bool Loader::CheckAppData() noexcept
 	}
 	catch (std::exception& e)
 	{
-		SetError(e.what());
+		SetError(std::move(e.what()));
 		return false;
 	}
 	catch (...)
@@ -298,7 +298,7 @@ std::string Loader::HexDump(const std::string& path) noexcept
 	}
 	catch (std::exception& e)
 	{
-		SetError(e.what());
+		SetError(std::move(e.what()));
 	}
 	catch (...)
 	{
@@ -403,7 +403,7 @@ unsigned int Loader::BuildHeader() noexcept
 	}
 	catch (std::exception& e)
 	{
-		SetError(e.what());
+		SetError(std::move(e.what()));
 		return FAILURE_CONTINUE;
 	}
 	catch (...)
@@ -464,7 +464,7 @@ unsigned int Loader::BuildImplFile() noexcept
 	}
 	catch (std::exception& e)
 	{
-		SetError(e.what());
+		SetError(std::move(e.what()));
 		return FAILURE_CONTINUE;
 	}
 	catch (...)
@@ -481,11 +481,11 @@ unsigned int Loader::Compile() noexcept
 	{
 		std::string cmd{ PATH_COMPILER };
 		cmd += " " + appDataPath + "\\impl.cpp -o " + exportPath + "\\" + fileNames[0] + " -lole32 -luuid";
-		return SpawnProcThread(cmd.c_str());
+		return SpawnProcThread(std::move(cmd.c_str()));
 	}
 	catch (std::exception& e)
 	{
-		SetError(e.what());
+		SetError(std::move(e.what()));
 	}
 	catch (...)
 	{
@@ -520,7 +520,7 @@ unsigned int Loader::CleanUp() noexcept
 	}
 	catch (std::exception& e)
 	{
-		SetError(e.what());
+		SetError(std::move(e.what()));
 	}
 	catch (...)
 	{

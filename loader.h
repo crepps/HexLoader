@@ -55,8 +55,8 @@ private:
 	const char *PATH_COMPILER{ "C:\\ProgramData\\mingw64\\mingw64\\bin\\g++.exe" },
 			   *PATH_CHOCO{ "C:\\ProgramData\\chocolatey" };
 
-	inline void SetError(const std::string& arg) noexcept { error = arg; }
-	unsigned int Command(const std::string&) noexcept;
+	inline void SetError(std::string&& arg) noexcept { error = arg; }
+	unsigned int Command(std::string&&) noexcept;
 	void LoadBuffer(const std::string&) noexcept;
 	std::string HexDump(const std::string&) noexcept;
 	std::string GetResourceData(unsigned int arg) const noexcept;
@@ -89,7 +89,7 @@ public:
 	inline std::string GetExportPath() const noexcept { return exportPath; }
 	inline std::string GetRunPath() const noexcept { return runPath; };
 	bool CompilerInstalled() const noexcept;
-	unsigned int SpawnProcThread(const std::string&) noexcept;
+	unsigned int SpawnProcThread(std::string&&) noexcept;
 	inline bool GetBufferLoaded() const noexcept { return bufferLoaded; }
 	const char* OffloadBuffer() noexcept;
 	void ClearBuffer() noexcept;
@@ -105,4 +105,3 @@ public:
 };
 
 extern HMODULE GetModule();
-//extern std::string GetResourceData(unsigned int);

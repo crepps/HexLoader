@@ -47,9 +47,9 @@ class CompilerTesting : public ::testing::Test
 public:
 	Loader obj;
 
-	std::string ExecuteCmd(const std::string& cmd)
+	std::string ExecuteCmd(std::string&& cmd)
 	{
-		obj.SpawnProcThread(cmd);
+		obj.SpawnProcThread(std::move(cmd));
 		std::string output("");
 
 		while (!obj.Reading());

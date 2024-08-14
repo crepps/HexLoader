@@ -899,7 +899,7 @@ private: System::Windows::Forms::Button^ patch_build;
 					Print("\n");
 
 					std::string cmd{ CMD_INSTALL_COMPILER };
-					loaderPtr->SpawnProcThread(cmd);
+					loaderPtr->SpawnProcThread(std::move(cmd));
 					installingCompiler = true;
 				}
 			}
@@ -1288,7 +1288,7 @@ private: System::Windows::Forms::Button^ patch_build;
 
 						// Install compiler
 						std::string compilerCmd{ CMD_INSTALL_COMPILER };
-						if (loaderPtr->SpawnProcThread(compilerCmd) != SUCCESS)
+						if (loaderPtr->SpawnProcThread(std::move(compilerCmd)) != SUCCESS)
 							Print(loaderPtr->GetError().c_str());
 
 						installingCompiler = true;
@@ -1340,7 +1340,7 @@ private: System::Windows::Forms::Button^ patch_build;
 
 					// Install chocolatey
 					std::string chocoCmd{ CMD_INSTALL_CHOCO };
-					if (loaderPtr->SpawnProcThread(chocoCmd) != SUCCESS)
+					if (loaderPtr->SpawnProcThread(std::move(chocoCmd)) != SUCCESS)
 						Print(loaderPtr->GetError().c_str());
 
 					installingChoco = true;
