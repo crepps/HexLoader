@@ -93,7 +93,7 @@ unsigned int Loader::SpawnProcThread(std::string&& cmd) noexcept
 	}
 	catch (std::exception& e)
 	{
-		SetError(std::move(e.what()));
+		SetError(e.what());
 		return FAILURE_CONTINUE;
 	}
 	catch (...)
@@ -110,7 +110,7 @@ unsigned int Loader::Command(std::string&& arg) noexcept
 	reading = true;
 
 	// Redirect process's stderr to stdout stream
-	std::string command(arg);
+	std::string command(std::move(arg));
 	command += " 2>&1";
 
 	// Open pipe for reading, execute command
@@ -164,7 +164,7 @@ void Loader::LoadBuffer(const std::string& arg) noexcept
 	}
 	catch (std::exception& e)
 	{
-		SetError(std::move(e.what()));
+		SetError(e.what());
 		return;
 	}
 	catch (...)
@@ -191,7 +191,7 @@ const char* Loader::OffloadBuffer() noexcept
 	}
 	catch (std::exception& e)
 	{
-		SetError(std::move(e.what()));
+		SetError(e.what());
 	}
 	catch (...)
 	{
@@ -212,7 +212,7 @@ void Loader::ClearBuffer() noexcept
 	}
 	catch (std::exception& e)
 	{
-		SetError(std::move(e.what()));
+		SetError(e.what());
 	}
 	catch (...)
 	{
@@ -260,7 +260,7 @@ bool Loader::CheckAppData() noexcept
 	}
 	catch (std::exception& e)
 	{
-		SetError(std::move(e.what()));
+		SetError(e.what());
 		return false;
 	}
 	catch (...)
@@ -298,7 +298,7 @@ std::string Loader::HexDump(const std::string& path) noexcept
 	}
 	catch (std::exception& e)
 	{
-		SetError(std::move(e.what()));
+		SetError(e.what());
 	}
 	catch (...)
 	{
@@ -403,7 +403,7 @@ unsigned int Loader::BuildHeader() noexcept
 	}
 	catch (std::exception& e)
 	{
-		SetError(std::move(e.what()));
+		SetError(e.what());
 		return FAILURE_CONTINUE;
 	}
 	catch (...)
@@ -464,7 +464,7 @@ unsigned int Loader::BuildImplFile() noexcept
 	}
 	catch (std::exception& e)
 	{
-		SetError(std::move(e.what()));
+		SetError(e.what());
 		return FAILURE_CONTINUE;
 	}
 	catch (...)
@@ -485,7 +485,7 @@ unsigned int Loader::Compile() noexcept
 	}
 	catch (std::exception& e)
 	{
-		SetError(std::move(e.what()));
+		SetError(e.what());
 	}
 	catch (...)
 	{
@@ -520,7 +520,7 @@ unsigned int Loader::CleanUp() noexcept
 	}
 	catch (std::exception& e)
 	{
-		SetError(std::move(e.what()));
+		SetError(e.what());
 	}
 	catch (...)
 	{

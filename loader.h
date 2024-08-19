@@ -55,7 +55,8 @@ private:
 	const char *PATH_COMPILER{ "C:\\ProgramData\\mingw64\\mingw64\\bin\\g++.exe" },
 			   *PATH_CHOCO{ "C:\\ProgramData\\chocolatey" };
 
-	inline void SetError(std::string&& arg) noexcept { error = arg; }
+	inline void SetError(std::string&& arg) noexcept { error = std::move(arg); }
+	inline void SetError(const std::string& arg) noexcept { error = std::move(arg); }
 	unsigned int Command(std::string&&) noexcept;
 	void LoadBuffer(const std::string&) noexcept;
 	std::string HexDump(const std::string&) noexcept;
