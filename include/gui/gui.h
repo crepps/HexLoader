@@ -1039,7 +1039,7 @@ private: System::Windows::Forms::Button^ patch_build;
 			// Hide bin select button overlay
 			button_sb->Visible = false;
 
-			// Strip path and file extension, pass to back-end as app name
+			// Strip path and file extension, pass to back end as app name
 			static std::string buffer{ binPath };
 			size_t pos = buffer.find_last_of("\\");
 			buffer.erase(0, pos + 1);
