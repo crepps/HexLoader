@@ -28,7 +28,6 @@
 #include "resource.h"
 
 /**
- * @brief
  * Custom return codes specifying that
  * a given operation:
  * 
@@ -41,7 +40,6 @@
 #define FAILURE_CONTINUE 2
 
 /**
- * @brief
  * Console output-related constants.
  * 
  * Buffer size is the chunk size of output
@@ -59,7 +57,6 @@ class Loader
 {
 public:
 	/**
-	 * @brief
 	 * Enumerator for specifying which file path the user would
 	 * like to set or verify with SetPath() or ValidatePath().
 	 */
@@ -75,7 +72,7 @@ public:
 
 	/**
 	 * @brief
-	 * Empty constructor with initializer list
+	 * Empty constructor with initializer list.
 	 */
 	Loader() noexcept
 		:installer(false),
@@ -100,7 +97,7 @@ public:
 
 	/**
 	 * @brief
-	 * Specify whether to generate installer
+	 * Specify whether to generate installer.
 	 * 
 	 * @param
 	 * true - build installer application
@@ -129,7 +126,7 @@ public:
 	 *                  will be generated
 	 * 
 	 * PATH_RUN       - temporary location from which the user's
-	 *                  application with be launched
+	 *                  application will be launched
 	 *  
 	 * PATH_INSTALLER - default installation path for user's
 	 *                  application
@@ -195,7 +192,7 @@ public:
 	 * ready to be offloaded with GetBufferLoaded().
 	 * 
 	 * @param
-	 * Pass an rvalue with std::move, or pass literal
+	 * Accepts rvalues - pass a literal, or std::move an lvalue.
 	 * 
 	 * @return 
 	 * Custom return code defined at the top of loader.h.
@@ -239,13 +236,13 @@ public:
 	/**
 	 * @brief 
 	 * Sets outputDelay, used in LoadBuffer() to sleep the specified
-	 * amount of time between outputs calling SpawnProcThread().
+	 * amount of milliseconds between outputs from SpawnProcThread().
 	 */
 	inline void DelayOutput(unsigned int arg) noexcept { outputDelay = arg; }
 
 	/**
 	 * @brief
-	 * Check whether the working directory set in appDataPath
+	 * Check whether the working directory stored in appDataPath
 	 * exists with stat().
 	 * 
 	 * This will attempt to create the folder if it doesn't
@@ -309,21 +306,21 @@ public:
 	~Loader() noexcept {}
 
 private:
-	unsigned int outputDelay;			// Milliseconds between SpawnProcThread()'s
-										// output buffer offloads
+	unsigned int outputDelay;           // Milliseconds between SpawnProcThread()'s
+                                        // output buffer offloads
 
-	bool installer;						// Whether to build installer (not loader)
+	bool installer;                     // Whether to build installer (not loader)
 
-	std::string appName,				// Name of user's application
-				binPath,				// Path to executable
-				exportPath,				// Output location for loader/installer
-				runPath,				// Temp location for running loader
-				installerPath,			// Installation destination for installer
-				error,					// Error info set in SetError()
-				outputBuffer,			// Holds chunks of output from SpawnProcThread()
-				appDataPath;			// Working directory for building loader/installer
+	std::string appName,                // Name of user's application
+				binPath,                // Path to executable
+				exportPath,             // Output location for loader/installer
+				runPath,                // Temp location for running loader
+				installerPath,          // Installation destination for installer
+				error,                  // Error info set in SetError()
+				outputBuffer,           // Holds chunks of output from SpawnProcThread()
+				appDataPath;            // Working directory for building loader/installer
 
-	std::vector<std::string> libPaths,	// Paths to user's lib files
+	std::vector<std::string> libPaths,  // Paths to user's lib files
 							 fileNames, // Names of user's bin and lib files
 							 varNames;  // Names of variables to be written to file
 										// in BuildHeader()
@@ -338,7 +335,7 @@ private:
 	std::mutex outputMutex;				// Mutex used to lock outputBuffer
 
 	/**
-	 * 
+	 * Constants for default paths.
 	 */
 	const char *PATH_COMPILER{ "C:\\ProgramData\\mingw64\\mingw64\\bin\\g++.exe" },
 			   *PATH_CHOCO{ "C:\\ProgramData\\chocolatey" },
@@ -346,17 +343,17 @@ private:
 
 	/**
 	 * @brief
-	 * Stores error description for later retrieval using GetError.
+	 * Stores error description for later retrieval using GetError().
 	 * 
-	 * Overload for rvalues
+	 * Overloaded for rvalues.
 	 */
 	inline void SetError(std::string&& arg) noexcept { error = std::move(arg); }
 
 	/**
 	 * @brief
-	 * Stores error description for later retrieval using GetError.
+	 * Stores error description for later retrieval using GetError().
 	 * 
-	 * Overload for lvalues
+	 * Overloaded for lvalues.
 	 */
 	inline void SetError(const std::string& arg) noexcept { error = std::move(arg); }
 
@@ -402,4 +399,12 @@ private:
 	std::string GetResourceData(unsigned int arg) const noexcept;
 };
 
+/**
+ * @brief
+ * External function used by GetResourceData().
+ */
 extern HMODULE GetModule();
+
+
+
+
