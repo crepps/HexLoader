@@ -1078,7 +1078,8 @@ namespace HexLoader {
 			button_sb->Visible = false;
 
 			// Strip path and file extension, pass to back end as app name
-			static std::string buffer{ binPath };
+			static std::string buffer;
+			buffer = binPath;
 			size_t pos = buffer.find_last_of("\\");
 			buffer.erase(0, pos + 1);
 			buffer.erase(buffer.length() - 4, buffer.length());
