@@ -404,7 +404,3 @@ private:
  * External function used by GetResourceData().
  */
 extern HMODULE GetModule();
-
-
-
-

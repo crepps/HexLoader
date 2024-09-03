@@ -1422,6 +1422,9 @@ namespace HexLoader {
 			input_export->Visible = !shown;
 			input_run->Visible = !shown;
 			check_cleanup->Visible = !shown;
+			label_prompts->Visible = !shown;
+			check_shortcut->Visible = !shown;
+			check_startup->Visible = !shown;
 
 			// Snap success message, links and patches
 			int offset = (shown ? XPOS_OFFSET : XPOS_OFFSET * -1),
