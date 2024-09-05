@@ -213,6 +213,8 @@ namespace HexLoader {
 	private: System::Windows::Forms::LinkLabel^ link_open;
 	private: System::Windows::Forms::Button^ patch_export;
 	private: System::Windows::Forms::Button^ patch_build;
+private: System::Windows::Forms::Label^ label_version;
+
 
 
 
@@ -334,6 +336,7 @@ namespace HexLoader {
 			this->link_open = (gcnew System::Windows::Forms::LinkLabel());
 			this->patch_export = (gcnew System::Windows::Forms::Button());
 			this->patch_build = (gcnew System::Windows::Forms::Button());
+			this->label_version = (gcnew System::Windows::Forms::Label());
 			this->SuspendLayout();
 			// 
 			// radio_loader
@@ -506,13 +509,12 @@ namespace HexLoader {
 			this->label2->ForeColor = System::Drawing::SystemColors::ButtonFace;
 			this->label2->Location = System::Drawing::Point(34, 7);
 			this->label2->Name = L"label2";
-			this->label2->Size = System::Drawing::Size(105, 19);
+			this->label2->Size = System::Drawing::Size(72, 19);
 			this->label2->TabIndex = 11;
-			this->label2->Text = L"HexLoader ALPHA";
+			this->label2->Text = L"HexLoader";
 			// 
 			// button_build
 			// 
-			this->button_build->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"button_build.BackgroundImage")));
 			this->button_build->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
 			this->button_build->Font = (gcnew System::Drawing::Font(L"Lucida Sans Unicode", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
@@ -742,6 +744,16 @@ namespace HexLoader {
 			this->patch_build->TabIndex = 28;
 			this->patch_build->UseVisualStyleBackColor = true;
 			// 
+			// label_version
+			// 
+			this->label_version->Font = (gcnew System::Drawing::Font(L"Lucida Sans Unicode", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->label_version->Location = System::Drawing::Point(50, 50);
+			this->label_version->Name = L"label_version";
+			this->label_version->Size = System::Drawing::Size(89, 17);
+			this->label_version->TabIndex = 29;
+			this->label_version->Text = L"v1.0.0-beta";
+			// 
 			// gui
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
@@ -750,6 +762,7 @@ namespace HexLoader {
 				static_cast<System::Int32>(static_cast<System::Byte>(30)));
 			this->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"$this.BackgroundImage")));
 			this->ClientSize = System::Drawing::Size(793, 325);
+			this->Controls->Add(this->label_version);
 			this->Controls->Add(this->patch_build);
 			this->Controls->Add(this->patch_export);
 			this->Controls->Add(this->text_output);
