@@ -76,6 +76,7 @@ public:
 	 */
 	Loader() noexcept
 		:installer(false),
+		cleanupThread(false),
 		outputDelay(DELAY_OUTPUT_LONG),
 		bufferLoaded(false),
 		runPath("C:\\temp"),
@@ -104,6 +105,13 @@ public:
 	 * false - build loader application
 	 */
 	inline void SelectInstaller(bool arg) { installer = arg; }
+
+	/**
+	 * @brief
+	 * Set whether to leave loader process open after launching and 
+	 * delete temp files when user application terminates.
+	 */
+	inline void SetCleanUp(bool arg) { cleanupThread = arg; }
 
 	/**
 	 * @brief
@@ -309,7 +317,8 @@ private:
 	unsigned int outputDelay;           // Milliseconds between SpawnProcThread()'s
                                         // output buffer offloads
 
-	bool installer;                     // Whether to build installer (not loader)
+	bool installer,                     // Whether to build installer (not loader)
+		cleanupThread;                  // Whether to purge loader temp files
 
 	std::string appName,                // Name of user's application
 				binPath,                // Path to executable

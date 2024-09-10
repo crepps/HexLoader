@@ -432,6 +432,8 @@ unsigned int Loader::BuildImplFile() noexcept
 
 		outFile << GetResourceData((installer ? INSTALLER_DATA_0 : LOADER_DATA_0));
 
+		outFile << "cleanupThread = " << (cleanupThread ? "true" : "false") << ";\n\n";
+
 		// Write variables
 		outFile << "path = R\"(" << (installer ? installerPath : runPath) << ")\";\n";
 

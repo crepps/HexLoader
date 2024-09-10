@@ -451,6 +451,7 @@ private: System::Windows::Forms::Label^ label_version;
 			this->check_cleanup->TabIndex = 4;
 			this->check_cleanup->Text = L"Cleanup Thread";
 			this->check_cleanup->UseVisualStyleBackColor = false;
+			this->check_cleanup->CheckedChanged += gcnew System::EventHandler(this, &gui::check_cleanup_CheckedChanged);
 			// 
 			// label_run
 			// 
@@ -1456,6 +1457,10 @@ private: System::Windows::Forms::Label^ label_version;
 		{
 			System::Diagnostics::Process::Start("C:\\Windows\\explorer.exe", gcnew String(exportPath));
 		}
-	};
+		private: System::Void check_cleanup_CheckedChanged(System::Object^ sender, System::EventArgs^ e)
+		{
+			loaderPtr->SetCleanUp(check_cleanup->Checked);
+		}
+};
 }
 

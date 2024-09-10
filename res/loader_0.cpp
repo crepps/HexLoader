@@ -12,5 +12,5 @@ int main()
 	std::vector<unsigned char*> data;
 	std::vector<uint64_t> sizes;
 	std::ofstream outFile;
-
+    bool cleanupThread{ false };
 	

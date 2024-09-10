@@ -6,11 +6,23 @@
 		outFile.close();
 	}
 	
-	path.append("\\" + fileNames[0]);
+	std::string currentPath{path};
+	currentPath.append("\\" + fileNames[0]);
 	STARTUPINFOA si{ 0 };
 	PROCESS_INFORMATION pi{ 0 };
 	si.wShowWindow = SW_HIDE;
-	CreateProcessA(path.c_str(), NULL, NULL, NULL, false, 0, NULL, NULL, &si, &pi);
+	CreateProcessA(currentPath.c_str(), NULL, NULL, NULL, false, 0, NULL, NULL, &si, &pi);
+	
+	if (cleanupThread)
+	{
+		while (WAIT_TIMEOUT == WaitForSingleObject(pi.hProcess, 5000));
+		
+		for (auto& file : fileNames)
+		{
+			currentPath = path + "\\" + file;
+			std::filesystem::remove_all(currentPath);
+		}
+	}
 	
 	return 0;
 }
