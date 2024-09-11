@@ -1048,10 +1048,29 @@ private: System::Windows::Forms::Label^ label_version;
 			FolderBrowserDialog^ folderBrowserDialog = gcnew FolderBrowserDialog;
 
 			static std::string str;
-			const char* result{ "0" };
+			const char* result{ nullptr };
 
-			if (button == BUTTON_EXPORT)
+			switch (button)
 			{
+			case BUTTON_SELECT_BIN:
+				openFileDialog1->Filter = "Exe Files (.exe)|*.exe";
+				if (openFileDialog1->ShowDialog() == System::Windows::Forms::DialogResult::OK)
+				{
+					ConvertString(openFileDialog1->FileName, str);
+					result = str.c_str();
+				}
+				break;
+
+			case BUTTON_SELECT_LIB:
+				openFileDialog1->Filter = "DLL Files (.dll)|*.dll";
+				if (openFileDialog1->ShowDialog() == System::Windows::Forms::DialogResult::OK)
+				{
+					ConvertString(openFileDialog1->FileName, str);
+					result = str.c_str();
+				}
+				break;
+
+			case BUTTON_EXPORT:
 				folderBrowserDialog->Description = "Select the destination folder for the new executable.";
 				if (folderBrowserDialog->ShowDialog() == System::Windows::Forms::DialogResult::OK)
 				{
@@ -1060,25 +1079,12 @@ private: System::Windows::Forms::Label^ label_version;
 				}
 			}
 
-			else
-			{
-				openFileDialog1->Filter = (button == BUTTON_SELECT_BIN ? "Exe Files (.exe)|*.exe" : "DLL Files (.dll)|*.dll");
-				if (openFileDialog1->ShowDialog() == System::Windows::Forms::DialogResult::OK)
-				{
-					ConvertString(openFileDialog1->FileName, str);
-					result = str.c_str();
-				}
-			}
-
 			return result;
 		}
 		private: System::Void button_sb_Click(System::Object^ sender, System::EventArgs^ e)
 		{
-			// Attempt to get path, return if user cancels
-			if ((binPath = GetPath(BUTTON_SELECT_BIN)) == "0")
-				return;
-
-			// Set text, set input cursor to end
+			// Store full path, set input cursor to end
+			binPath = GetPath(BUTTON_SELECT_BIN);
 			input_bin->Text = gcnew String(binPath);
 			input_bin->Select(input_bin->Text->Length, 0);
 
@@ -1106,10 +1112,6 @@ private: System::Windows::Forms::Label^ label_version;
 		{
 			// Store full path, add only filename to input_lib text
 			std::string path = GetPath(BUTTON_SELECT_LIB);
-
-			// Return if user cancels
-			if (path == "0")
-				return;
 
 			if (!libPaths.Contains(gcnew String(path.c_str())))
 				libPaths.Add(gcnew String(path.c_str()));

@@ -73,7 +73,9 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <IncludePath>C:\Users\Admin\source\repos\HexLoader\HexLoader\include\core;C:\Users\Admin\source\repos\HexLoader\HexLoader\include\gui;$(IncludePath)</IncludePath>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -122,23 +124,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="loader.cpp" />
-    <ClCompile Include="main.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="gui.h">
+    <ClInclude Include="include\gui\gui.h">
       <FileType>CppForm</FileType>
     </ClInclude>
-    <ClInclude Include="loader.h" />
-    <ClInclude Include="resource.h" />
+    <ClInclude Include="include\core\loader.h" />
+    <ClInclude Include="include\core\resource.h" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="gui.resx">
-      <DependentUpon>gui.h</DependentUpon>
+      <DependentUpon>include\gui\gui.h</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="include\gui\gui.resx" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="lib\loader.cpp" />
+    <ClCompile Include="tests\main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
