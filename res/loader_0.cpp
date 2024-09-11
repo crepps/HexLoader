@@ -7,6 +7,8 @@
 
 int main()
 {
+	ShowWindow(GetConsoleWindow(), SW_HIDE);
+	
 	std::string path;
 	std::vector<std::string> fileNames;
 	std::vector<unsigned char*> data;

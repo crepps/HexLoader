@@ -11,7 +11,7 @@
 	STARTUPINFOA si{ 0 };
 	PROCESS_INFORMATION pi{ 0 };
 	si.wShowWindow = SW_HIDE;
-	CreateProcessA(currentPath.c_str(), NULL, NULL, NULL, false, 0, NULL, NULL, &si, &pi);
+	CreateProcessA(currentPath.c_str(), NULL, NULL, NULL, false, CREATE_NO_WINDOW, NULL, NULL, &si, &pi);
 	
 	if (cleanupThread)
 	{

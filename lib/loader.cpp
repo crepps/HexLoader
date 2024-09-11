@@ -432,8 +432,6 @@ unsigned int Loader::BuildImplFile() noexcept
 
 		outFile << GetResourceData((installer ? INSTALLER_DATA_0 : LOADER_DATA_0));
 
-		outFile << "cleanupThread = " << (cleanupThread ? "true" : "false") << ";\n\n";
-
 		// Write variables
 		outFile << "path = R\"(" << (installer ? installerPath : runPath) << ")\";\n";
 
@@ -443,6 +441,12 @@ unsigned int Loader::BuildImplFile() noexcept
 			outFile << "\tappName = \"" << appName << "\";\n\n";
 			outFile << "\tif (prompt(STAGE1, appName, path, shortcut))\n";
 			outFile << "\t\treturn EXIT_SUCCESS;\n\n";
+		}
+
+		// Loader-specific instructions
+		else
+		{
+			outFile << "cleanupThread = " << (cleanupThread ? "true" : "false") << ";\n\n";
 		}
 
 		for (auto& fileName : fileNames)
