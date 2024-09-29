@@ -529,7 +529,6 @@ private: System::Windows::Forms::Label^ label_version;
 			this->button_build->UseVisualStyleBackColor = true;
 			this->button_build->Visible = false;
 			this->button_build->Click += gcnew System::EventHandler(this, &gui::button_build_Click);
-			this->button_build->KeyPress += gcnew System::Windows::Forms::KeyPressEventHandler(this, &gui::HandleKeyPress);
 			// 
 			// button_sb
 			// 
@@ -649,6 +648,7 @@ private: System::Windows::Forms::Label^ label_version;
 			this->text_output->ReadOnly = true;
 			this->text_output->Size = System::Drawing::Size(0, 193);
 			this->text_output->TabIndex = 21;
+			this->text_output->KeyPress += gcnew System::Windows::Forms::KeyPressEventHandler(this, &gui::HandleKeyPress);
 			// 
 			// timer_console
 			// 
@@ -749,13 +749,15 @@ private: System::Windows::Forms::Label^ label_version;
 			// 
 			// label_version
 			// 
+			this->label_version->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(36)), static_cast<System::Int32>(static_cast<System::Byte>(36)),
+				static_cast<System::Int32>(static_cast<System::Byte>(36)));
 			this->label_version->Font = (gcnew System::Drawing::Font(L"Lucida Sans Unicode", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
 			this->label_version->Location = System::Drawing::Point(50, 50);
 			this->label_version->Name = L"label_version";
-			this->label_version->Size = System::Drawing::Size(89, 17);
+			this->label_version->Size = System::Drawing::Size(92, 17);
 			this->label_version->TabIndex = 29;
-			this->label_version->Text = L"v1.0.0-beta";
+			this->label_version->Text = L"v1.0.0-beta.2";
 			// 
 			// gui
 			// 
@@ -897,13 +899,6 @@ private: System::Windows::Forms::Label^ label_version;
 
 			static std::stringstream ss;
 			static std::string line;
-
-			// Keep focus on build button
-			if (!button_build->Focused)
-			{
-				this->ActiveControl = button_build;
-				button_build->Focus();
-			}
 
 			// If output buffer from process thread is loaded
 			if (loaderPtr->GetBufferLoaded())
@@ -1248,7 +1243,6 @@ private: System::Windows::Forms::Label^ label_version;
 		}
 		private: unsigned int Build()
 		{
-			button_build->Focus();
 			text_output->Clear();
 
 			// Validate file paths
@@ -1285,7 +1279,8 @@ private: System::Windows::Forms::Label^ label_version;
 				Print("Could not detect compiler.");
 				text_output->AppendText("Auto install GNU C++ Compiler (g++)? (Y/N): ");
 				prompting[INSTALL_COMPILER] = true;
-
+				this->ActiveControl = text_output;
+				
 				return FAILURE_CONTINUE;
 			}
 
@@ -1322,7 +1317,7 @@ private: System::Windows::Forms::Label^ label_version;
 
 			return SUCCESS;
 		}
-		private: void HandleKeyPress(System::Object^ sender, System::Windows::Forms::KeyPressEventArgs^ e)
+		private: System::Void HandleKeyPress(System::Object^ sender, System::Windows::Forms::KeyPressEventArgs^ e)
 		{
 			// 'Auto install compiler' prompt
 			if (prompting[INSTALL_COMPILER])
