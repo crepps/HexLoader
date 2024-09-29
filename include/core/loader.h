@@ -40,6 +40,14 @@
 #define FAILURE_CONTINUE 2
 
 /**
+ * Optional behaviors selected in front end,
+ * passed into SetOption().
+ */
+#define OPTION_CLEANUP 0
+#define OPTION_SHORTCUT 1
+#define OPTION_STARTUP 2
+
+/**
  * Console output-related constants.
  * 
  * Buffer size is the chunk size of output
@@ -77,6 +85,8 @@ public:
 	Loader() noexcept
 		:installer(false),
 		cleanupThread(false),
+		shortcut(false),
+		startup(false),
 		outputDelay(DELAY_OUTPUT_LONG),
 		bufferLoaded(false),
 		runPath("C:\\temp"),
@@ -105,13 +115,6 @@ public:
 	 * false - build loader application
 	 */
 	inline void SelectInstaller(bool arg) { installer = arg; }
-
-	/**
-	 * @brief
-	 * Set whether to leave loader process open after launching and 
-	 * delete temp files when user application terminates.
-	 */
-	inline void SetCleanUp(bool arg) { cleanupThread = arg; }
 
 	/**
 	 * @brief
@@ -159,6 +162,12 @@ public:
 	inline std::vector<std::string> GetLibPaths() const noexcept { return libPaths; };
 	inline std::string GetExportPath() const noexcept { return exportPath; }
 	inline std::string GetRunPath() const noexcept { return runPath; };
+
+	/**
+	 * @brief
+	 * Set user-selected options.
+	 */
+	void SetOption(unsigned int, bool) noexcept;
 
 	/**
 	 * @brief
@@ -318,7 +327,9 @@ private:
                                         // output buffer offloads
 
 	bool installer,                     // Whether to build installer (not loader)
-		cleanupThread;                  // Whether to purge loader temp files
+		cleanupThread,                  // Whether to purge loader temp files
+		shortcut,						// Whether installer should prompt desktop shortcut
+		startup;						// Whether installer should prompt startup reg entry
 
 	std::string appName,                // Name of user's application
 				binPath,                // Path to executable

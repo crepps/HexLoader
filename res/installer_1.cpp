@@ -12,9 +12,20 @@
 	}
 	
 	if (shortcut)
-		createShortcut(path, appName);
-
-	if (autoStart)
+	{
+		if (result = createShortcut(path, appName))
+			MessageBoxA(0, "Error: " + result, "Failed To Create Shortcut", MB_OK);
+	}
+	
+	if (startup)
+	{
+		if (result = createRegKey(path, fileNames[0], appName))
+			MessageBoxA(0, "Error: " + result, "Failed To Create Registry Key", MB_OK);
+	}
+	
+	launch = prompt(STAGE2, appName, path, shortcut, startup);
+	
+	if (launch)
 	{
 		path.append("\\" + fileNames[0]);
 		STARTUPINFOA si{ 0 };

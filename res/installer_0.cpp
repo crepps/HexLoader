@@ -30,7 +30,8 @@ std::string browsePath(const std::string appName)
 unsigned int prompt(unsigned int stage,
 					const std::string& appName,
 					std::string& path,
-					bool& shortcut)
+					bool& shortcut,
+					bool& startup)
 {
 	int input{ 0 };
 	std::string msg1{ "" },
@@ -71,10 +72,21 @@ unsigned int prompt(unsigned int stage,
 			path = (buffer == "CANCEL" ? path : buffer);
 		}
 
-		input = MessageBoxA(0, "Create a desktop shortcut?", "Shortcut", MB_YESNO);
+		if (shortcut)
+		{
+			input = MessageBoxA(0, "Create a desktop shortcut?", "Shortcut", MB_YESNO);
 
-		if (input == IDYES)
-			shortcut = true;
+			if (input == IDYES)
+				shortcut = true;
+		}
+		
+		if (startup)
+		{
+			input = MessageBoxA(0, "Launch application when Windows starts?", "Startup", MB_YESNO);
+
+			if (input == IDYES)
+				startup = true;
+		}
 		
 		return 0;
 	}
@@ -131,6 +143,25 @@ int createShortcut(const std::string& path, const std::string& appName)
 	return 0;
 }
 
+int createRegKey(const std::string& path, const std::string& filename, const std::string& appName)
+{
+	std::string filePath{ path + "\\" + filename };
+
+	std::wstring wstr1{ std::wstring(filePath.begin(), filePath.end()) },
+				wstr2(std::wstring(appName.begin(), appName.end()));
+
+	HKEY hKey;
+
+	LONG result = RegCreateKeyExW(HKEY_CURRENT_USER, L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", 0, NULL, 0, KEY_WRITE, NULL, &hKey, NULL);
+
+	if (result != 0)
+		return result;
+
+	result = RegSetValueExW(hKey, wstr2.c_str(), 0, REG_SZ, (BYTE*)wstr1.c_str(), ((wstr1.size() + 1) * sizeof(wchar_t)));
+
+	return (int)result;
+}
+
 int main()
 {
 	ShowWindow(GetConsoleWindow(), SW_HIDE);
@@ -141,7 +172,9 @@ int main()
 	std::vector<uint64_t> sizes;
 	std::ofstream outFile;
 	bool shortcut{ false },
-		 autoStart{ false };
+		startup{ false },
+		launch{ false };
+	int result{ 0 };
 		 
 	const unsigned int STAGE1{0},
 					   STAGE2{1};

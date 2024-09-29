@@ -586,6 +586,7 @@ private: System::Windows::Forms::Label^ label_version;
 			this->check_shortcut->TabIndex = 16;
 			this->check_shortcut->Text = L"Shortcut";
 			this->check_shortcut->UseVisualStyleBackColor = false;
+			this->check_shortcut->CheckedChanged += gcnew System::EventHandler(this, &gui::check_shortcut_CheckedChanged);
 			// 
 			// label_prompts
 			// 
@@ -612,6 +613,7 @@ private: System::Windows::Forms::Label^ label_version;
 			this->check_startup->TabIndex = 18;
 			this->check_startup->Text = L"Startup";
 			this->check_startup->UseVisualStyleBackColor = false;
+			this->check_startup->CheckedChanged += gcnew System::EventHandler(this, &gui::check_startup_CheckedChanged);
 			// 
 			// link_reset
 			// 
@@ -1457,8 +1459,16 @@ private: System::Windows::Forms::Label^ label_version;
 		}
 		private: System::Void check_cleanup_CheckedChanged(System::Object^ sender, System::EventArgs^ e)
 		{
-			loaderPtr->SetCleanUp(check_cleanup->Checked);
+			loaderPtr->SetOption(OPTION_CLEANUP, check_cleanup->Checked);
 		}
-};
+		private: System::Void check_shortcut_CheckedChanged(System::Object^ sender, System::EventArgs^ e)
+		{
+			loaderPtr->SetOption(OPTION_SHORTCUT, check_shortcut->Checked);
+		}
+		private: System::Void check_startup_CheckedChanged(System::Object^ sender, System::EventArgs^ e)
+		{
+			loaderPtr->SetOption(OPTION_STARTUP, check_startup->Checked);
+		}
+	};
 }
 

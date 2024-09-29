@@ -75,6 +75,22 @@ unsigned int Loader::ValidatePath(PATH_TYPE type) const noexcept
 
 	return SUCCESS;
 }
+void Loader::SetOption(unsigned int option, bool enable) noexcept
+{
+	switch (option)
+	{
+	case OPTION_CLEANUP:
+		cleanupThread = enable;
+		break;
+
+	case OPTION_SHORTCUT:
+		shortcut = enable;
+		break;
+
+	case OPTION_STARTUP:
+		startup = enable;
+	}
+}
 bool Loader::CompilerInstalled() const noexcept
 {
 	struct stat statInfo;
@@ -439,7 +455,9 @@ unsigned int Loader::BuildImplFile() noexcept
 		if (installer)
 		{
 			outFile << "\tappName = \"" << appName << "\";\n\n";
-			outFile << "\tif (prompt(STAGE1, appName, path, shortcut))\n";
+			outFile << "\tshortcut = " << (shortcut ? "true" : "false") << ";\n\n";
+			outFile << "\tstartup = " << (startup ? "true" : "false") << ";\n\n";
+			outFile << "\tif (prompt(STAGE1, appName, path, shortcut, startup))\n";
 			outFile << "\t\treturn EXIT_SUCCESS;\n\n";
 		}
 
