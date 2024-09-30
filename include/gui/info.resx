@@ -117,4 +117,10 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="label_desc2.Text" xml:space="preserve">
+    <value>Running the new executable will silently write your files to the specified temp directory, and launch the original executable. If 'Cleanup Thread' is enabled, after launching, a process will run in the background until your application closes, at </value>
+  </data>
+  <data name="label_desc3.Text" xml:space="preserve">
+    <value>Running the new executable will spawn a series of message boxes, prompting the user to confirm the installation directory, whether to create a desktop shortcut, whether to automatically start the application when Windows starts, and whether to run the application after installing.</value>
+  </data>
 </root>

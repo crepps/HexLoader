@@ -760,7 +760,7 @@ private: System::Windows::Forms::Label^ label_version;
 			this->label_version->Name = L"label_version";
 			this->label_version->Size = System::Drawing::Size(92, 17);
 			this->label_version->TabIndex = 29;
-			this->label_version->Text = L"v1.0.0-beta.2";
+			this->label_version->Text = L"v1.0.0-beta.3";
 			// 
 			// gui
 			// 

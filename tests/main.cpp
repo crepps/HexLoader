@@ -4,7 +4,7 @@
 #include "loader.h"
 #include "gui.h"
 
-#define UNIT_TESTING
+//#define UNIT_TESTING
 
 using namespace System;
 using namespace System::Windows::Forms;
