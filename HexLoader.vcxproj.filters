@@ -24,6 +24,9 @@
     <ClInclude Include="include\core\resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="include\gui\info.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="resource.rc">

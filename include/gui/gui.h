@@ -20,6 +20,8 @@
 #include <string>
 #include <vector>
 
+#include "info.h"
+
 /**
  * Selectable areas for buttons.
  */
@@ -571,6 +573,7 @@ private: System::Windows::Forms::Label^ label_version;
 			this->link_more->Text = L"More";
 			this->link_more->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
 			this->link_more->VisitedLinkColor = System::Drawing::SystemColors::ButtonFace;
+			this->link_more->LinkClicked += gcnew System::Windows::Forms::LinkLabelLinkClickedEventHandler(this, &gui::link_more_LinkClicked);
 			// 
 			// check_shortcut
 			// 
@@ -1463,6 +1466,11 @@ private: System::Windows::Forms::Label^ label_version;
 		private: System::Void check_startup_CheckedChanged(System::Object^ sender, System::EventArgs^ e)
 		{
 			loaderPtr->SetOption(OPTION_STARTUP, check_startup->Checked);
+		}
+		private: System::Void link_more_LinkClicked(System::Object^ sender, System::Windows::Forms::LinkLabelLinkClickedEventArgs^ e)
+		{
+			info^ infoForm = gcnew info();
+			infoForm->Show();
 		}
 	};
 }
