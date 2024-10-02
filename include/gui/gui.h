@@ -1469,6 +1469,15 @@ private: System::Windows::Forms::Label^ label_version;
 		}
 		private: System::Void link_more_LinkClicked(System::Object^ sender, System::Windows::Forms::LinkLabelLinkClickedEventArgs^ e)
 		{
+			// Return if info form is already open
+			FormCollection^ forms = Application::OpenForms;
+			for each (System::Windows::Forms::Form^ form in forms)
+			{
+				if (form->Name == "info")
+					return;
+			}
+
+			// Open info form
 			info^ infoForm = gcnew info();
 			infoForm->Show();
 		}

@@ -14,6 +14,11 @@ namespace HexLoader {
 	/// </summary>
 	public ref class info : public System::Windows::Forms::Form
 	{
+	private:
+		// Mouse-selectable window regions
+		const unsigned int TITLE_BAR_HEIGHT{ 25 },
+						   TITLE_BAR_WIDTH{ 665 };
+
 	public:
 		info(void)
 		{
@@ -185,17 +190,20 @@ namespace HexLoader {
 			this->label_desc1->ForeColor = System::Drawing::SystemColors::ButtonFace;
 			this->label_desc1->Location = System::Drawing::Point(80, 231);
 			this->label_desc1->Name = L"label_desc1";
-			this->label_desc1->Size = System::Drawing::Size(477, 15);
+			this->label_desc1->Size = System::Drawing::Size(537, 15);
 			this->label_desc1->TabIndex = 6;
-			this->label_desc1->Text = L"HexLoader is a utility for packing library files into a standalone executable.";
+			this->label_desc1->Text = L"A utility for combining a bin and its dependencies to make a standalone executabl"
+				L"e.";
 			// 
 			// label_coffee
 			// 
 			this->label_coffee->AutoSize = true;
+			this->label_coffee->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(10)), static_cast<System::Int32>(static_cast<System::Byte>(10)),
+				static_cast<System::Int32>(static_cast<System::Byte>(10)));
 			this->label_coffee->Font = (gcnew System::Drawing::Font(L"Lucida Sans", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
 			this->label_coffee->ForeColor = System::Drawing::SystemColors::ButtonFace;
-			this->label_coffee->Location = System::Drawing::Point(244, 592);
+			this->label_coffee->Location = System::Drawing::Point(261, 592);
 			this->label_coffee->Name = L"label_coffee";
 			this->label_coffee->Size = System::Drawing::Size(90, 15);
 			this->label_coffee->TabIndex = 11;
@@ -204,6 +212,8 @@ namespace HexLoader {
 			// link_coffee
 			// 
 			this->link_coffee->AutoSize = true;
+			this->link_coffee->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(20)), static_cast<System::Int32>(static_cast<System::Byte>(20)),
+				static_cast<System::Int32>(static_cast<System::Byte>(20)));
 			this->link_coffee->Font = (gcnew System::Drawing::Font(L"Lucida Sans", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
 			this->link_coffee->LinkColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(192)), static_cast<System::Int32>(static_cast<System::Byte>(0)),
@@ -214,6 +224,7 @@ namespace HexLoader {
 			this->link_coffee->TabIndex = 12;
 			this->link_coffee->TabStop = true;
 			this->link_coffee->Text = L"Buy me a coffee";
+			this->link_coffee->LinkClicked += gcnew System::Windows::Forms::LinkLabelLinkClickedEventHandler(this, &info::link_coffee_LinkClicked);
 			// 
 			// label_header1
 			// 
@@ -222,7 +233,7 @@ namespace HexLoader {
 			this->label_header1->Font = (gcnew System::Drawing::Font(L"Lucida Console", 15.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
 			this->label_header1->ForeColor = System::Drawing::SystemColors::ButtonFace;
-			this->label_header1->Location = System::Drawing::Point(79, 285);
+			this->label_header1->Location = System::Drawing::Point(78, 289);
 			this->label_header1->Name = L"label_header1";
 			this->label_header1->Size = System::Drawing::Size(88, 21);
 			this->label_header1->TabIndex = 7;
@@ -231,7 +242,8 @@ namespace HexLoader {
 			// label_header2
 			// 
 			this->label_header2->AutoSize = true;
-			this->label_header2->BackColor = System::Drawing::SystemColors::ActiveCaptionText;
+			this->label_header2->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(15)), static_cast<System::Int32>(static_cast<System::Byte>(15)),
+				static_cast<System::Int32>(static_cast<System::Byte>(15)));
 			this->label_header2->Font = (gcnew System::Drawing::Font(L"Lucida Console", 15.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
 			this->label_header2->ForeColor = System::Drawing::SystemColors::ButtonFace;
@@ -243,6 +255,8 @@ namespace HexLoader {
 			// 
 			// label_desc2
 			// 
+			this->label_desc2->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(10)), static_cast<System::Int32>(static_cast<System::Byte>(10)),
+				static_cast<System::Int32>(static_cast<System::Byte>(10)));
 			this->label_desc2->Font = (gcnew System::Drawing::Font(L"Lucida Sans", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
 			this->label_desc2->ForeColor = System::Drawing::SystemColors::ButtonFace;
@@ -254,6 +268,8 @@ namespace HexLoader {
 			// 
 			// label_desc3
 			// 
+			this->label_desc3->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(18)), static_cast<System::Int32>(static_cast<System::Byte>(18)),
+				static_cast<System::Int32>(static_cast<System::Byte>(18)));
 			this->label_desc3->Font = (gcnew System::Drawing::Font(L"Lucida Sans", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
 			this->label_desc3->ForeColor = System::Drawing::SystemColors::ButtonFace;
@@ -268,6 +284,7 @@ namespace HexLoader {
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->BackColor = System::Drawing::SystemColors::ActiveCaptionText;
+			this->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"$this.BackgroundImage")));
 			this->ClientSize = System::Drawing::Size(700, 625);
 			this->ControlBox = false;
 			this->Controls->Add(this->link_coffee);
@@ -284,6 +301,7 @@ namespace HexLoader {
 			this->Controls->Add(this->logo);
 			this->Controls->Add(this->label_title);
 			this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::None;
+			this->MouseDown += gcnew System::Windows::Forms::MouseEventHandler(this, &info::info_MouseDown);
 			this->MaximizeBox = false;
 			this->MinimizeBox = false;
 			this->Name = L"info";
@@ -296,5 +314,15 @@ namespace HexLoader {
 
 		}
 #pragma endregion
+		private: System::Void link_coffee_LinkClicked(System::Object^ sender, System::Windows::Forms::LinkLabelLinkClickedEventArgs^ e) 
+		{
+			System::Diagnostics::Process::Start("https://buymeacoffee.com/crepps");
+		}
+		private: System::Void info::info_MouseDown(System::Object^ Sender, System::Windows::Forms::MouseEventArgs^ e)
+		{
+			// Close application if mouse is over close button
+			if (e->Y <= TITLE_BAR_HEIGHT && e->X >= TITLE_BAR_WIDTH)
+				this->Close();
+		}
 	};
 }
