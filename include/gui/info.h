@@ -35,10 +35,11 @@ namespace HexLoader {
 			}
 		}
 	private: System::Windows::Forms::Label^ label_title;
+	private: System::Windows::Forms::Button^ logo;
 	protected:
 
 	protected:
-	private: System::Windows::Forms::Button^ button1;
+
 	private: System::Windows::Forms::Label^ label_version;
 	private: System::Windows::Forms::Label^ label_copyright;
 	private: System::Windows::Forms::LinkLabel^ link_license;
@@ -88,7 +89,7 @@ namespace HexLoader {
 		{
 			System::ComponentModel::ComponentResourceManager^ resources = (gcnew System::ComponentModel::ComponentResourceManager(info::typeid));
 			this->label_title = (gcnew System::Windows::Forms::Label());
-			this->button1 = (gcnew System::Windows::Forms::Button());
+			this->logo = (gcnew System::Windows::Forms::Button());
 			this->label_version = (gcnew System::Windows::Forms::Label());
 			this->label_copyright = (gcnew System::Windows::Forms::Label());
 			this->link_license = (gcnew System::Windows::Forms::LinkLabel());
@@ -109,22 +110,23 @@ namespace HexLoader {
 			this->label_title->Font = (gcnew System::Drawing::Font(L"Lucida Console", 20.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
 			this->label_title->ForeColor = System::Drawing::SystemColors::ButtonFace;
-			this->label_title->Location = System::Drawing::Point(72, 88);
+			this->label_title->Location = System::Drawing::Point(87, 91);
 			this->label_title->Name = L"label_title";
 			this->label_title->Size = System::Drawing::Size(156, 27);
 			this->label_title->TabIndex = 0;
 			this->label_title->Text = L"HexLoader";
 			// 
-			// button1
+			// logo
 			// 
-			this->button1->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(20)), static_cast<System::Int32>(static_cast<System::Byte>(20)),
-				static_cast<System::Int32>(static_cast<System::Byte>(20)));
-			this->button1->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
-			this->button1->Location = System::Drawing::Point(273, 39);
-			this->button1->Name = L"button1";
-			this->button1->Size = System::Drawing::Size(130, 130);
-			this->button1->TabIndex = 1;
-			this->button1->UseVisualStyleBackColor = false;
+			this->logo->BackColor = System::Drawing::Color::Black;
+			this->logo->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"logo.BackgroundImage")));
+			this->logo->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
+			this->logo->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
+			this->logo->Location = System::Drawing::Point(264, 24);
+			this->logo->Name = L"logo";
+			this->logo->Size = System::Drawing::Size(160, 160);
+			this->logo->TabIndex = 1;
+			this->logo->UseVisualStyleBackColor = false;
 			// 
 			// label_version
 			// 
@@ -246,7 +248,7 @@ namespace HexLoader {
 			this->label_desc2->ForeColor = System::Drawing::SystemColors::ButtonFace;
 			this->label_desc2->Location = System::Drawing::Point(80, 321);
 			this->label_desc2->Name = L"label_desc2";
-			this->label_desc2->Size = System::Drawing::Size(544, 67);
+			this->label_desc2->Size = System::Drawing::Size(544, 75);
 			this->label_desc2->TabIndex = 9;
 			this->label_desc2->Text = resources->GetString(L"label_desc2.Text");
 			// 
@@ -279,7 +281,7 @@ namespace HexLoader {
 			this->Controls->Add(this->link_license);
 			this->Controls->Add(this->label_copyright);
 			this->Controls->Add(this->label_version);
-			this->Controls->Add(this->button1);
+			this->Controls->Add(this->logo);
 			this->Controls->Add(this->label_title);
 			this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::None;
 			this->MaximizeBox = false;

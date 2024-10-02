@@ -2,7 +2,7 @@
 #include <fstream>
 #include <filesystem>
 #include "loader.h"
-#include "gui.h"
+#include "../include/gui/gui.h"
 
 //#define UNIT_TESTING
 
