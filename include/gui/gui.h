@@ -1474,7 +1474,10 @@ private: System::Windows::Forms::Label^ label_version;
 			for each (System::Windows::Forms::Form^ form in forms)
 			{
 				if (form->Name == "info")
+				{
+					form->Focus();
 					return;
+				}
 			}
 
 			// Open info form

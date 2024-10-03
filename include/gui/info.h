@@ -115,7 +115,7 @@ namespace HexLoader {
 			this->label_title->Font = (gcnew System::Drawing::Font(L"Lucida Console", 20.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
 			this->label_title->ForeColor = System::Drawing::SystemColors::ButtonFace;
-			this->label_title->Location = System::Drawing::Point(87, 91);
+			this->label_title->Location = System::Drawing::Point(69, 91);
 			this->label_title->Name = L"label_title";
 			this->label_title->Size = System::Drawing::Size(156, 27);
 			this->label_title->TabIndex = 0;
@@ -127,46 +127,47 @@ namespace HexLoader {
 			this->logo->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"logo.BackgroundImage")));
 			this->logo->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
 			this->logo->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
-			this->logo->Location = System::Drawing::Point(264, 24);
+			this->logo->Location = System::Drawing::Point(237, 24);
 			this->logo->Name = L"logo";
 			this->logo->Size = System::Drawing::Size(160, 160);
 			this->logo->TabIndex = 1;
 			this->logo->UseVisualStyleBackColor = false;
+			this->logo->Click += gcnew System::EventHandler(this, &info::logo_Click);
 			// 
 			// label_version
 			// 
 			this->label_version->AutoSize = true;
-			this->label_version->Font = (gcnew System::Drawing::Font(L"Lucida Sans", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->label_version->Font = (gcnew System::Drawing::Font(L"Lucida Console", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
 			this->label_version->ForeColor = System::Drawing::SystemColors::ButtonFace;
-			this->label_version->Location = System::Drawing::Point(489, 70);
+			this->label_version->Location = System::Drawing::Point(466, 70);
 			this->label_version->Name = L"label_version";
-			this->label_version->Size = System::Drawing::Size(90, 15);
+			this->label_version->Size = System::Drawing::Size(111, 13);
 			this->label_version->TabIndex = 2;
 			this->label_version->Text = L"v1.0.0-beta.3";
 			// 
 			// label_copyright
 			// 
 			this->label_copyright->AutoSize = true;
-			this->label_copyright->Font = (gcnew System::Drawing::Font(L"Lucida Sans", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->label_copyright->Font = (gcnew System::Drawing::Font(L"Lucida Console", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
 			this->label_copyright->ForeColor = System::Drawing::SystemColors::ButtonFace;
-			this->label_copyright->Location = System::Drawing::Point(430, 100);
+			this->label_copyright->Location = System::Drawing::Point(400, 100);
 			this->label_copyright->Name = L"label_copyright";
-			this->label_copyright->Size = System::Drawing::Size(211, 15);
+			this->label_copyright->Size = System::Drawing::Size(255, 13);
 			this->label_copyright->TabIndex = 3;
 			this->label_copyright->Text = L"Copyright (c) 2024 Kevin Crepps";
 			// 
 			// link_license
 			// 
 			this->link_license->AutoSize = true;
-			this->link_license->Font = (gcnew System::Drawing::Font(L"Lucida Sans", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->link_license->Font = (gcnew System::Drawing::Font(L"Lucida Console", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
 			this->link_license->LinkColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(192)), static_cast<System::Int32>(static_cast<System::Byte>(0)),
 				static_cast<System::Int32>(static_cast<System::Byte>(0)));
-			this->link_license->Location = System::Drawing::Point(510, 129);
+			this->link_license->Location = System::Drawing::Point(495, 130);
 			this->link_license->Name = L"link_license";
-			this->link_license->Size = System::Drawing::Size(50, 15);
+			this->link_license->Size = System::Drawing::Size(54, 12);
 			this->link_license->TabIndex = 4;
 			this->link_license->TabStop = true;
 			this->link_license->Text = L"License";
@@ -185,27 +186,27 @@ namespace HexLoader {
 			// label_desc1
 			// 
 			this->label_desc1->AutoSize = true;
-			this->label_desc1->Font = (gcnew System::Drawing::Font(L"Lucida Sans", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->label_desc1->Font = (gcnew System::Drawing::Font(L"Microsoft Tai Le", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
 			this->label_desc1->ForeColor = System::Drawing::SystemColors::ButtonFace;
-			this->label_desc1->Location = System::Drawing::Point(80, 231);
+			this->label_desc1->Location = System::Drawing::Point(80, 239);
 			this->label_desc1->Name = L"label_desc1";
-			this->label_desc1->Size = System::Drawing::Size(537, 15);
+			this->label_desc1->Size = System::Drawing::Size(510, 16);
 			this->label_desc1->TabIndex = 6;
-			this->label_desc1->Text = L"A utility for combining a bin and its dependencies to make a standalone executabl"
-				L"e.";
+			this->label_desc1->Text = L"This utility combines an executable and its dependencies into a standalone execut"
+				L"able.";
 			// 
 			// label_coffee
 			// 
 			this->label_coffee->AutoSize = true;
-			this->label_coffee->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(10)), static_cast<System::Int32>(static_cast<System::Byte>(10)),
-				static_cast<System::Int32>(static_cast<System::Byte>(10)));
-			this->label_coffee->Font = (gcnew System::Drawing::Font(L"Lucida Sans", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->label_coffee->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(15)), static_cast<System::Int32>(static_cast<System::Byte>(15)),
+				static_cast<System::Int32>(static_cast<System::Byte>(15)));
+			this->label_coffee->Font = (gcnew System::Drawing::Font(L"Microsoft Tai Le", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
 			this->label_coffee->ForeColor = System::Drawing::SystemColors::ButtonFace;
-			this->label_coffee->Location = System::Drawing::Point(261, 592);
+			this->label_coffee->Location = System::Drawing::Point(261, 588);
 			this->label_coffee->Name = L"label_coffee";
-			this->label_coffee->Size = System::Drawing::Size(90, 15);
+			this->label_coffee->Size = System::Drawing::Size(84, 16);
 			this->label_coffee->TabIndex = 11;
 			this->label_coffee->Text = L"Like the app\?";
 			// 
@@ -214,13 +215,13 @@ namespace HexLoader {
 			this->link_coffee->AutoSize = true;
 			this->link_coffee->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(20)), static_cast<System::Int32>(static_cast<System::Byte>(20)),
 				static_cast<System::Int32>(static_cast<System::Byte>(20)));
-			this->link_coffee->Font = (gcnew System::Drawing::Font(L"Lucida Sans", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->link_coffee->Font = (gcnew System::Drawing::Font(L"Microsoft Tai Le", 9, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
 			this->link_coffee->LinkColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(192)), static_cast<System::Int32>(static_cast<System::Byte>(0)),
 				static_cast<System::Int32>(static_cast<System::Byte>(0)));
-			this->link_coffee->Location = System::Drawing::Point(360, 592);
+			this->link_coffee->Location = System::Drawing::Point(352, 588);
 			this->link_coffee->Name = L"link_coffee";
-			this->link_coffee->Size = System::Drawing::Size(102, 15);
+			this->link_coffee->Size = System::Drawing::Size(92, 16);
 			this->link_coffee->TabIndex = 12;
 			this->link_coffee->TabStop = true;
 			this->link_coffee->Text = L"Buy me a coffee";
@@ -229,11 +230,12 @@ namespace HexLoader {
 			// label_header1
 			// 
 			this->label_header1->AutoSize = true;
-			this->label_header1->BackColor = System::Drawing::SystemColors::ActiveCaptionText;
+			this->label_header1->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(7)), static_cast<System::Int32>(static_cast<System::Byte>(7)),
+				static_cast<System::Int32>(static_cast<System::Byte>(7)));
 			this->label_header1->Font = (gcnew System::Drawing::Font(L"Lucida Console", 15.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
 			this->label_header1->ForeColor = System::Drawing::SystemColors::ButtonFace;
-			this->label_header1->Location = System::Drawing::Point(78, 289);
+			this->label_header1->Location = System::Drawing::Point(78, 297);
 			this->label_header1->Name = L"label_header1";
 			this->label_header1->Size = System::Drawing::Size(88, 21);
 			this->label_header1->TabIndex = 7;
@@ -242,12 +244,12 @@ namespace HexLoader {
 			// label_header2
 			// 
 			this->label_header2->AutoSize = true;
-			this->label_header2->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(15)), static_cast<System::Int32>(static_cast<System::Byte>(15)),
-				static_cast<System::Int32>(static_cast<System::Byte>(15)));
+			this->label_header2->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(14)), static_cast<System::Int32>(static_cast<System::Byte>(14)),
+				static_cast<System::Int32>(static_cast<System::Byte>(14)));
 			this->label_header2->Font = (gcnew System::Drawing::Font(L"Lucida Console", 15.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
 			this->label_header2->ForeColor = System::Drawing::SystemColors::ButtonFace;
-			this->label_header2->Location = System::Drawing::Point(78, 434);
+			this->label_header2->Location = System::Drawing::Point(78, 442);
 			this->label_header2->Name = L"label_header2";
 			this->label_header2->Size = System::Drawing::Size(127, 21);
 			this->label_header2->TabIndex = 8;
@@ -257,10 +259,10 @@ namespace HexLoader {
 			// 
 			this->label_desc2->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(10)), static_cast<System::Int32>(static_cast<System::Byte>(10)),
 				static_cast<System::Int32>(static_cast<System::Byte>(10)));
-			this->label_desc2->Font = (gcnew System::Drawing::Font(L"Lucida Sans", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->label_desc2->Font = (gcnew System::Drawing::Font(L"Microsoft Tai Le", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
 			this->label_desc2->ForeColor = System::Drawing::SystemColors::ButtonFace;
-			this->label_desc2->Location = System::Drawing::Point(80, 321);
+			this->label_desc2->Location = System::Drawing::Point(80, 329);
 			this->label_desc2->Name = L"label_desc2";
 			this->label_desc2->Size = System::Drawing::Size(544, 75);
 			this->label_desc2->TabIndex = 9;
@@ -270,10 +272,10 @@ namespace HexLoader {
 			// 
 			this->label_desc3->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(18)), static_cast<System::Int32>(static_cast<System::Byte>(18)),
 				static_cast<System::Int32>(static_cast<System::Byte>(18)));
-			this->label_desc3->Font = (gcnew System::Drawing::Font(L"Lucida Sans", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+			this->label_desc3->Font = (gcnew System::Drawing::Font(L"Microsoft Tai Le", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
 			this->label_desc3->ForeColor = System::Drawing::SystemColors::ButtonFace;
-			this->label_desc3->Location = System::Drawing::Point(80, 468);
+			this->label_desc3->Location = System::Drawing::Point(80, 476);
 			this->label_desc3->Name = L"label_desc3";
 			this->label_desc3->Size = System::Drawing::Size(550, 84);
 			this->label_desc3->TabIndex = 10;
@@ -301,7 +303,6 @@ namespace HexLoader {
 			this->Controls->Add(this->logo);
 			this->Controls->Add(this->label_title);
 			this->FormBorderStyle = System::Windows::Forms::FormBorderStyle::None;
-			this->MouseDown += gcnew System::Windows::Forms::MouseEventHandler(this, &info::info_MouseDown);
 			this->MaximizeBox = false;
 			this->MinimizeBox = false;
 			this->Name = L"info";
@@ -309,6 +310,7 @@ namespace HexLoader {
 			this->ShowIcon = false;
 			this->ShowInTaskbar = false;
 			this->StartPosition = System::Windows::Forms::FormStartPosition::CenterScreen;
+			this->MouseDown += gcnew System::Windows::Forms::MouseEventHandler(this, &info::info_MouseDown);
 			this->ResumeLayout(false);
 			this->PerformLayout();
 
@@ -323,6 +325,10 @@ namespace HexLoader {
 			// Close application if mouse is over close button
 			if (e->Y <= TITLE_BAR_HEIGHT && e->X >= TITLE_BAR_WIDTH)
 				this->Close();
+		}
+		private: System::Void logo_Click(System::Object^ sender, System::EventArgs^ e)
+		{
+			System::Diagnostics::Process::Start("https://kevincrepps.com/hexloader.html");
 		}
 	};
 }

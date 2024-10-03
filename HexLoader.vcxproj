@@ -74,7 +74,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <IncludePath>C:\Users\kcreppsx\source\repos\HexLoader\HexLoader\include\core;C:\Users\kcreppsx\source\repos\HexLoader\HexLoader\include\gui;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\Admin\source\repos\HexLoader\HexLoader\include\core;C:\Users\Admin\source\repos\HexLoader\HexLoader\include\gui;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>C:\Users\kcreppsx\source\repos\HexLoader\HexLoader\include\core;C:\Users\kcreppsx\source\repos\HexLoader\HexLoader\include\gui;$(IncludePath)</IncludePath>
@@ -140,6 +140,9 @@
   <ItemGroup>
     <EmbeddedResource Include="gui.resx">
       <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="include\gui\info.resx">
+      <DependentUpon>include\gui\info.h</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="info.resx">
       <SubType>Designer</SubType>
