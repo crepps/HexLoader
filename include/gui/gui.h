@@ -30,7 +30,8 @@ enum AREA
 	BUTTON_SELECT_BIN,
 	BUTTON_SELECT_LIB,
 	BUTTON_EXPORT,
-	BUTTON_BUILD
+	BUTTON_BUILD,
+	BUTTON_EXIT
 };
 
 /**
@@ -128,7 +129,7 @@ namespace HexLoader {
 		*/
 
 		// Text animation-related
-		const unsigned int NUM_BUTTONS{ 4 },
+		const unsigned int NUM_BUTTONS{ 5 },
 		NUM_HEADER_FRAMES{ 16 },
 		HEADER_TICK_RATE{ 9 },
 
@@ -155,6 +156,11 @@ namespace HexLoader {
 		BB_AREA_R{ 733 },
 		BB_AREA_T{ 270 },
 		BB_AREA_B{ 294 },
+
+		BE_AREA_L{ 752},	// BUTTON EXIT
+		BE_AREA_R{ 792},
+		BE_AREA_T{ 1 },
+		BE_AREA_B{ 29 },
 
 		// Label locations
 		XPOS_OFFSET{ 400 },
@@ -216,6 +222,7 @@ namespace HexLoader {
 	private: System::Windows::Forms::Button^ patch_export;
 	private: System::Windows::Forms::Button^ patch_build;
 private: System::Windows::Forms::Label^ label_version;
+private: System::Windows::Forms::Button^ button_exit;
 
 
 
@@ -254,12 +261,14 @@ private: System::Windows::Forms::Label^ label_version;
 			button_ex->FlatStyle = FlatStyle::Flat;
 			patch_export->FlatStyle = FlatStyle::Flat;
 			patch_build->FlatStyle = FlatStyle::Flat;
-			patch_build->FlatAppearance->BorderSize = 0;
+			button_exit->FlatStyle = FlatStyle::Flat;
+			//button_build->FlatAppearance->BorderSize = 0;
 			button_sb->FlatAppearance->BorderSize = 0;
 			button_sl->FlatAppearance->BorderSize = 0;
 			button_ex->FlatAppearance->BorderSize = 0;
 			patch_export->FlatAppearance->BorderSize = 0;
 			patch_build->FlatAppearance->BorderSize = 0;
+			button_exit->FlatAppearance->BorderSize = 0;
 		}
 
 	protected:
@@ -339,6 +348,7 @@ private: System::Windows::Forms::Label^ label_version;
 			this->patch_export = (gcnew System::Windows::Forms::Button());
 			this->patch_build = (gcnew System::Windows::Forms::Button());
 			this->label_version = (gcnew System::Windows::Forms::Label());
+			this->button_exit = (gcnew System::Windows::Forms::Button());
 			this->SuspendLayout();
 			// 
 			// radio_loader
@@ -518,6 +528,7 @@ private: System::Windows::Forms::Label^ label_version;
 			// 
 			// button_build
 			// 
+			this->button_build->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"button_build.BackgroundImage")));
 			this->button_build->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
 			this->button_build->Font = (gcnew System::Drawing::Font(L"Lucida Sans Unicode", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
@@ -762,6 +773,18 @@ private: System::Windows::Forms::Label^ label_version;
 			this->label_version->TabIndex = 29;
 			this->label_version->Text = L"v1.0.0-beta.3";
 			// 
+			// button_exit
+			// 
+			this->button_exit->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"button_exit.BackgroundImage")));
+			this->button_exit->FlatStyle = System::Windows::Forms::FlatStyle::Flat;
+			this->button_exit->Location = System::Drawing::Point(754, 0);
+			this->button_exit->Name = L"button_exit";
+			this->button_exit->Size = System::Drawing::Size(39, 30);
+			this->button_exit->TabIndex = 30;
+			this->button_exit->UseVisualStyleBackColor = true;
+			this->button_exit->Visible = false;
+			this->button_exit->Click += gcnew System::EventHandler(this, &gui::button_exit_Click);
+			// 
 			// gui
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
@@ -770,6 +793,7 @@ private: System::Windows::Forms::Label^ label_version;
 				static_cast<System::Int32>(static_cast<System::Byte>(30)));
 			this->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"$this.BackgroundImage")));
 			this->ClientSize = System::Drawing::Size(793, 325);
+			this->Controls->Add(this->button_exit);
 			this->Controls->Add(this->label_version);
 			this->Controls->Add(this->patch_build);
 			this->Controls->Add(this->patch_export);
@@ -844,6 +868,10 @@ private: System::Windows::Forms::Label^ label_version;
 			case BUTTON_BUILD:
 				return (cursorPos.x >= BB_AREA_L && cursorPos.x <= BB_AREA_R
 					&& cursorPos.y >= BB_AREA_T && cursorPos.y <= BB_AREA_B);
+
+			case BUTTON_EXIT:
+				return (cursorPos.x >= BE_AREA_L && cursorPos.x <= BE_AREA_R
+					&& cursorPos.y >= BE_AREA_T && cursorPos.y <= BE_AREA_B);
 			}
 		}
 		private: System::Void timer_anim_Tick(System::Object^ sender, System::EventArgs^ e)
@@ -991,10 +1019,6 @@ private: System::Windows::Forms::Label^ label_version;
 				cursorDownPos = Cursor->Position;
 				mouseDown = true;
 			}
-
-			// Close application if mouse is over close button
-			else if (e->Y <= TITLE_BAR_HEIGHT && e->X >= TITLE_BAR_WIDTH)
-				Application::Exit();
 		}
 		private: System::Void gui::gui_MouseUp(System::Object^ Sender, System::Windows::Forms::MouseEventArgs^ e)
 		{
@@ -1029,6 +1053,9 @@ private: System::Windows::Forms::Label^ label_version;
 					break;
 				case BUTTON_BUILD:
 					buttonPtr = button_build;
+					break;
+				case BUTTON_EXIT:
+					buttonPtr = button_exit;
 				}
 
 				if (CheckMouseover(vec2(e->X, e->Y), AREA(i)))
@@ -1484,6 +1511,10 @@ private: System::Windows::Forms::Label^ label_version;
 			info^ infoForm = gcnew info();
 			infoForm->Show();
 		}
-	};
+		private: System::Void button_exit_Click(System::Object^ sender, System::EventArgs^ e)
+		{
+			Application::Exit();
+		}
+};
 }
 
