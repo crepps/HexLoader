@@ -19,13 +19,16 @@ namespace HexLoader {
 		const unsigned int TITLE_BAR_HEIGHT{ 25 },
 						   TITLE_BAR_WIDTH{ 665 };
 
+		// License info shown flag
+		bool license;
+
+	private: System::Windows::Forms::Label^ label_license;
+
 	public:
 		info(void)
+			:license(false)
 		{
 			InitializeComponent();
-			//
-			//TODO: Add the constructor code here
-			//
 		}
 
 	protected:
@@ -106,6 +109,7 @@ namespace HexLoader {
 			this->label_header2 = (gcnew System::Windows::Forms::Label());
 			this->label_desc2 = (gcnew System::Windows::Forms::Label());
 			this->label_desc3 = (gcnew System::Windows::Forms::Label());
+			this->label_license = (gcnew System::Windows::Forms::Label());
 			this->SuspendLayout();
 			// 
 			// label_title
@@ -163,12 +167,14 @@ namespace HexLoader {
 				static_cast<System::Byte>(0)));
 			this->link_license->LinkColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(192)), static_cast<System::Int32>(static_cast<System::Byte>(0)),
 				static_cast<System::Int32>(static_cast<System::Byte>(0)));
-			this->link_license->Location = System::Drawing::Point(522, 132);
+			this->link_license->Location = System::Drawing::Point(524, 132);
 			this->link_license->Name = L"link_license";
 			this->link_license->Size = System::Drawing::Size(54, 12);
 			this->link_license->TabIndex = 4;
 			this->link_license->TabStop = true;
 			this->link_license->Text = L"License";
+			this->link_license->TextAlign = System::Drawing::ContentAlignment::MiddleCenter;
+			this->link_license->LinkClicked += gcnew System::Windows::Forms::LinkLabelLinkClickedEventHandler(this, &info::link_license_LinkClicked);
 			// 
 			// label4
 			// 
@@ -279,6 +285,21 @@ namespace HexLoader {
 			this->label_desc3->TabIndex = 10;
 			this->label_desc3->Text = resources->GetString(L"label_desc3.Text");
 			// 
+			// label_license
+			// 
+			this->label_license->BackColor = System::Drawing::Color::FromArgb(static_cast<System::Int32>(static_cast<System::Byte>(10)), static_cast<System::Int32>(static_cast<System::Byte>(10)),
+				static_cast<System::Int32>(static_cast<System::Byte>(10)));
+			this->label_license->Font = (gcnew System::Drawing::Font(L"Microsoft Tai Le", 9.75F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
+				static_cast<System::Byte>(0)));
+			this->label_license->ForeColor = System::Drawing::SystemColors::ButtonFace;
+			this->label_license->Location = System::Drawing::Point(59, 232);
+			this->label_license->Name = L"label_license";
+			this->label_license->Padding = System::Windows::Forms::Padding(25, 15, 15, 15);
+			this->label_license->Size = System::Drawing::Size(584, 318);
+			this->label_license->TabIndex = 13;
+			this->label_license->Text = resources->GetString(L"label_license.Text");
+			this->label_license->Visible = false;
+			// 
 			// info
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
@@ -287,6 +308,7 @@ namespace HexLoader {
 			this->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"$this.BackgroundImage")));
 			this->ClientSize = System::Drawing::Size(700, 625);
 			this->ControlBox = false;
+			this->Controls->Add(this->label_license);
 			this->Controls->Add(this->link_coffee);
 			this->Controls->Add(this->label_coffee);
 			this->Controls->Add(this->label_desc3);
@@ -328,5 +350,35 @@ namespace HexLoader {
 		{
 			System::Diagnostics::Process::Start("https://kevincrepps.com/hexloader.html");
 		}
-	};
+		private: System::Void link_license_LinkClicked(System::Object^ sender, System::Windows::Forms::LinkLabelLinkClickedEventArgs^ e)
+		{
+			license = !license;
+
+			if (license)
+			{
+				label_header1->Visible = false;
+				label_header2->Visible = false;
+				label_desc1->Visible = false;
+				label_desc2->Visible = false;
+				label_desc3->Visible = false;
+
+				label_license->Visible = true;
+
+				link_license->Text = "About";
+			}
+
+			else
+			{
+				label_license->Visible = false;
+
+				label_header1->Visible = true;
+				label_header2->Visible = true;
+				label_desc1->Visible = true;
+				label_desc2->Visible = true;
+				label_desc3->Visible = true;
+
+				link_license->Text = "License";
+			}
+		}
+};
 }
