@@ -147,7 +147,7 @@ namespace HexLoader {
 			this->label_version->Name = L"label_version";
 			this->label_version->Size = System::Drawing::Size(96, 12);
 			this->label_version->TabIndex = 2;
-			this->label_version->Text = L"v1.0.0-beta.3";
+			this->label_version->Text = L"v1.0.0-beta.4";
 			// 
 			// label_copyright
 			// 
