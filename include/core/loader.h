@@ -35,17 +35,17 @@
  * - Failed and aborting is recommended (1)
  * - Failed but program can safely continue (2)
  */
-#define SUCCESS 0
-#define FAILURE_ABORT 1
-#define FAILURE_CONTINUE 2
+constexpr int SUCCESS = 0;
+constexpr int FAILURE_ABORT = 1;
+constexpr int FAILURE_CONTINUE = 2;
 
 /**
  * Optional behaviors selected in front end,
  * passed into SetOption().
  */
-#define OPTION_CLEANUP 0
-#define OPTION_SHORTCUT 1
-#define OPTION_STARTUP 2
+constexpr int OPTION_CLEANUP = 0;
+constexpr int OPTION_SHORTCUT = 1;
+constexpr int OPTION_STARTUP = 2;
 
 /**
  * Console output-related constants.
@@ -57,9 +57,9 @@
  * milliseconds the thread will sleep between
  * buffer offloads.
  */
-#define BUFFER_SIZE 128
-#define DELAY_OUTPUT_LONG 100
-#define DELAY_OUTPUT_SHORT 5
+constexpr int BUFFER_SIZE = 128;
+constexpr int DELAY_OUTPUT_LONG = 100;
+constexpr int DELAY_OUTPUT_SHORT = 5;
 
 class Loader
 {
@@ -68,7 +68,7 @@ public:
 	 * Enumerator for specifying which file path the user would
 	 * like to set or verify with SetPath() or ValidatePath().
 	 */
-	enum PATH_TYPE
+	enum class PATH_TYPE
 	{
 		PATH_ALL,
 		PATH_BIN,
@@ -324,35 +324,35 @@ public:
 
 private:
 	unsigned int outputDelay;           // Milliseconds between SpawnProcThread()'s
-                                        // output buffer offloads
+	                                    // output buffer offloads
 
 	bool installer,                     // Whether to build installer (not loader)
 		cleanupThread,                  // Whether to purge loader temp files
-		shortcut,						// Whether installer should prompt desktop shortcut
-		startup;						// Whether installer should prompt startup reg entry
+		shortcut,                       // Whether installer should prompt desktop shortcut
+		startup;                        // Whether installer should prompt startup reg entry
 
 	std::string appName,                // Name of user's application
-				binPath,                // Path to executable
-				exportPath,             // Output location for loader/installer
-				runPath,                // Temp location for running loader
-				installerPath,          // Installation destination for installer
-				error,                  // Error info set in SetError()
-				outputBuffer,           // Holds chunks of output from SpawnProcThread()
-				appDataPath;            // Working directory for building loader/installer
+                binPath,                // Path to executable
+                exportPath,             // Output location for loader/installer
+                runPath,                // Temp location for running loader
+                installerPath,          // Installation destination for installer
+                error,                  // Error info set in SetError()
+                outputBuffer,           // Holds chunks of output from SpawnProcThread()
+                appDataPath;            // Working directory for building loader/installer
 
 	std::vector<std::string> libPaths,  // Paths to user's lib files
 							 fileNames, // Names of user's bin and lib files
 							 varNames;  // Names of variables to be written to file
-										// in BuildHeader()
+                                        // in BuildHeader()
 
-	std::vector<uint64_t> fileSizes;	// Sizes of user's bin and lib files
+	std::vector<uint64_t> fileSizes;    // Sizes of user's bin and lib files
 		
-	std::atomic<bool> bufferLoaded,		// Whether outputBuffer ready for offload
+	std::atomic<bool> bufferLoaded,     // Whether outputBuffer ready for offload
 
-					  reading;			// Whether there's more output from command
-										// executed with SpawnProcThread()
+					  reading;          // Whether there's more output from command
+                                        // executed with SpawnProcThread()
 
-	std::mutex outputMutex;				// Mutex used to lock outputBuffer
+	std::mutex outputMutex;             // Mutex used to lock outputBuffer
 
 	/**
 	 * Constants for default paths.

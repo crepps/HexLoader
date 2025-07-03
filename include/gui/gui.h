@@ -25,7 +25,7 @@
 /**
  * Selectable areas for buttons.
  */
-enum AREA
+enum class AREA
 {
 	BUTTON_SELECT_BIN,
 	BUTTON_SELECT_LIB,
@@ -38,7 +38,7 @@ enum AREA
  * Used when prompting user to confirm auto-
  * installing compiler/chocolatey
  */
-enum PROMPT_INDEX
+enum class PROMPT_INDEX
 {
 	INSTALL_COMPILER,
 	INSTALL_CHOCO
@@ -855,23 +855,23 @@ private: System::Windows::Forms::Button^ button_exit;
 
 			switch (area)
 			{
-			case BUTTON_SELECT_BIN:
+			case AREA::BUTTON_SELECT_BIN:
 				return (cursorPos.x >= BSB_AREA_L && cursorPos.x <= BSB_AREA_R
 					&& cursorPos.y >= BSB_AREA_T && cursorPos.y <= BSB_AREA_B);
 
-			case BUTTON_SELECT_LIB:
+			case AREA::BUTTON_SELECT_LIB:
 				return (cursorPos.x >= BSL_AREA_L && cursorPos.x <= BSL_AREA_R
 					&& cursorPos.y >= BSL_AREA_T && cursorPos.y <= BSL_AREA_B);
 
-			case BUTTON_EXPORT:
+			case AREA::BUTTON_EXPORT:
 				return (cursorPos.x >= BEX_AREA_L && cursorPos.x <= BEX_AREA_R
 					&& cursorPos.y >= BEX_AREA_T && cursorPos.y <= BEX_AREA_B);
 
-			case BUTTON_BUILD:
+			case AREA::BUTTON_BUILD:
 				return (cursorPos.x >= BB_AREA_L && cursorPos.x <= BB_AREA_R
 					&& cursorPos.y >= BB_AREA_T && cursorPos.y <= BB_AREA_B);
 
-			case BUTTON_EXIT:
+			case AREA::BUTTON_EXIT:
 				return (cursorPos.x >= BE_AREA_L && cursorPos.x <= BE_AREA_R
 					&& cursorPos.y >= BE_AREA_T && cursorPos.y <= BE_AREA_B);
 			}
@@ -1040,23 +1040,23 @@ private: System::Windows::Forms::Button^ button_exit;
 			}
 
 			// Cycle through button coords, toggle highlight overlay button visibility
-			for (unsigned int i = BUTTON_SELECT_BIN; i < NUM_BUTTONS; ++i)
+			for (unsigned int i = (unsigned int)AREA::BUTTON_SELECT_BIN; i < NUM_BUTTONS; ++i)
 			{
 				switch (i)
 				{
-				case BUTTON_SELECT_BIN:
+				case (unsigned int)AREA::BUTTON_SELECT_BIN:
 					buttonPtr = button_sb;
 					break;
-				case BUTTON_SELECT_LIB:
+				case (unsigned int)AREA::BUTTON_SELECT_LIB:
 					buttonPtr = button_sl;
 					break;
-				case BUTTON_EXPORT:
+				case (unsigned int)AREA::BUTTON_EXPORT:
 					buttonPtr = button_ex;
 					break;
-				case BUTTON_BUILD:
+				case (unsigned int)AREA::BUTTON_BUILD:
 					buttonPtr = button_build;
 					break;
-				case BUTTON_EXIT:
+				case (unsigned int)AREA::BUTTON_EXIT:
 					buttonPtr = button_exit;
 				}
 
@@ -1079,7 +1079,7 @@ private: System::Windows::Forms::Button^ button_exit;
 			static std::string str;
 			const char* result{ "0" };
 
-			if (button == BUTTON_EXPORT)
+			if (button == AREA::BUTTON_EXPORT)
 			{
 				folderBrowserDialog->Description = "Select the destination folder for the new executable.";
 				if (folderBrowserDialog->ShowDialog() == System::Windows::Forms::DialogResult::OK)
@@ -1091,7 +1091,7 @@ private: System::Windows::Forms::Button^ button_exit;
 
 			else
 			{
-				openFileDialog1->Filter = (button == BUTTON_SELECT_BIN ? "Exe Files (.exe)|*.exe" : "DLL Files (.dll)|*.dll");
+				openFileDialog1->Filter = (button == AREA::BUTTON_SELECT_BIN ? "Exe Files (.exe)|*.exe" : "DLL Files (.dll)|*.dll");
 				if (openFileDialog1->ShowDialog() == System::Windows::Forms::DialogResult::OK)
 				{
 					ConvertString(openFileDialog1->FileName, str);
@@ -1104,7 +1104,7 @@ private: System::Windows::Forms::Button^ button_exit;
 		private: System::Void button_sb_Click(System::Object^ sender, System::EventArgs^ e)
 		{
 			// Attempt to get path, return if user cancels
-			if ((binPath = GetPath(BUTTON_SELECT_BIN)) == "0")
+			if ((binPath = GetPath(AREA::BUTTON_SELECT_BIN)) == "0")
 				return;
 
 			// Set text, set input cursor to end
@@ -1134,7 +1134,7 @@ private: System::Windows::Forms::Button^ button_exit;
 		private: System::Void button_sl_Click(System::Object^ sender, System::EventArgs^ e)
 		{
 			// Store full path, add only filename to input_lib text
-			std::string path = GetPath(BUTTON_SELECT_LIB);
+			std::string path = GetPath(AREA::BUTTON_SELECT_LIB);
 
 			// Return if user cancels
 			if (path == "0")
@@ -1143,7 +1143,7 @@ private: System::Windows::Forms::Button^ button_exit;
 			if (!libPaths.Contains(gcnew String(path.c_str())))
 				libPaths.Add(gcnew String(path.c_str()));
 			
-			loaderPtr->SetPath(Loader::PATH_LIB, path);
+			loaderPtr->SetPath(Loader::PATH_TYPE::PATH_LIB, path);
 			size_t pos = path.find_last_of("\\");
 			path.erase(0, pos + 1);
 
@@ -1158,7 +1158,7 @@ private: System::Windows::Forms::Button^ button_exit;
 		private: System::Void button_ex_Click(System::Object^ sender, System::EventArgs^ e)
 		{
 			// Store full path, set input cursor to end
-			exportPath = gcnew String(GetPath(BUTTON_EXPORT));
+			exportPath = gcnew String(GetPath(AREA::BUTTON_EXPORT));
 			input_export->Text = exportPath;
 			input_export->Select(input_export->Text->Length, 0);
 			button_ex->Visible = false;
@@ -1244,13 +1244,13 @@ private: System::Windows::Forms::Button^ button_exit;
 		{
 			std::string path;
 			ConvertString(input_bin->Text, path);
-			loaderPtr->SetPath(Loader::PATH_BIN, path);
+			loaderPtr->SetPath(Loader::PATH_TYPE::PATH_BIN, path);
 		}
 		private: System::Void input_export_TextChanged(System::Object^ sender, System::EventArgs^ e)
 		{
 			std::string path;
 			ConvertString(input_export->Text, path);
-			loaderPtr->SetPath(Loader::PATH_EXPORT, path);
+			loaderPtr->SetPath(Loader::PATH_TYPE::PATH_EXPORT, path);
 		}
 		private: System::Void input_run_TextChanged(System::Object^ sender, System::EventArgs^ e)
 		{
@@ -1259,10 +1259,10 @@ private: System::Windows::Forms::Button^ button_exit;
 
 			// Set run path or installer path
 			if (loaderPtr->CheckInstaller())
-				loaderPtr->SetPath(Loader::PATH_INSTALLER, path);
+				loaderPtr->SetPath(Loader::PATH_TYPE::PATH_INSTALLER, path);
 
 			else
-				loaderPtr->SetPath(Loader::PATH_RUN, path);
+				loaderPtr->SetPath(Loader::PATH_TYPE::PATH_RUN, path);
 		}
 		private: void Print(const std::string& arg)
 		{
@@ -1280,19 +1280,19 @@ private: System::Windows::Forms::Button^ button_exit;
 			// Validate file paths
 			Print("Validating file paths.");
 
-			unsigned int pathResult = loaderPtr->ValidatePath(Loader::PATH_ALL);
+			unsigned int pathResult = loaderPtr->ValidatePath(Loader::PATH_TYPE::PATH_ALL);
 
 			if (pathResult != SUCCESS)
 			{
 				switch (pathResult)
 				{
-				case Loader::PATH_BIN:
+				case 1: // todo: replace magic numbers with keys of hashmap for scoped enumeration -> integral value
 					Print("Invalid executable path specified.");
 					break;
-				case Loader::PATH_LIB:
+				case 2:
 					Print("Invalid libary path specified.");
 					break;
-				case Loader::PATH_RUN:
+				case 4: 
 					Print("Invalid run path specified.");
 				}
 
@@ -1310,7 +1310,7 @@ private: System::Windows::Forms::Button^ button_exit;
 			{
 				Print("Could not detect compiler.");
 				text_output->AppendText("Auto install GNU C++ Compiler (g++)? (Y/N): ");
-				prompting[INSTALL_COMPILER] = true;
+				prompting[(unsigned int)PROMPT_INDEX::INSTALL_COMPILER] = true;
 				this->ActiveControl = text_output;
 				
 				return FAILURE_CONTINUE;
@@ -1352,9 +1352,9 @@ private: System::Windows::Forms::Button^ button_exit;
 		private: System::Void HandleKeyPress(System::Object^ sender, System::Windows::Forms::KeyPressEventArgs^ e)
 		{
 			// 'Auto install compiler' prompt
-			if (prompting[INSTALL_COMPILER])
+			if (prompting[(unsigned int)PROMPT_INDEX::INSTALL_COMPILER])
 			{
-				prompting[INSTALL_COMPILER] = false;
+				prompting[(unsigned int)PROMPT_INDEX::INSTALL_COMPILER] = false;
 
 				// 'Y' pressed
 				if (e->KeyChar == 'y' || e->KeyChar == 'Y')
@@ -1384,7 +1384,7 @@ private: System::Windows::Forms::Button^ button_exit;
 						// Prompt user whether to auto install
 						Print("Could not detect Chocolatey.");
 						text_output->AppendText("Auto install Chocolatey? (Y/N): ");
-						prompting[INSTALL_CHOCO] = true;
+						prompting[(unsigned int)PROMPT_INDEX::INSTALL_CHOCO] = true;
 					}
 				}
 
@@ -1409,9 +1409,9 @@ private: System::Windows::Forms::Button^ button_exit;
 			}
 
 			// 'Auto install choco' prompt
-			if (prompting[INSTALL_CHOCO])
+			if (prompting[(unsigned int)PROMPT_INDEX::INSTALL_CHOCO])
 			{
-				prompting[INSTALL_CHOCO] = false;
+				prompting[(unsigned int)PROMPT_INDEX::INSTALL_CHOCO] = false;
 
 				// 'Y' pressed
 				if (e->KeyChar == 'y' || e->KeyChar == 'Y')

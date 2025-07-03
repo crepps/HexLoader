@@ -4,11 +4,11 @@ void Loader::SetPath(PATH_TYPE type, const std::string& path) noexcept
 {
 	switch (type)
 	{
-	case PATH_BIN:
+	case PATH_TYPE::PATH_BIN:
 		binPath = path;
 		break;
 
-	case PATH_LIB:
+	case PATH_TYPE::PATH_LIB:
 		try
 		{
 			libPaths.push_back(std::move(path));
@@ -19,15 +19,15 @@ void Loader::SetPath(PATH_TYPE type, const std::string& path) noexcept
 		}
 		break;
 
-	case PATH_EXPORT:
+	case PATH_TYPE::PATH_EXPORT:
 		exportPath = path;
 		break;
 
-	case PATH_RUN:
+	case PATH_TYPE::PATH_RUN:
 		runPath = path;
 		break;
 
-	case PATH_INSTALLER:
+	case PATH_TYPE::PATH_INSTALLER:
 		installerPath = path;
 	}
 }
@@ -38,39 +38,39 @@ unsigned int Loader::ValidatePath(PATH_TYPE type) const noexcept
 	// Return path type if file/directory doesn't exist
 	switch (type)
 	{
-	case PATH_ALL:
-	case PATH_BIN:
+	case PATH_TYPE::PATH_ALL:
+	case PATH_TYPE::PATH_BIN:
 		if (stat(binPath.c_str(), &statInfo) != 0 || binPath == "")
-			return (unsigned int)PATH_BIN;
-		if (type)
+			return (unsigned int)PATH_TYPE::PATH_BIN;
+		if ((unsigned int)type)
 			break;
 
-	case PATH_LIB:
+	case PATH_TYPE::PATH_LIB:
 		if (libPaths.empty())
-			return (unsigned int)PATH_LIB;
+			return (unsigned int)PATH_TYPE::PATH_LIB;
 		for (auto& path : libPaths)
 		{
 			if (stat(path.c_str(), &statInfo) != 0)
-				return (unsigned int)PATH_LIB;
+				return (unsigned int)PATH_TYPE::PATH_LIB;
 		}
-		if (type)
+		if ((unsigned int)type)
 			break;
 
-	case PATH_EXPORT:
+	case PATH_TYPE::PATH_EXPORT:
 		if (stat(exportPath.c_str(), &statInfo) != 0 || exportPath == "")
-			return (unsigned int)PATH_EXPORT;
-		if (type)
+			return (unsigned int)PATH_TYPE::PATH_EXPORT;
+		if ((unsigned int)type)
 			break;
 
-	case PATH_RUN:
+	case PATH_TYPE::PATH_RUN:
 		if ((stat(runPath.c_str(), &statInfo) != 0 || runPath == "") && !installer)
-			return (unsigned int)PATH_RUN;
-		if (type)
+			return (unsigned int)PATH_TYPE::PATH_RUN;
+		if ((unsigned int)type)
 			break;
 
-	case PATH_INSTALLER:
+	case PATH_TYPE::PATH_INSTALLER:
 		if ((stat(runPath.c_str(), &statInfo) != 0 || runPath == "") && installer)
-			return (unsigned int)PATH_INSTALLER;
+			return (unsigned int)PATH_TYPE::PATH_INSTALLER;
 	}
 
 	return SUCCESS;
