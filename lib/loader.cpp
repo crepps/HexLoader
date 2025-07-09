@@ -387,14 +387,14 @@ unsigned int Loader::BuildHeader() noexcept
 			varNames.push_back(varName);
 			fileSizes.push_back(fileSize);
 
-			/* Hex dump bin file, open header file, write declarations
+            /* Hex dump bin file, open header file, write declarations
 
-					static const unsigned int varName_size{ fileSize };
+                    static const unsigned int varName_size{ fileSize };
 
-					unsigned char varName[] = {
-						(hex bytes)
-					};
-			*/
+                    unsigned char varName[] = {
+                        (hex bytes)
+                    };
+            */
 
 			std::string hex{ HexDump(path) };
 

@@ -529,6 +529,7 @@ private: System::Windows::Forms::Button^ button_exit;
 			// button_build
 			// 
 			this->button_build->BackgroundImage = (cli::safe_cast<System::Drawing::Image^>(resources->GetObject(L"button_build.BackgroundImage")));
+			
 			this->button_build->BackgroundImageLayout = System::Windows::Forms::ImageLayout::Stretch;
 			this->button_build->Font = (gcnew System::Drawing::Font(L"Lucida Sans Unicode", 8.25F, System::Drawing::FontStyle::Regular, System::Drawing::GraphicsUnit::Point,
 				static_cast<System::Byte>(0)));
@@ -875,6 +876,8 @@ private: System::Windows::Forms::Button^ button_exit;
 				return (cursorPos.x >= BE_AREA_L && cursorPos.x <= BE_AREA_R
 					&& cursorPos.y >= BE_AREA_T && cursorPos.y <= BE_AREA_B);
 			}
+
+			return false;
 		}
 		private: System::Void timer_anim_Tick(System::Object^ sender, System::EventArgs^ e)
 		{

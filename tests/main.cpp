@@ -226,6 +226,11 @@ int main(array<String^>^ args)
 		MessageBox::Show(gcnew String(e.what()), "Exception occured.");
 		return EXIT_FAILURE;
 	}
+	catch (Exception^ ex)
+	{
+		MessageBox::Show(gcnew String(ex->Message), "Exception occured.");
+		return EXIT_FAILURE;
+	}
 	catch (...)
 	{
 		MessageBox::Show("Unknown exception.", "Exception occured.");
